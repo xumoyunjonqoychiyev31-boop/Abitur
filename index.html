@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Test Kabineti</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0F1B2E;
+    --bg-soft:#152540;
+    --card:#1B2C4A;
+    --card-border:#2A3E63;
+    --gold:#F0A500;
+    --gold-soft:#F7C24B;
+    --text:#F4F6FB;
+    --muted:#8CA0C2;
+    --danger:#FF6B6B;
+    --radius:18px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(circle at 15% 0%, rgba(240,165,0,0.10), transparent 45%),
+      radial-gradient(circle at 100% 100%, rgba(240,165,0,0.06), transparent 40%),
+      var(--bg);
+    color:var(--text);
+    font-family:'Manrope', sans-serif;
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+  }
+  h1,h2,h3{font-family:'Fraunces', serif; margin:0;}
+  .eyebrow{
+    text-transform:uppercase;
+    letter-spacing:.14em;
+    font-size:12px;
+    color:var(--gold-soft);
+    font-weight:700;
+    margin-bottom:10px;
+  }
+  .screen{width:100%; max-width:420px;}
+  .card{
+    background:linear-gradient(180deg, var(--card), var(--bg-soft));
+    border:1px solid var(--card-border);
+    border-radius:var(--radius);
+    padding:36px 30px;
+    box-shadow:0 20px 60px rgba(0,0,0,0.35);
+  }
+  .card h1{font-size:26px; font-weight:600; margin-bottom:8px;}
+  .card p.sub{color:var(--muted); font-size:14px; margin:0 0 28px 0; line-height:1.5;}
+
+  .btn{
+    display:block;
+    width:100%;
+    padding:15px 18px;
+    border-radius:12px;
+    border:none;
+    font-family:'Manrope', sans-serif;
+    font-size:15px;
+    font-weight:700;
+    cursor:pointer;
+    text-align:center;
+    transition:transform .15s ease, filter .15s ease;
+  }
+  .btn:active{transform:scale(.98);}
+  .btn-primary{
+    background:linear-gradient(135deg, var(--gold-soft), var(--gold));
+    color:#241500;
+  }
+  .btn-primary:hover{filter:brightness(1.06);}
+  .btn-ghost{
+    background:transparent;
+    color:var(--text);
+    border:1px solid var(--card-border);
+    margin-top:12px;
+  }
+  .btn-ghost:hover{border-color:var(--gold-soft); color:var(--gold-soft);}
+  .btn-link{
+    background:none;
+    border:none;
+    color:var(--muted);
+    font-size:13px;
+    text-decoration:underline;
+    cursor:pointer;
+    padding:0;
+    margin-top:18px;
+    display:block;
+    text-align:center;
+    width:100%;
+  }
+  .btn-link:hover{color:var(--gold-soft);}
+
+  label{
+    display:block;
+    font-size:12px;
+    color:var(--muted);
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:.08em;
+    margin:16px 0 6px 0;
+  }
+  input{
+    width:100%;
+    padding:13px 14px;
+    border-radius:10px;
+    border:1px solid var(--card-border);
+    background:#0F1B2E;
+    color:var(--text);
+    font-family:'Manrope', sans-serif;
+    font-size:15px;
+    outline:none;
+    transition:border-color .15s ease;
+  }
+  input:focus{border-color:var(--gold-soft);}
+  input::placeholder{color:#4C5E80;}
+
+  .error{
+    color:var(--danger);
+    font-size:13px;
+    margin-top:14px;
+    display:none;
+  }
+  .error.show{display:block;}
+
+  .id-badge{
+    background:rgba(240,165,0,0.12);
+    border:1px dashed var(--gold-soft);
+    border-radius:12px;
+    padding:18px;
+    text-align:center;
+    margin-top:20px;
+  }
+  .id-badge .num{
+    font-family:'Fraunces', serif;
+    font-size:34px;
+    font-weight:700;
+    color:var(--gold-soft);
+    letter-spacing:.02em;
+  }
+  .id-badge .lbl{font-size:12px; color:var(--muted); margin-top:4px;}
+
+  .spinner{
+    width:16px; height:16px;
+    border:2px solid rgba(0,0,0,.25);
+    border-top-color:#241500;
+    border-radius:50%;
+    display:inline-block;
+    animation:spin .7s linear infinite;
+    vertical-align:middle;
+    margin-right:8px;
+  }
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  /* ==== KABINET ==== */
+  .cab-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:26px;
+  }
+  .cab-header .who{font-size:20px; font-weight:600;}
+  .cab-header .id-pill{
+    font-size:12px; color:var(--muted);
+    border:1px solid var(--card-border);
+    padding:4px 10px; border-radius:20px;
+  }
+
+  .stat-grid{
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+    margin-top:6px;
+  }
+  .stat-card{
+    background:#0F1B2E;
+    border:1px solid var(--card-border);
+    border-radius:14px;
+    padding:18px 20px;
+    display:flex;
+    align-items:center;
+    gap:16px;
+  }
+  .ring{
+    position:relative;
+    width:58px; height:58px;
+    flex-shrink:0;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size:14px;
+  }
+  .stat-info .type{font-weight:700; font-size:14px;}
+  .stat-info .count{font-size:12px; color:var(--muted); margin-top:2px;}
+
+  .hidden{display:none !important;}
+  .footnote{
+    text-align:center;
+    font-size:12px;
+    color:var(--muted);
+    margin-top:22px;
+  }
+
+  /* ==== TEST RO'YXATI ==== */
+  .stat-card{cursor:pointer; transition:border-color .15s ease;}
+  .stat-card:active{border-color:var(--gold-soft);}
+  .test-item{
+    background:#0F1B2E;
+    border:1px solid var(--card-border);
+    border-radius:14px;
+    padding:16px 18px;
+    margin-bottom:12px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+  }
+  .test-item .ti-title{font-weight:700; font-size:14px;}
+  .test-item .ti-meta{font-size:12px; color:var(--muted); margin-top:3px;}
+  .test-item .ti-btn{
+    background:linear-gradient(135deg, var(--gold-soft), var(--gold));
+    color:#241500; border:none; border-radius:10px;
+    padding:9px 16px; font-weight:700; font-size:13px; cursor:pointer; flex-shrink:0;
+  }
+
+  /* ==== TEST ISHLASH ==== */
+  .timer-bar{
+    display:flex; align-items:center; justify-content:space-between;
+    background:#0F1B2E; border:1px solid var(--card-border); border-radius:12px;
+    padding:12px 16px; margin-bottom:18px;
+  }
+  .timer-bar .tb-label{font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:.06em;}
+  .timer-bar .tb-time{font-family:'Fraunces', serif; font-size:20px; font-weight:700; color:var(--gold-soft);}
+  .timer-bar .tb-time.low{color:var(--danger);}
+
+  .q-card{
+    background:#0F1B2E; border:1px solid var(--card-border); border-radius:14px;
+    padding:18px; margin-bottom:14px;
+  }
+  .q-card .q-num{font-size:12px; color:var(--gold-soft); font-weight:700; margin-bottom:8px;}
+  .q-card .q-text{font-size:15px; font-weight:600; margin-bottom:14px; line-height:1.4;}
+  .q-opt{
+    display:flex; align-items:center; gap:10px;
+    padding:11px 14px; border-radius:10px; border:1px solid var(--card-border);
+    margin-bottom:8px; cursor:pointer; font-size:14px;
+  }
+  .q-opt input{width:auto; margin:0;}
+  .q-opt.selected{border-color:var(--gold-soft); background:rgba(240,165,0,.08);}
+  .q-opt .opt-letter{
+    width:22px; height:22px; border-radius:50%; background:var(--card-border);
+    display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; flex-shrink:0;
+  }
+
+  .result-ring{
+    width:140px; height:140px; border-radius:50%; margin:10px auto 20px auto;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .result-ring .inner{
+    width:112px; height:112px; border-radius:50%; background:var(--bg-soft);
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+  }
+  .result-ring .inner .pct{font-family:'Fraunces', serif; font-size:32px; font-weight:700; color:var(--gold-soft);}
+  .result-ring .inner .frac{font-size:12px; color:var(--muted); margin-top:2px;}
+</style>
+</head>
+<body>
+
+<div class="screen">
+
+  <!-- ============ 1) LANDING ============ -->
+  <div id="view-landing" class="card">
+    <div class="eyebrow">Test Kabineti</div>
+    <h1>Xush kelibsiz</h1>
+    <p class="sub">Sinov, DTM va Sertifikat testlaringiz natijalarini shu yerda kuzatib boring.</p>
+    <button class="btn btn-primary" onclick="showView('register')">Ro'yxatdan o'tish</button>
+    <button class="btn btn-ghost" onclick="showView('login')">ID orqali kirish</button>
+  </div>
+
+  <!-- ============ 2) REGISTER ============ -->
+  <div id="view-register" class="card hidden">
+    <div class="eyebrow">Yangi foydalanuvchi</div>
+    <h1>Ro'yxatdan o'tish</h1>
+    <p class="sub">Ism-familiyangiz va telefon raqamingizni kiriting. Sizga shaxsiy ID beriladi — uni saqlab qo'ying.</p>
+
+    <label for="reg-ism">Ism</label>
+    <input id="reg-ism" type="text" placeholder="Masalan: Aziz">
+
+    <label for="reg-familiya">Familiya</label>
+    <input id="reg-familiya" type="text" placeholder="Masalan: Karimov">
+
+    <label for="reg-telefon">Telefon raqam</label>
+    <input id="reg-telefon" type="tel" placeholder="+998 90 123 45 67">
+
+    <button class="btn btn-primary" style="margin-top:22px" onclick="submitRegister()" id="reg-btn">Ro'yxatdan o'tish</button>
+    <div class="error" id="reg-error"></div>
+    <button class="btn-link" onclick="showView('landing')">Orqaga</button>
+  </div>
+
+  <!-- ============ 3) REGISTER SUCCESS ============ -->
+  <div id="view-reg-success" class="card hidden">
+    <div class="eyebrow">Muvaffaqiyatli</div>
+    <h1>Ro'yxatdan o'tdingiz!</h1>
+    <p class="sub">Bu sizning shaxsiy ID raqamingiz. Keyingi safar tizimga shu ID orqali kirasiz — uni yozib qo'ying yoki skrinshot oling.</p>
+    <div class="id-badge">
+      <div class="num" id="new-id-display">—</div>
+      <div class="lbl">Sizning ID raqamingiz</div>
+    </div>
+    <button class="btn btn-primary" style="margin-top:22px" onclick="goToCabinetAfterRegister()">Kabinetga o'tish</button>
+  </div>
+
+  <!-- ============ 4) LOGIN BY ID ============ -->
+  <div id="view-login" class="card hidden">
+    <div class="eyebrow">Qaytgan foydalanuvchi</div>
+    <h1>ID orqali kirish</h1>
+    <p class="sub">Ro'yxatdan o'tganingizda berilgan ID raqamingiz va telefon raqamingizni kiriting.</p>
+
+    <label for="login-id">ID raqam</label>
+    <input id="login-id" type="text" inputmode="numeric" placeholder="Masalan: 100001">
+
+    <label for="login-telefon">Telefon raqam</label>
+    <input id="login-telefon" type="tel" placeholder="+998 90 123 45 67">
+
+    <button class="btn btn-primary" style="margin-top:22px" onclick="submitLogin()" id="login-btn">Kirish</button>
+    <div class="error" id="login-error"></div>
+    <button class="btn-link" onclick="showView('landing')">Orqaga</button>
+  </div>
+
+  <!-- ============ 5) CABINET ============ -->
+  <div id="view-cabinet" class="card hidden">
+    <div class="cab-header">
+      <div>
+        <div class="eyebrow">Kabinet</div>
+        <div class="who" id="cab-name">—</div>
+      </div>
+      <div class="id-pill">ID: <span id="cab-id">—</span></div>
+    </div>
+
+    <div class="stat-grid" id="stat-grid"></div>
+
+    <div class="footnote">Statistikangizni ko'rish uchun bo'limni bosing, test ishlash uchun ham shundan boshlang.</div>
+    <button class="btn-ghost btn" style="margin-top:22px" onclick="logout()">Chiqish</button>
+  </div>
+
+  <!-- ============ 6) TEST RO'YXATI ============ -->
+  <div id="view-test-list" class="card hidden">
+    <div class="eyebrow" id="tl-eyebrow">Testlar</div>
+    <h1 id="tl-title" style="font-size:22px; font-weight:600; margin-bottom:18px;">—</h1>
+
+    <div id="tl-list"></div>
+    <div class="footnote hidden" id="tl-empty">Bu turdagi testlar hozircha qo'shilmagan.</div>
+
+    <button class="btn-link" onclick="showView('cabinet')">← Kabinetga qaytish</button>
+  </div>
+
+  <!-- ============ 7) TEST ISHLASH ============ -->
+  <div id="view-test-taking" class="card hidden">
+    <div class="timer-bar">
+      <div>
+        <div class="tb-label" id="tt-title">—</div>
+      </div>
+      <div class="tb-time" id="tt-timer">--:--</div>
+    </div>
+
+    <div id="tt-questions"></div>
+
+    <button class="btn btn-primary" onclick="confirmSubmitTest()" id="tt-submit-btn">Yakunlash</button>
+  </div>
+
+  <!-- ============ 8) NATIJA ============ -->
+  <div id="view-test-result" class="card hidden">
+    <div class="eyebrow">Natija</div>
+    <h1 style="font-size:22px; font-weight:600;">Test yakunlandi</h1>
+
+    <div class="result-ring" id="result-ring">
+      <div class="inner">
+        <div class="pct" id="result-pct">0%</div>
+        <div class="frac" id="result-frac">0 / 0</div>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" onclick="backToCabinetFromResult()">Kabinetga qaytish</button>
+  </div>
+
+</div>
+
+<script>
+/* ==========================================================
+   MUHIM: quyidagi API_URL o'rniga Google Apps Script
+   deploy qilingandan keyin olgan Web App URL manzilingizni
+   qo'ying (Code.gs faylidagi yo'riqnomaga qarang).
+   ========================================================== */
+const API_URL = "https://script.google.com/macros/s/AKfycbwzt5Rxoc-QmxiYTD79syMv09yGRgziS_GPdge9F6DFhzLbTSH7l_MkTZouC7q8wWNV/exec";
+
+let pendingUser = null; // ro'yxatdan o'tgandan keyin vaqtinchalik saqlash
+let currentUser = null; // { id, ism, familiya, telefon } — kabinetda faol foydalanuvchi
+let currentTest = null; // hozir ishlanayotgan test ma'lumotlari
+let userAnswers = {};   // { qid: "A" }
+let timerInterval = null;
+let secondsLeft = 0;
+
+function showView(name){
+  document.querySelectorAll('.screen > .card').forEach(el => el.classList.add('hidden'));
+  document.getElementById('view-' + name).classList.remove('hidden');
+}
+
+function setLoading(btn, loading, label){
+  btn.disabled = loading;
+  btn.innerHTML = loading ? '<span class="spinner"></span>Yuklanmoqda...' : label;
+}
+
+function showError(elId, msg){
+  const el = document.getElementById(elId);
+  el.textContent = msg;
+  el.classList.add('show');
+}
+function clearError(elId){
+  const el = document.getElementById(elId);
+  el.classList.remove('show');
+}
+
+async function submitRegister(){
+  clearError('reg-error');
+  const ism = document.getElementById('reg-ism').value.trim();
+  const familiya = document.getElementById('reg-familiya').value.trim();
+  const telefon = document.getElementById('reg-telefon').value.trim();
+
+  if(!ism || !familiya || !telefon){
+    showError('reg-error', 'Barcha maydonlarni to\'ldiring.');
+    return;
+  }
+
+  const btn = document.getElementById('reg-btn');
+  setLoading(btn, true, 'Ro\'yxatdan o\'tish');
+
+  try{
+    const url = `${API_URL}?action=register&ism=${encodeURIComponent(ism)}&familiya=${encodeURIComponent(familiya)}&telefon=${encodeURIComponent(telefon)}`;
+    const res = await fetch(url);
+    const data = await res.json();
+
+    if(!data.success){
+      showError('reg-error', data.message || 'Xatolik yuz berdi.');
+      setLoading(btn, false, 'Ro\'yxatdan o\'tish');
+      return;
+    }
+
+    pendingUser = data;
+    document.getElementById('new-id-display').textContent = data.id;
+    showView('reg-success');
+  }catch(err){
+    showError('reg-error', 'Serverga ulanib bo\'lmadi. Internetni tekshiring.');
+  }finally{
+    setLoading(btn, false, 'Ro\'yxatdan o\'tish');
+  }
+}
+
+function goToCabinetAfterRegister(){
+  currentUser = { id: pendingUser.id, ism: pendingUser.ism, familiya: pendingUser.familiya, telefon: pendingUser.telefon };
+  renderCabinet({
+    id: pendingUser.id,
+    ism: pendingUser.ism,
+    familiya: pendingUser.familiya,
+    stats: {
+      Sinov: {testlarSoni:0, foiz:0},
+      DTM: {testlarSoni:0, foiz:0},
+      Sertifikat: {testlarSoni:0, foiz:0}
+    }
+  });
+  showView('cabinet');
+}
+
+async function submitLogin(){
+  clearError('login-error');
+  const id = document.getElementById('login-id').value.trim();
+  const telefon = document.getElementById('login-telefon').value.trim();
+
+  if(!id || !telefon){
+    showError('login-error', 'ID va telefon raqamni kiriting.');
+    return;
+  }
+
+  const btn = document.getElementById('login-btn');
+  setLoading(btn, true, 'Kirish');
+
+  try{
+    const url = `${API_URL}?action=login&id=${encodeURIComponent(id)}&telefon=${encodeURIComponent(telefon)}`;
+    const res = await fetch(url);
+    const data = await res.json();
+
+    if(!data.success){
+      showError('login-error', data.message || 'ID topilmadi.');
+      setLoading(btn, false, 'Kirish');
+      return;
+    }
+
+    renderCabinet(data);
+    currentUser = { id: data.id, ism: data.ism, familiya: data.familiya, telefon: data.telefon };
+    showView('cabinet');
+  }catch(err){
+    showError('login-error', 'Serverga ulanib bo\'lmadi. Internetni tekshiring.');
+  }finally{
+    setLoading(btn, false, 'Kirish');
+  }
+}
+
+function ringGradient(pct){
+  return `conic-gradient(var(--gold) ${pct*3.6}deg, #24365A ${pct*3.6}deg)`;
+}
+
+function renderCabinet(data){
+  document.getElementById('cab-name').textContent = `${data.ism} ${data.familiya}`;
+  document.getElementById('cab-id').textContent = data.id;
+
+  const types = [
+    {key:'Sinov', label:'Sinov testlar', desc:'fanlar bo\'yicha'},
+    {key:'DTM', label:'DTM testlar', desc:'ikki fan birlashmasi'},
+    {key:'Sertifikat', label:'Sertifikat testlar', desc:'fanlar bo\'yicha'}
+  ];
+
+  const grid = document.getElementById('stat-grid');
+  grid.innerHTML = '';
+
+  types.forEach(t => {
+    const s = (data.stats && data.stats[t.key]) ? data.stats[t.key] : {testlarSoni:0, foiz:0};
+    const card = document.createElement('div');
+    card.className = 'stat-card';
+    card.onclick = () => openTestList(t.key, t.label);
+    card.innerHTML = `
+      <div class="ring" style="background:${ringGradient(s.foiz)}">
+        <div style="background:var(--bg-soft); width:42px; height:42px; border-radius:50%; display:flex; align-items:center; justify-content:center;">
+          ${s.foiz}%
+        </div>
+      </div>
+      <div class="stat-info">
+        <div class="type">${t.label}</div>
+        <div class="count">${s.testlarSoni} ta ishlangan · ${t.desc}</div>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+/* ================== TEST RO'YXATI ================== */
+
+async function openTestList(turi, label){
+  document.getElementById('tl-eyebrow').textContent = label;
+  document.getElementById('tl-title').textContent = `${label} — mavjud testlar`;
+  const listEl = document.getElementById('tl-list');
+  const emptyEl = document.getElementById('tl-empty');
+  listEl.innerHTML = '<div class="footnote">Yuklanmoqda...</div>';
+  emptyEl.classList.add('hidden');
+  showView('test-list');
+
+  try{
+    const res = await fetch(`${API_URL}?action=publicListTests`);
+    const data = await res.json();
+    listEl.innerHTML = '';
+
+    const tests = (data.tests || []).filter(t => t.turi === turi);
+
+    if(!data.success || tests.length === 0){
+      emptyEl.classList.remove('hidden');
+      return;
+    }
+
+    tests.forEach(t => {
+      const fanText = t.turi === 'DTM' ? `${t.fan1} + ${t.fan2}` : t.fan1;
+      const item = document.createElement('div');
+      item.className = 'test-item';
+      item.innerHTML = `
+        <div>
+          <div class="ti-title">${t.sarlavha || fanText}</div>
+          <div class="ti-meta">${fanText} · ${t.savollarSoni} savol · ${t.vaqt} daqiqa</div>
+        </div>
+        <button class="ti-btn">Boshlash</button>
+      `;
+      item.querySelector('.ti-btn').onclick = () => startTest(t.testId);
+      listEl.appendChild(item);
+    });
+  }catch(err){
+    listEl.innerHTML = '<div class="footnote">Yuklashda xatolik yuz berdi.</div>';
+  }
+}
+
+/* ================== TEST ISHLASH ================== */
+
+async function startTest(testId){
+  try{
+    const res = await fetch(`${API_URL}?action=getTest&testId=${encodeURIComponent(testId)}`);
+    const data = await res.json();
+
+    if(!data.success){
+      alert(data.message || "Testni yuklab bo'lmadi.");
+      return;
+    }
+
+    currentTest = data;
+    userAnswers = {};
+
+    const fanText = data.turi === 'DTM' ? `${data.fan1} + ${data.fan2}` : data.fan1;
+    document.getElementById('tt-title').textContent = data.sarlavha || fanText;
+
+    const qWrap = document.getElementById('tt-questions');
+    qWrap.innerHTML = '';
+
+    data.questions.forEach((q, idx) => {
+      const card = document.createElement('div');
+      card.className = 'q-card';
+      const letters = ['A','B','C','D'];
+      const optsHtml = letters.map(letter => {
+        const val = q[letter.toLowerCase()];
+        return `
+          <label class="q-opt" data-qid="${q.qid}" data-letter="${letter}">
+            <span class="opt-letter">${letter}</span>
+            <input type="radio" name="q_${q.qid}" value="${letter}" style="display:none;">
+            <span>${val}</span>
+          </label>
+        `;
+      }).join('');
+
+      card.innerHTML = `
+        <div class="q-num">Savol ${idx + 1} / ${data.questions.length}</div>
+        <div class="q-text">${q.savol}</div>
+        ${optsHtml}
+      `;
+      qWrap.appendChild(card);
+    });
+
+    // Variant bosilganda tanlanganini belgilash
+    qWrap.querySelectorAll('.q-opt').forEach(opt => {
+      opt.addEventListener('click', () => {
+        const qid = opt.dataset.qid;
+        const letter = opt.dataset.letter;
+        userAnswers[qid] = letter;
+
+        qWrap.querySelectorAll(`.q-opt[data-qid="${qid}"]`).forEach(o => o.classList.remove('selected'));
+        opt.classList.add('selected');
+      });
+    });
+
+    showView('test-taking');
+    startTimer(data.vaqt * 60);
+  }catch(err){
+    alert("Serverga ulanib bo'lmadi.");
+  }
+}
+
+function startTimer(totalSeconds){
+  clearInterval(timerInterval);
+  secondsLeft = totalSeconds;
+  updateTimerDisplay();
+
+  timerInterval = setInterval(() => {
+    secondsLeft--;
+    updateTimerDisplay();
+    if(secondsLeft <= 0){
+      clearInterval(timerInterval);
+      submitTestNow(); // vaqt tugaganda avtomatik yuborish
+    }
+  }, 1000);
+}
+
+function updateTimerDisplay(){
+  const m = Math.floor(secondsLeft / 60);
+  const s = secondsLeft % 60;
+  const el = document.getElementById('tt-timer');
+  el.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  el.classList.toggle('low', secondsLeft <= 60);
+}
+
+function confirmSubmitTest(){
+  const total = currentTest ? currentTest.questions.length : 0;
+  const answered = Object.keys(userAnswers).length;
+
+  if(answered < total){
+    if(!confirm(`${total - answered} ta savolga javob bermadingiz. Baribir yakunlaysizmi?`)) return;
+  }
+  submitTestNow();
+}
+
+async function submitTestNow(){
+  clearInterval(timerInterval);
+  if(!currentTest || !currentUser) return;
+
+  const btn = document.getElementById('tt-submit-btn');
+  btn.disabled = true;
+  btn.textContent = 'Yuborilmoqda...';
+
+  try{
+    const javoblarJson = JSON.stringify(userAnswers);
+    const url = `${API_URL}?action=submitTest&id=${encodeURIComponent(currentUser.id)}&testId=${encodeURIComponent(currentTest.testId)}&javoblar=${encodeURIComponent(javoblarJson)}`;
+    const res = await fetch(url);
+    const data = await res.json();
+
+    if(!data.success){
+      alert(data.message || "Natijani yuborishda xatolik yuz berdi.");
+      btn.disabled = false;
+      btn.textContent = 'Yakunlash';
+      return;
+    }
+
+    showResult(data.toGri, data.jami, data.foiz);
+  }catch(err){
+    alert("Serverga ulanib bo'lmadi.");
+    btn.disabled = false;
+    btn.textContent = 'Yakunlash';
+  }
+}
+
+function showResult(toGri, jami, foiz){
+  document.getElementById('result-pct').textContent = `${foiz}%`;
+  document.getElementById('result-frac').textContent = `${toGri} / ${jami} to'g'ri`;
+  document.getElementById('result-ring').style.background = ringGradient(foiz);
+
+  const btn = document.getElementById('tt-submit-btn');
+  btn.disabled = false;
+  btn.textContent = 'Yakunlash';
+
+  showView('test-result');
+}
+
+async function backToCabinetFromResult(){
+  currentTest = null;
+  userAnswers = {};
+
+  if(currentUser && currentUser.telefon){
+    try{
+      const url = `${API_URL}?action=login&id=${encodeURIComponent(currentUser.id)}&telefon=${encodeURIComponent(currentUser.telefon)}`;
+      const res = await fetch(url);
+      const data = await res.json();
+      if(data.success){
+        renderCabinet(data);
+      }
+    }catch(err){ /* jim tur, kabinetni eski holatda qoldiramiz */ }
+  }
+
+  showView('cabinet');
+}
+
+function logout(){
+  pendingUser = null;
+  currentUser = null;
+  currentTest = null;
+  userAnswers = {};
+  clearInterval(timerInterval);
+  document.getElementById('reg-ism').value = '';
+  document.getElementById('reg-familiya').value = '';
+  document.getElementById('reg-telefon').value = '';
+  document.getElementById('login-id').value = '';
+  document.getElementById('login-telefon').value = '';
+  clearError('reg-error');
+  clearError('login-error');
+  showView('landing');
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Panel — Test Kabineti</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0F1B2E;
+    --bg-soft:#152540;
+    --card:#1B2C4A;
+    --card-border:#2A3E63;
+    --gold:#F0A500;
+    --gold-soft:#F7C24B;
+    --text:#F4F6FB;
+    --muted:#8CA0C2;
+    --danger:#FF6B6B;
+    --ok:#5FD08A;
+    --radius:16px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(circle at 15% 0%, rgba(240,165,0,0.10), transparent 45%),
+      var(--bg);
+    color:var(--text);
+    font-family:'Manrope', sans-serif;
+    min-height:100vh;
+    padding:24px;
+  }
+  h1,h2,h3{font-family:'Fraunces', serif; margin:0;}
+  .wrap{max-width:720px; margin:0 auto;}
+  .eyebrow{
+    text-transform:uppercase; letter-spacing:.14em; font-size:12px;
+    color:var(--gold-soft); font-weight:700; margin-bottom:8px;
+  }
+  .card{
+    background:linear-gradient(180deg, var(--card), var(--bg-soft));
+    border:1px solid var(--card-border);
+    border-radius:var(--radius);
+    padding:28px 24px;
+    margin-bottom:20px;
+  }
+  label{
+    display:block; font-size:12px; color:var(--muted); font-weight:700;
+    text-transform:uppercase; letter-spacing:.08em; margin:14px 0 6px 0;
+  }
+  input, select{
+    width:100%; padding:12px 14px; border-radius:10px;
+    border:1px solid var(--card-border); background:#0F1B2E;
+    color:var(--text); font-family:'Manrope', sans-serif; font-size:15px; outline:none;
+  }
+  input:focus, select:focus{border-color:var(--gold-soft);}
+  .btn{
+    display:block; width:100%; padding:14px 18px; border-radius:12px; border:none;
+    font-family:'Manrope', sans-serif; font-size:15px; font-weight:700; cursor:pointer;
+    background:linear-gradient(135deg, var(--gold-soft), var(--gold)); color:#241500;
+    margin-top:18px;
+  }
+  .btn:disabled{opacity:.6;}
+  .error{color:var(--danger); font-size:13px; margin-top:12px; display:none;}
+  .error.show{display:block;}
+  .success{color:var(--ok); font-size:13px; margin-top:12px; display:none;}
+  .success.show{display:block;}
+  .hidden{display:none !important;}
+
+  table{width:100%; border-collapse:collapse; margin-top:10px; font-size:14px;}
+  th, td{text-align:left; padding:10px 8px; border-bottom:1px solid var(--card-border);}
+  th{color:var(--muted); font-size:11px; text-transform:uppercase; letter-spacing:.06em;}
+  .badge{
+    display:inline-block; padding:2px 8px; border-radius:20px; font-size:11px; font-weight:700;
+  }
+  .badge-sinov{background:rgba(95,208,138,.15); color:var(--ok);}
+  .badge-dtm{background:rgba(240,165,0,.15); color:var(--gold-soft);}
+  .badge-sertifikat{background:rgba(140,160,194,.15); color:var(--muted);}
+
+  .row2{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+  .tabs{display:flex; gap:10px; margin-bottom:18px;}
+  .tab-btn{
+    flex:1; padding:12px; border-radius:10px; border:1px solid var(--card-border);
+    background:transparent; color:var(--muted); font-family:'Manrope'; font-weight:700;
+    font-size:13px; cursor:pointer;
+  }
+  .tab-btn.active{border-color:var(--gold-soft); color:var(--gold-soft); background:rgba(240,165,0,.08);}
+  .empty{color:var(--muted); font-size:13px; text-align:center; padding:20px 0;}
+  .refresh-link{
+    color:var(--gold-soft); font-size:13px; text-decoration:underline; cursor:pointer;
+    background:none; border:none; padding:0;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ============ PAROL EKRANI ============ -->
+  <div id="view-password" class="card">
+    <div class="eyebrow">Admin Panel</div>
+    <h1 style="font-size:24px; font-weight:600;">Kirish</h1>
+    <label for="admin-password">Parol</label>
+    <input id="admin-password" type="password" placeholder="Admin parolni kiriting">
+    <button class="btn" onclick="adminLoginSubmit()" id="admin-login-btn">Kirish</button>
+    <div class="error" id="password-error"></div>
+  </div>
+
+  <!-- ============ ADMIN PANEL ============ -->
+  <div id="view-admin" class="card hidden">
+    <div class="eyebrow">Admin Panel</div>
+    <h1 style="font-size:24px; font-weight:600; margin-bottom:20px;">Boshqaruv</h1>
+
+    <div class="tabs">
+      <button class="tab-btn active" id="tab-btn-test" onclick="switchTab('test')">Test qo'shish</button>
+      <button class="tab-btn" id="tab-btn-questions" onclick="switchTab('questions')">Savollar</button>
+      <button class="tab-btn" id="tab-btn-users" onclick="switchTab('users')">Foydalanuvchilar</button>
+    </div>
+
+    <!-- TEST QO'SHISH -->
+    <div id="tab-test">
+      <label for="test-turi">Test turi</label>
+      <select id="test-turi" onchange="onTuriChange()">
+        <option value="Sinov">Sinov testlar (bitta fan)</option>
+        <option value="DTM">DTM testlar (ikki fan)</option>
+        <option value="Sertifikat">Sertifikat testlar (bitta fan)</option>
+      </select>
+
+      <div class="row2" id="fan-row">
+        <div>
+          <label for="test-fan1">Fan 1</label>
+          <input id="test-fan1" type="text" placeholder="Masalan: Matematika">
+        </div>
+        <div id="fan2-wrap" class="hidden">
+          <label for="test-fan2">Fan 2</label>
+          <input id="test-fan2" type="text" placeholder="Masalan: Fizika">
+        </div>
+      </div>
+
+      <label for="test-sarlavha">Sarlavha</label>
+      <input id="test-sarlavha" type="text" placeholder="Masalan: 2026-yil 1-blok">
+
+      <label for="test-vaqt">Vaqt chegarasi (daqiqa)</label>
+      <input id="test-vaqt" type="number" min="1" value="30" placeholder="30">
+
+      <button class="btn" onclick="addTestSubmit()" id="add-test-btn">Testni qo'shish</button>
+      <div class="error" id="test-error"></div>
+      <div class="success" id="test-success"></div>
+
+      <h3 style="font-size:15px; margin-top:28px; color:var(--muted); font-weight:700;">Qo'shilgan testlar</h3>
+      <table id="tests-table">
+        <thead>
+          <tr><th>ID</th><th>Turi</th><th>Fan(lar)</th><th>Sarlavha</th><th>Vaqt</th><th>Savollar</th></tr>
+        </thead>
+        <tbody id="tests-tbody"></tbody>
+      </table>
+      <div class="empty hidden" id="tests-empty">Hozircha testlar qo'shilmagan.</div>
+    </div>
+
+    <!-- SAVOLLAR -->
+    <div id="tab-questions" class="hidden">
+      <label for="q-test-select">Test tanlang</label>
+      <select id="q-test-select" onchange="onQuestionTestChange()">
+        <option value="">— Testni tanlang —</option>
+      </select>
+
+      <div id="q-form-wrap" class="hidden">
+        <label for="q-savol">Savol matni</label>
+        <input id="q-savol" type="text" placeholder="Savolni kiriting">
+
+        <label for="q-a">A variant</label>
+        <input id="q-a" type="text" placeholder="A javob varianti">
+
+        <label for="q-b">B variant</label>
+        <input id="q-b" type="text" placeholder="B javob varianti">
+
+        <label for="q-c">C variant</label>
+        <input id="q-c" type="text" placeholder="C javob varianti">
+
+        <label for="q-d">D variant</label>
+        <input id="q-d" type="text" placeholder="D javob varianti">
+
+        <label for="q-togri">To'g'ri javob</label>
+        <select id="q-togri">
+          <option value="A">A</option>
+          <option value="B">B</option>
+          <option value="C">C</option>
+          <option value="D">D</option>
+        </select>
+
+        <button class="btn" onclick="addQuestionSubmit()" id="add-question-btn">Savolni qo'shish</button>
+        <div class="error" id="question-error"></div>
+        <div class="success" id="question-success"></div>
+
+        <h3 style="font-size:15px; margin-top:28px; color:var(--muted); font-weight:700;">Shu testdagi savollar</h3>
+        <table id="questions-table">
+          <thead>
+            <tr><th>№</th><th>Savol</th><th>To'g'ri</th><th></th></tr>
+          </thead>
+          <tbody id="questions-tbody"></tbody>
+        </table>
+        <div class="empty hidden" id="questions-empty">Hozircha savol qo'shilmagan.</div>
+      </div>
+    </div>
+
+    <!-- FOYDALANUVCHILAR -->
+    <div id="tab-users" class="hidden">
+      <button class="refresh-link" onclick="loadUsers()">↻ Yangilash</button>
+      <table id="users-table">
+        <thead>
+          <tr><th>ID</th><th>Ism familiya</th><th>Telefon</th><th>Testlar</th><th>Foiz</th></tr>
+        </thead>
+        <tbody id="users-tbody"></tbody>
+      </table>
+      <div class="empty hidden" id="users-empty">Hozircha foydalanuvchilar yo'q.</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* MUHIM: shu URL API_URL bilan bir xil bo'lishi kerak (index.html dagi kabi) */
+const API_URL = "https://script.google.com/macros/s/AKfycbwzt5Rxoc-QmxiYTD79syMv09yGRgziS_GPdge9F6DFhzLbTSH7l_MkTZouC7q8wWNV/exec";
+
+let adminPassword = "";
+
+async function adminLoginSubmit(){
+  const pass = document.getElementById('admin-password').value.trim();
+  const errEl = document.getElementById('password-error');
+  errEl.classList.remove('show');
+
+  if(!pass){
+    errEl.textContent = "Parolni kiriting.";
+    errEl.classList.add('show');
+    return;
+  }
+
+  const btn = document.getElementById('admin-login-btn');
+  btn.disabled = true;
+  btn.textContent = "Tekshirilmoqda...";
+
+  try{
+    const res = await fetch(`${API_URL}?action=adminLogin&password=${encodeURIComponent(pass)}`);
+    const data = await res.json();
+
+    if(!data.success){
+      errEl.textContent = data.message || "Parol noto'g'ri.";
+      errEl.classList.add('show');
+      btn.disabled = false;
+      btn.textContent = "Kirish";
+      return;
+    }
+
+    adminPassword = pass;
+    document.getElementById('view-password').classList.add('hidden');
+    document.getElementById('view-admin').classList.remove('hidden');
+    loadTests();
+  }catch(err){
+    errEl.textContent = "Serverga ulanib bo'lmadi.";
+    errEl.classList.add('show');
+    btn.disabled = false;
+    btn.textContent = "Kirish";
+  }
+}
+
+function switchTab(name){
+  document.getElementById('tab-test').classList.toggle('hidden', name !== 'test');
+  document.getElementById('tab-questions').classList.toggle('hidden', name !== 'questions');
+  document.getElementById('tab-users').classList.toggle('hidden', name !== 'users');
+  document.getElementById('tab-btn-test').classList.toggle('active', name === 'test');
+  document.getElementById('tab-btn-questions').classList.toggle('active', name === 'questions');
+  document.getElementById('tab-btn-users').classList.toggle('active', name === 'users');
+  if(name === 'users') loadUsers();
+  if(name === 'questions') loadTestsForQuestionSelect();
+}
+
+function onTuriChange(){
+  const turi = document.getElementById('test-turi').value;
+  document.getElementById('fan2-wrap').classList.toggle('hidden', turi !== 'DTM');
+}
+
+async function addTestSubmit(){
+  const turi = document.getElementById('test-turi').value;
+  const fan1 = document.getElementById('test-fan1').value.trim();
+  const fan2 = document.getElementById('test-fan2').value.trim();
+  const sarlavha = document.getElementById('test-sarlavha').value.trim();
+  const vaqt = document.getElementById('test-vaqt').value.trim() || '30';
+
+  const errEl = document.getElementById('test-error');
+  const okEl = document.getElementById('test-success');
+  errEl.classList.remove('show');
+  okEl.classList.remove('show');
+
+  if(!fan1){
+    errEl.textContent = "Fan nomini kiriting.";
+    errEl.classList.add('show');
+    return;
+  }
+  if(turi === 'DTM' && !fan2){
+    errEl.textContent = "DTM testi uchun ikkinchi fan ham kerak.";
+    errEl.classList.add('show');
+    return;
+  }
+
+  const btn = document.getElementById('add-test-btn');
+  btn.disabled = true;
+  btn.textContent = "Qo'shilmoqda...";
+
+  try{
+    const url = `${API_URL}?action=addTest&password=${encodeURIComponent(adminPassword)}&turi=${encodeURIComponent(turi)}&fan1=${encodeURIComponent(fan1)}&fan2=${encodeURIComponent(fan2)}&sarlavha=${encodeURIComponent(sarlavha)}&vaqt=${encodeURIComponent(vaqt)}`;
+    const res = await fetch(url);
+    const data = await res.json();
+
+    if(!data.success){
+      errEl.textContent = data.message || "Xatolik yuz berdi.";
+      errEl.classList.add('show');
+      return;
+    }
+
+    okEl.textContent = `Test qo'shildi (ID: ${data.testId}).`;
+    okEl.classList.add('show');
+    document.getElementById('test-fan1').value = '';
+    document.getElementById('test-fan2').value = '';
+    document.getElementById('test-sarlavha').value = '';
+    document.getElementById('test-vaqt').value = '30';
+    loadTests();
+  }catch(err){
+    errEl.textContent = "Serverga ulanib bo'lmadi.";
+    errEl.classList.add('show');
+  }finally{
+    btn.disabled = false;
+    btn.textContent = "Testni qo'shish";
+  }
+}
+
+function badgeClass(turi){
+  if(turi === 'Sinov') return 'badge-sinov';
+  if(turi === 'DTM') return 'badge-dtm';
+  return 'badge-sertifikat';
+}
+
+async function loadTests(){
+  try{
+    const res = await fetch(`${API_URL}?action=listTests&password=${encodeURIComponent(adminPassword)}`);
+    const data = await res.json();
+    const tbody = document.getElementById('tests-tbody');
+    const empty = document.getElementById('tests-empty');
+    tbody.innerHTML = '';
+
+    if(!data.success || !data.tests || data.tests.length === 0){
+      empty.classList.remove('hidden');
+      return;
+    }
+    empty.classList.add('hidden');
+
+    data.tests.forEach(t => {
+      const fanText = t.turi === 'DTM' ? `${t.fan1} + ${t.fan2}` : t.fan1;
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${t.testId}</td>
+        <td><span class="badge ${badgeClass(t.turi)}">${t.turi}</span></td>
+        <td>${fanText}</td>
+        <td>${t.sarlavha || '—'}</td>
+        <td>${t.vaqt} daq</td>
+        <td>${t.savollarSoni}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }catch(err){
+    console.error(err);
+  }
+}
+
+let currentQuestionTestId = "";
+
+async function loadTestsForQuestionSelect(){
+  try{
+    const res = await fetch(`${API_URL}?action=listTests&password=${encodeURIComponent(adminPassword)}`);
+    const data = await res.json();
+    const sel = document.getElementById('q-test-select');
+    sel.innerHTML = '<option value="">— Testni tanlang —</option>';
+
+    if(data.success && data.tests){
+      data.tests.forEach(t => {
+        const fanText = t.turi === 'DTM' ? `${t.fan1} + ${t.fan2}` : t.fan1;
+        const opt = document.createElement('option');
+        opt.value = t.testId;
+        opt.textContent = `#${t.testId} — ${t.turi} — ${fanText} (${t.savollarSoni} savol)`;
+        sel.appendChild(opt);
+      });
+    }
+
+    if(currentQuestionTestId){
+      sel.value = currentQuestionTestId;
+      document.getElementById('q-form-wrap').classList.remove('hidden');
+      loadQuestionsForTest(currentQuestionTestId);
+    }
+  }catch(err){
+    console.error(err);
+  }
+}
+
+function onQuestionTestChange(){
+  const testId = document.getElementById('q-test-select').value;
+  currentQuestionTestId = testId;
+  document.getElementById('q-form-wrap').classList.toggle('hidden', !testId);
+  if(testId) loadQuestionsForTest(testId);
+}
+
+async function addQuestionSubmit(){
+  const testId = document.getElementById('q-test-select').value;
+  const savol = document.getElementById('q-savol').value.trim();
+  const a = document.getElementById('q-a').value.trim();
+  const b = document.getElementById('q-b').value.trim();
+  const c = document.getElementById('q-c').value.trim();
+  const d = document.getElementById('q-d').value.trim();
+  const togri = document.getElementById('q-togri').value;
+
+  const errEl = document.getElementById('question-error');
+  const okEl = document.getElementById('question-success');
+  errEl.classList.remove('show');
+  okEl.classList.remove('show');
+
+  if(!testId || !savol || !a || !b || !c || !d){
+    errEl.textContent = "Savol matni va barcha 4 variant to'ldirilishi shart.";
+    errEl.classList.add('show');
+    return;
+  }
+
+  const btn = document.getElementById('add-question-btn');
+  btn.disabled = true;
+  btn.textContent = "Qo'shilmoqda...";
+
+  try{
+    const url = `${API_URL}?action=addQuestion&password=${encodeURIComponent(adminPassword)}&testId=${encodeURIComponent(testId)}&savol=${encodeURIComponent(savol)}&a=${encodeURIComponent(a)}&b=${encodeURIComponent(b)}&c=${encodeURIComponent(c)}&d=${encodeURIComponent(d)}&togri=${encodeURIComponent(togri)}`;
+    const res = await fetch(url);
+    const data = await res.json();
+
+    if(!data.success){
+      errEl.textContent = data.message || "Xatolik yuz berdi.";
+      errEl.classList.add('show');
+      return;
+    }
+
+    okEl.textContent = "Savol qo'shildi.";
+    okEl.classList.add('show');
+    document.getElementById('q-savol').value = '';
+    document.getElementById('q-a').value = '';
+    document.getElementById('q-b').value = '';
+    document.getElementById('q-c').value = '';
+    document.getElementById('q-d').value = '';
+    document.getElementById('q-togri').value = 'A';
+    loadQuestionsForTest(testId);
+    loadTestsForQuestionSelect(); // savollar sonini yangilash uchun
+  }catch(err){
+    errEl.textContent = "Serverga ulanib bo'lmadi.";
+    errEl.classList.add('show');
+  }finally{
+    btn.disabled = false;
+    btn.textContent = "Savolni qo'shish";
+  }
+}
+
+async function loadQuestionsForTest(testId){
+  const tbody = document.getElementById('questions-tbody');
+  const empty = document.getElementById('questions-empty');
+  tbody.innerHTML = '<tr><td colspan="4" style="color:var(--muted);">Yuklanmoqda...</td></tr>';
+  empty.classList.add('hidden');
+
+  try{
+    const res = await fetch(`${API_URL}?action=listQuestionsAdmin&password=${encodeURIComponent(adminPassword)}&testId=${encodeURIComponent(testId)}`);
+    const data = await res.json();
+    tbody.innerHTML = '';
+
+    if(!data.success || !data.questions || data.questions.length === 0){
+      empty.classList.remove('hidden');
+      return;
+    }
+
+    data.questions.forEach((q, idx) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${idx + 1}</td>
+        <td>${q.savol}</td>
+        <td><span class="badge badge-sinov">${q.togri}</span></td>
+        <td><button class="refresh-link" style="color:var(--danger);" onclick="deleteQuestionConfirm('${q.qid}', '${testId}')">O'chirish</button></td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }catch(err){
+    tbody.innerHTML = '';
+    empty.textContent = "Yuklashda xatolik yuz berdi.";
+    empty.classList.remove('hidden');
+  }
+}
+
+async function deleteQuestionConfirm(qid, testId){
+  if(!confirm("Bu savolni o'chirmoqchimisiz?")) return;
+
+  try{
+    const res = await fetch(`${API_URL}?action=deleteQuestion&password=${encodeURIComponent(adminPassword)}&qid=${encodeURIComponent(qid)}`);
+    const data = await res.json();
+    if(data.success){
+      loadQuestionsForTest(testId);
+      loadTestsForQuestionSelect();
+    }
+  }catch(err){
+    console.error(err);
+  }
+}
+
+async function loadUsers(){
+  const tbody = document.getElementById('users-tbody');
+  const empty = document.getElementById('users-empty');
+  tbody.innerHTML = '<tr><td colspan="5" style="color:var(--muted);">Yuklanmoqda...</td></tr>';
+  empty.classList.add('hidden');
+
+  try{
+    const res = await fetch(`${API_URL}?action=listUsers&password=${encodeURIComponent(adminPassword)}`);
+    const data = await res.json();
+    tbody.innerHTML = '';
+
+    if(!data.success || !data.users || data.users.length === 0){
+      empty.classList.remove('hidden');
+      return;
+    }
+
+    data.users.forEach(u => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${u.id}</td>
+        <td>${u.ism} ${u.familiya}</td>
+        <td>${u.telefon}</td>
+        <td>${u.umumiyTestlar}</td>
+        <td>${u.umumiyFoiz}%</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }catch(err){
+    tbody.innerHTML = '';
+    empty.textContent = "Yuklashda xatolik yuz berdi.";
+    empty.classList.remove('hidden');
+  }
+}
+</script>
+</body>
+</html>
