@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ABITUR — Admin</title>
+<style>
+:root{--gold:#e8b84b;--gold2:#f5d98a;--bg:#0c0d10;--panel:#15171c;--text:#f0efe9;--muted:#9a9a9a;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh;
+  background-color:#0b0c0f;
+  background-image:
+    repeating-linear-gradient(45deg, rgba(232,184,75,0.055) 0, rgba(232,184,75,0.055) 1px, transparent 1px, transparent 17px),
+    repeating-linear-gradient(-45deg, rgba(232,184,75,0.055) 0, rgba(232,184,75,0.055) 1px, transparent 1px, transparent 17px),
+    radial-gradient(ellipse at 50% 0%, rgba(232,184,75,0.05), transparent 55%),
+    linear-gradient(160deg, #0b0c0f 0%, #101116 50%, #0b0c0f 100%);
+  background-attachment:fixed;
+}
+.container{max-width:520px;margin:0 auto;padding:20px 16px 60px;}
+.hide{display:none !important;}
+h2{color:var(--gold2);margin-bottom:14px;font-size:18px;}
+.card{background:var(--panel);border:1px solid rgba(232,184,75,.2);border-radius:14px;padding:18px;margin-bottom:14px;}
+label{display:block;font-size:13px;color:var(--muted);margin:10px 0 5px;}
+input,select,textarea{width:100%;padding:11px;border-radius:8px;border:1px solid rgba(255,255,255,.12);background:#0f1013;color:var(--text);font-size:14px;}
+textarea{min-height:100px;font-family:monospace;font-size:12px;}
+button{cursor:pointer;border:none;}
+.btn{width:100%;padding:12px;border-radius:8px;background:linear-gradient(135deg,var(--gold2),var(--gold));color:#111;font-weight:700;font-size:14px;margin-top:12px;}
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;}
+.tab{padding:8px 12px;border-radius:8px;background:#0f1013;color:var(--muted);font-size:12px;}
+.tab.active{background:var(--gold);color:#111;font-weight:700;}
+.row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.06);font-size:13px;}
+.row b{color:var(--gold2);}
+.small-btn{padding:6px 10px;border-radius:6px;background:var(--gold);color:#111;font-size:12px;font-weight:700;}
+.err{color:#ff6b6b;font-size:13px;margin-top:8px;}
+.pill{background:#0f1013;padding:2px 8px;border-radius:10px;font-size:11px;color:var(--muted);}
+</style>
+</head>
+<body>
+<div class="container">
+  <h2 style="text-align:center;">🔑 ABITUR — Admin panel</h2>
+
+  <div class="card" id="loginBox">
+    <label>Admin parol</label>
+    <input id="adminPass" type="password">
+    <button class="btn" onclick="adminLogin()">Kirish</button>
+    <div class="err hide" id="loginErr"></div>
+  </div>
+
+  <div id="panel" class="hide">
+    <div class="tabs">
+      <div class="tab active" onclick="showTab('users')">Foydalanuvchilar</div>
+      <div class="tab" onclick="showTab('settings')">Sozlamalar</div>
+      <div class="tab" onclick="showTab('tests')">Testlar</div>
+      <div class="tab" onclick="showTab('payments')">To'lovlar</div>
+    </div>
+
+    <div id="tab-users">
+      <div class="card">
+        <h2>Foydalanuvchilar</h2>
+        <div id="usersList"></div>
+      </div>
+    </div>
+
+    <div id="tab-settings" class="hide">
+      <div class="card">
+        <h2>Narxlar va karta</h2>
+        <label>Sinov test narxi (so'm)</label>
+        <input id="s_price_sinov">
+        <label>Blok test narxi (so'm)</label>
+        <input id="s_price_blok">
+        <label>Sertifikat test narxi (so'm)</label>
+        <input id="s_price_sertifikat">
+        <label>Karta raqami</label>
+        <input id="s_card_number">
+        <label>Karta egasi</label>
+        <input id="s_card_owner">
+        <button class="btn" onclick="saveSettings()">Saqlash</button>
+        <div class="err hide" id="setMsg"></div>
+      </div>
+    </div>
+
+    <div id="tab-tests" class="hide">
+      <div class="card">
+        <h2>Qo'lda savol qo'shish</h2>
+        <label>Test turi</label>
+        <select id="t_type"><option value="sinov">Sinov</option><option value="blok">Blok</option><option value="sertifikat">Sertifikat</option></select>
+        <label>Test nomi (masalan: Biologiya-1)</label>
+        <input id="t_name">
+        <label>Savol matni</label>
+        <input id="t_savol">
+        <label>A varianti (agar yozma javob bo'lsa bo'sh qoldiring)</label>
+        <input id="t_a">
+        <label>B varianti</label>
+        <input id="t_b">
+        <label>C varianti</label>
+        <input id="t_c">
+        <label>D varianti</label>
+        <input id="t_d">
+        <label>To'g'ri javob (A/B/C/D yoki yozma javob matni)</label>
+        <input id="t_togri">
+        <label>Ball</label>
+        <input id="t_ball" type="number" value="1">
+        <button class="btn" onclick="addTest()">Qo'shish</button>
+        <div class="err hide" id="testMsg"></div>
+      </div>
+
+      <div class="card">
+        <h2>Ommaviy yuklash (JSON)</h2>
+        <p style="font-size:12px;color:var(--muted);">Google Forms javoblarini quyidagi JSON formatga o'tkazib joylashtiring:</p>
+        <p style="font-size:11px;color:var(--muted);font-family:monospace;margin:6px 0;">[{"savol":"...","a":"...","b":"...","c":"...","d":"...","togri":"A","ball":1}]</p>
+        <label>Test turi</label>
+        <select id="j_type"><option value="sinov">Sinov</option><option value="blok">Blok</option><option value="sertifikat">Sertifikat</option></select>
+        <label>Test nomi</label>
+        <input id="j_name">
+        <label>JSON</label>
+        <textarea id="j_data"></textarea>
+        <button class="btn" onclick="importJson()">Yuklash</button>
+        <div class="err hide" id="jsonMsg"></div>
+      </div>
+    </div>
+
+    <div id="tab-payments" class="hide">
+      <div class="card">
+        <h2>To'lovlar</h2>
+        <div id="paymentsList"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const GAS_URL = "https://script.google.com/macros/s/AKfycbxPwqhzGIFESOBUpymKFVcqMHZgtVy5rtLzVC8yHBeaNEI68wvAxnDZSwma7uz7Zlk4IA/exec";
+let ADMIN_PASS = '';
+
+async function api(params){
+  const url = GAS_URL + '?' + new URLSearchParams(params).toString();
+  const res = await fetch(url);
+  return res.json();
+}
+
+async function adminLogin(){
+  const pass = document.getElementById('adminPass').value;
+  const res = await api({action:'adminLogin', password: pass});
+  const err = document.getElementById('loginErr');
+  if(!res.ok){ err.textContent = res.error; err.classList.remove('hide'); return; }
+  ADMIN_PASS = pass;
+  document.getElementById('loginBox').classList.add('hide');
+  document.getElementById('panel').classList.remove('hide');
+  loadUsers();
+  loadSettings();
+  loadPayments();
+}
+
+function showTab(name){
+  ['users','settings','tests','payments'].forEach(t=>{
+    document.getElementById('tab-'+t).classList.toggle('hide', t!==name);
+  });
+  document.querySelectorAll('.tab').forEach(el=>el.classList.remove('active'));
+  event.target.classList.add('active');
+}
+
+async function loadUsers(){
+  const res = await api({action:'adminGetUsers', password: ADMIN_PASS});
+  const list = document.getElementById('usersList');
+  list.innerHTML = '';
+  (res.list||[]).forEach(u=>{
+    const div = document.createElement('div');
+    div.className = 'row';
+    div.innerHTML = `<span>${u.ism} ${u.familiya}<br><span class="pill">ID: ${u.id} · ${u.telefon}</span><br><span class="pill">Ball: ${u.totalScore} · Test: ${u.testsCount}</span></span>
+      <span style="text-align:right;">
+        <div>${u.balans} so'm</div>
+        <button class="small-btn" style="margin-top:6px;" onclick="addBalancePrompt('${u.id}')">+ Balans</button>
+      </span>`;
+    list.appendChild(div);
+  });
+}
+
+async function addBalancePrompt(id){
+  const amount = prompt('Qo\'shiladigan summa (so\'m):');
+  if(!amount) return;
+  await api({action:'adminAddBalance', password: ADMIN_PASS, id, amount});
+  loadUsers();
+}
+
+async function loadSettings(){
+  const res = await api({action:'getSettings'});
+  const s = res.settings || {};
+  document.getElementById('s_price_sinov').value = s.price_sinov || 0;
+  document.getElementById('s_price_blok').value = s.price_blok || 0;
+  document.getElementById('s_price_sertifikat').value = s.price_sertifikat || 0;
+  document.getElementById('s_card_number').value = s.card_number || '';
+  document.getElementById('s_card_owner').value = s.card_owner || '';
+}
+
+async function saveSettings(){
+  const keys = {
+    price_sinov: document.getElementById('s_price_sinov').value,
+    price_blok: document.getElementById('s_price_blok').value,
+    price_sertifikat: document.getElementById('s_price_sertifikat').value,
+    card_number: document.getElementById('s_card_number').value,
+    card_owner: document.getElementById('s_card_owner').value
+  };
+  for(const key in keys){
+    await api({action:'adminSetSetting', password: ADMIN_PASS, key, value: keys[key]});
+  }
+  const msg = document.getElementById('setMsg');
+  msg.textContent = 'Saqlandi!'; msg.style.color = '#8bd17c'; msg.classList.remove('hide');
+}
+
+async function addTest(){
+  const p = {
+    action:'adminAddTest', password: ADMIN_PASS,
+    testTuri: document.getElementById('t_type').value,
+    testNomi: document.getElementById('t_name').value,
+    savol: document.getElementById('t_savol').value,
+    a: document.getElementById('t_a').value,
+    b: document.getElementById('t_b').value,
+    c: document.getElementById('t_c').value,
+    d: document.getElementById('t_d').value,
+    togri: document.getElementById('t_togri').value,
+    ball: document.getElementById('t_ball').value
+  };
+  const res = await api(p);
+  const msg = document.getElementById('testMsg');
+  if(res.ok){ msg.style.color='#8bd17c'; msg.textContent='Qo\'shildi!'; document.getElementById('t_savol').value=''; }
+  else { msg.style.color='#ff6b6b'; msg.textContent=res.error; }
+  msg.classList.remove('hide');
+}
+
+async function importJson(){
+  const msg = document.getElementById('jsonMsg');
+  try{
+    const testTuri = document.getElementById('j_type').value;
+    const testNomi = document.getElementById('j_name').value;
+    const dataJson = document.getElementById('j_data').value;
+    JSON.parse(dataJson);
+    const res = await api({action:'adminImportTestsJson', password: ADMIN_PASS, testTuri, testNomi, dataJson});
+    if(res.ok){ msg.style.color='#8bd17c'; msg.textContent = res.count + ' ta savol qo\'shildi!'; }
+    else { msg.style.color='#ff6b6b'; msg.textContent = res.error; }
+  }catch(e){ msg.style.color='#ff6b6b'; msg.textContent = 'JSON formatida xatolik: '+e.message; }
+  msg.classList.remove('hide');
+}
+
+async function loadPayments(){
+  const res = await api({action:'adminGetPayments', password: ADMIN_PASS});
+  const list = document.getElementById('paymentsList');
+  list.innerHTML = '';
+  (res.list||[]).forEach(p=>{
+    const div = document.createElement('div');
+    div.className = 'row';
+    const statusColor = p.status==='Tasdiqlangan' ? '#8bd17c' : '#f5d98a';
+    div.innerHTML = `<span>ID: ${p.id}<br><span class="pill">${p.summa} so'm · ${p.izoh||''}</span></span>
+      <span style="text-align:right;">
+        <div style="color:${statusColor};font-size:12px;">${p.status}</div>
+        ${p.status!=='Tasdiqlangan' ? `<button class="small-btn" style="margin-top:6px;" onclick="confirmPayment(${p.row})">Tasdiqlash</button>` : ''}
+      </span>`;
+    list.appendChild(div);
+  });
+}
+
+async function confirmPayment(row){
+  await api({action:'adminConfirmPayment', password: ADMIN_PASS, row});
+  loadPayments();
+  loadUsers();
+}
+</script>
+</body>
+</html>
