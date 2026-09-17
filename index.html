@@ -127,7 +127,7 @@ button{cursor:pointer;border:none;}
       <label>ID raqamingiz</label>
       <input id="loginId" placeholder="Masalan: 482913">
       <label>Telefon raqam</label>
-      <input id="loginTel" placeholder="+998901234567">
+      <input id="loginTel" placeholder="998901234567">
       <button class="btn" onclick="doLogin()">Kirish</button>
       <div class="error hide" id="loginErr"></div>
     </div>
@@ -136,7 +136,7 @@ button{cursor:pointer;border:none;}
       <h2>Ro'yxatdan o'tish</h2>
       <label>Ism</label><input id="regIsm">
       <label>Familiya</label><input id="regFamiliya">
-      <label>Telefon raqam</label><input id="regTel" placeholder="+998901234567">
+      <label>Telefon raqam</label><input id="regTel" placeholder="998901234567">
       <button class="btn" onclick="doRegister()">Ro'yxatdan o'tish</button>
       <div class="error hide" id="regErr"></div>
     </div>
@@ -167,15 +167,15 @@ button{cursor:pointer;border:none;}
     <div class="card">
       <h2>Testlar</h2>
       <div class="test-btn" onclick="openTestType('sinov')">
-        <div><div class="name">Sinov test</div><div class="sub">30 ta savol · 1 ball / savol</div></div>
+        <div><div class="name">Sinov test</div><div class="sub">30 ta savol · 30 ball</div></div>
         <div class="badge" id="priceSinov">...</div>
       </div>
       <div class="test-btn" onclick="openTestType('blok')">
-        <div><div class="name">Blok test</div><div class="sub">90 ta savol · jami 189 ball</div></div>
+        <div><div class="name">Blok test</div><div class="sub">90 ta savol ·  189 ball</div></div>
         <div class="badge" id="priceBlok">...</div>
       </div>
       <div class="test-btn" onclick="openTestType('sertifikat')">
-        <div><div class="name">Sertifikat test</div><div class="sub">45 ta savol · jami 100 ball</div></div>
+        <div><div class="name">Sertifikat test</div><div class="sub">45 ta savol ·  100 ball</div></div>
         <div class="badge" id="priceSert">...</div>
       </div>
     </div>
