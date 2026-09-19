@@ -186,7 +186,7 @@ button{cursor:pointer;border:none;}
       <label>ID raqamingiz</label>
       <input id="loginId" placeholder="Masalan: 482913">
       <label>Telefon raqam</label>
-      <input id="loginTel" placeholder="+998901234567">
+      <input id="loginTel" placeholder="998901234567">
       <button class="btn" onclick="doLogin()">Kirish</button>
       <div class="error hide" id="loginErr"></div>
     </div>
@@ -195,7 +195,7 @@ button{cursor:pointer;border:none;}
       <h2>Ro'yxatdan o'tish</h2>
       <label>Ism</label><input id="regIsm">
       <label>Familiya</label><input id="regFamiliya">
-      <label>Telefon raqam</label><input id="regTel" placeholder="+998901234567">
+      <label>Telefon raqam</label><input id="regTel" placeholder="998901234567">
       <button class="btn" onclick="doRegister()">Ro'yxatdan o'tish</button>
       <div class="error hide" id="regErr"></div>
     </div>
@@ -226,7 +226,7 @@ button{cursor:pointer;border:none;}
     <div class="card">
       <h2>Testlar</h2>
       <div class="test-btn" onclick="openTestType('sinov')">
-        <div><div class="name">Sinov test</div><div class="sub">30 ta savol · 1 ball / savol</div></div>
+        <div><div class="name">Sinov test</div><div class="sub">30 ta savol · jami 30 ball</div></div>
         <div class="badge" id="priceSinov">...</div>
       </div>
       <div class="test-btn" onclick="openTestType('blok')">
@@ -268,7 +268,7 @@ button{cursor:pointer;border:none;}
       <label>Izoh (ixtiyoriy — chek raqami va h.k.)</label>
       <input id="payIzoh" placeholder="Chek raqami">
       <button class="btn" onclick="submitPayment()">Yuborish</button>
-      <p style="font-size:12px;color:var(--muted);margin-top:10px;">To'lovingiz "Kutilmoqda" holatida saqlanadi. Admin tasdiqlagach balansingizga qo'shiladi. Chekni admin bilan bog'lanib yuboring: <b>+998773081500</b></p>
+      <p style="font-size:12px;color:var(--muted);margin-top:10px;">To'lovingiz "Kutilmoqda" holatida saqlanadi. Admin tasdiqlagach balansingizga qo'shiladi. ADMIN: <b>+998773081500</b></p>
       <div class="msg hide" id="payMsg"></div>
       <button class="btn btn-outline" onclick="backToDashboard()">Orqaga</button>
     </div>
@@ -432,7 +432,7 @@ function shuffleArray(arr){
   return a;
 }
 
-const TEST_TIME_MIN = { sinov: 30, blok: 90, sertifikat: 120 };
+const TEST_TIME_MIN = { sinov: 60, blok: 180, sertifikat: 150 };
 const TEST_LABEL = { sinov:'Sinov test', blok:'Blok test', sertifikat:'Sertifikat test' };
 
 async function openTestType(type){
