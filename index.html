@@ -187,7 +187,7 @@ button{cursor:pointer;border:none;}
       <label>ID raqamingiz</label>
       <input id="loginId" placeholder="Masalan: 482913">
       <label>Telefon raqam</label>
-      <input id="loginTel" placeholder="+998901234567">
+      <input id="loginTel" placeholder="998901234567">
       <button class="btn" id="loginBtn" onclick="doLogin()">Kirish</button>
       <div class="error hide" id="loginErr"></div>
     </div>
@@ -196,7 +196,7 @@ button{cursor:pointer;border:none;}
       <h2>Ro'yxatdan o'tish</h2>
       <label>Ism</label><input id="regIsm">
       <label>Familiya</label><input id="regFamiliya">
-      <label>Telefon raqam</label><input id="regTel" placeholder="+998901234567">
+      <label>Telefon raqam</label><input id="regTel" placeholder="998901234567">
       <button class="btn" id="regBtn" onclick="doRegister()">Ro'yxatdan o'tish</button>
       <div class="error hide" id="regErr"></div>
     </div>
@@ -269,7 +269,7 @@ button{cursor:pointer;border:none;}
       <label>Izoh (ixtiyoriy — chek raqami va h.k.)</label>
       <input id="payIzoh" placeholder="Chek raqami">
       <button class="btn" onclick="submitPayment()">Yuborish</button>
-      <p style="font-size:12px;color:var(--muted);margin-top:10px;">To'lovingiz "Kutilmoqda" holatida saqlanadi. Admin tasdiqlagach balansingizga qo'shiladi. Chekni admin bilan bog'lanib yuboring: <b>+998773081500</b></p>
+      <p style="font-size:12px;color:var(--muted);margin-top:10px;">To'lovingiz "Kutilmoqda" holatida saqlanadi. Admin tasdiqlagach balansingizga qo'shiladi. ADMIN : <b>+998773081500</b></p>
       <div class="msg hide" id="payMsg"></div>
       <button class="btn btn-outline" onclick="backToDashboard()">Orqaga</button>
     </div>
@@ -300,7 +300,7 @@ button{cursor:pointer;border:none;}
 </div>
 
 <script>
-const GAS_URL = "https://script.google.com/macros/s/AKfycbxPwqhzGIFESOBUpymKFVcqMHZgtVy5rtLzVC8yHBeaNEI68wvAxnDZSwma7uz7Zlk4IA/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbx_j9vrIXpm1q9Ruq9rdYX6YnqV4dq-2i_DYYug014esKtxG4TASCVnotUPcguSqpxwpg/exec";
 
 async function api(params){
   const url = GAS_URL + '?' + new URLSearchParams(params).toString();
@@ -455,7 +455,7 @@ function shuffleArray(arr){
   return a;
 }
 
-const TEST_TIME_MIN = { sinov: 30, blok: 90, sertifikat: 120 };
+const TEST_TIME_MIN = { sinov: 60, blok: 180, sertifikat: 150 };
 const TEST_LABEL = { sinov:'Sinov test', blok:'Blok test', sertifikat:'Sertifikat test' };
 
 async function openTestType(type){
