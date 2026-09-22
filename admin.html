@@ -249,11 +249,15 @@ async function loadPayments(){
   (res.list||[]).forEach(p=>{
     const div = document.createElement('div');
     div.className = 'row';
-    const statusColor = p.status==='Tasdiqlangan' ? '#8bd17c' : '#f5d98a';
-    div.innerHTML = `<span>ID: ${p.id}<br><span class="pill">${p.summa} so'm · ${p.izoh||''}</span></span>
+    let statusColor = '#f5d98a';
+    if(p.status==='Tasdiqlangan') statusColor = '#8bd17c';
+    if(p.status==='Rad etilgan') statusColor = '#ff6b6b';
+    const pending = p.status!=='Tasdiqlangan' && p.status!=='Rad etilgan';
+    div.innerHTML = `<span>ID: ${p.id}<br><span class="pill">${p.summa} so'm \u00b7 ${p.izoh||''}</span></span>
       <span style="text-align:right;">
         <div style="color:${statusColor};font-size:12px;">${p.status}</div>
-        ${p.status!=='Tasdiqlangan' ? `<button class="small-btn" style="margin-top:6px;" onclick="confirmPayment(${p.row})">Tasdiqlash</button>` : ''}
+        ${pending ? `<button class="small-btn" style="margin-top:6px;" onclick="confirmPayment(${p.row})">Tasdiqlash</button>
+        <button class="small-btn" style="margin-top:6px;margin-left:4px;background:#ff6b6b;" onclick="rejectPayment(${p.row})">Rad etish</button>` : ''}
       </span>`;
     list.appendChild(div);
   });
@@ -263,6 +267,12 @@ async function confirmPayment(row){
   await api({action:'adminConfirmPayment', password: ADMIN_PASS, row});
   loadPayments();
   loadUsers();
+}
+
+async function rejectPayment(row){
+  if(!confirm('Bu to\'lovni rad etmoqchimisiz?')) return;
+  await api({action:'adminRejectPayment', password: ADMIN_PASS, row});
+  loadPayments();
 }
 </script>
 </body>
