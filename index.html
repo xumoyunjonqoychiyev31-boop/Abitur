@@ -649,8 +649,9 @@ async function finishTest(){
     }
   });
 
-  // Kasr qismini 2 xonagacha qoldirish (backenddagi Math.trunc(ball*100)/100 bilan bir xil bo'lishi uchun)
+  // Floating-point xatolarini tuzatish (masalan 188.999977 -> 189, 57.4499999 -> 57.44)
   score = Math.trunc(score * 100) / 100;
+  maxScore = Math.round(maxScore * 100) / 100;
 
   await api({action:'submitResult', id: currentUser.id, testTuri: activeTestType, testNomi: activeQuestions._name, ball: score, maxBall: maxScore});
 
