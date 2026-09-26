@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 <html lang="uz">
-<html lang="en">
-<html lang="ru">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ABITUR DTM</title>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
 :root{
   --gold:#e8b84b; --gold2:#f5d98a; --bg:#0c0d10; --panel:#15171c;
@@ -44,7 +43,7 @@ body::after{
   clip-path:polygon(30% 0, 100% 0, 100% 8%, 38% 8%, 12% 62%, 6% 62%, 6% 54%);
   transform:rotate(180deg);
 }
-.overlay-bg{ min-height:100vh; position:relative; z-index:1; }
+.overlay-bg{ min-height:100vh; position:relative; z-index:1; display:flex; flex-direction:column; }
 
 /* INTRO */
 #intro{position:fixed;inset:0;z-index:9999;background:radial-gradient(circle at 50% 40%,#1a1a1a,#000 75%);
@@ -102,7 +101,7 @@ body::after{
 @keyframes shine{0%{left:-160%;}100%{left:160%;}}
 
 /* LAYOUT */
-.container{max-width:480px;margin:0 auto;padding:24px 18px 60px;}
+.container{max-width:480px;margin:0 auto;padding:24px 18px 20px;flex:1;width:100%;}
 .hide{display:none !important;}
 .top-logo{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:22px;}
 .top-logo img{width:44px;}
@@ -117,6 +116,7 @@ button{cursor:pointer;border:none;}
 .btn{width:100%;padding:13px;border-radius:10px;background:linear-gradient(135deg,var(--gold2),var(--gold));color:#111;font-weight:700;font-size:15px;margin-top:18px;letter-spacing:.5px;}
 .btn:active{transform:scale(.98);}
 .btn-outline{background:transparent;border:1px solid var(--gold);color:var(--gold2);}
+.link-btn{background:none;border:none;color:var(--gold2);font-size:13px;text-decoration:underline;margin-top:14px;display:block;text-align:center;width:100%;}
 .tabs{display:flex;gap:8px;margin-bottom:18px;}
 .tab{flex:1;text-align:center;padding:10px;border-radius:10px;background:#0f1013;color:var(--muted);font-size:14px;}
 .tab.active{background:var(--gold);color:#111;font-weight:700;}
@@ -179,6 +179,17 @@ button{cursor:pointer;border:none;}
 .cert-fish{font-size:13px;text-align:left;padding:4px 6px 8px;border-bottom:1px solid #c99c2e;margin-bottom:6px;}
 .grade-big{font-size:46px;font-weight:800;margin:8px 0 4px;color:#8a5a00;text-shadow:0 1px 0 #fff8e0;}
 .cert-contact{font-size:11px;color:#6b5a2e;margin-top:12px;}
+
+/* FOOTER */
+.site-footer{
+  text-align:center;
+  padding:16px 18px 22px;
+  font-size:12px;
+  color:var(--muted);
+  position:relative;
+  z-index:1;
+}
+.site-footer b{color:var(--gold2);}
 </style>
 </head>
 <body>
@@ -208,29 +219,22 @@ button{cursor:pointer;border:none;}
 
   <!-- AUTH -->
   <div id="authScreen">
-    <div class="tabs">
-      <div class="tab active" id="tabLogin" onclick="switchTab('login')">Kirish</div>
-      <div class="tab" id="tabReg" onclick="switchTab('register')">Ro'yxatdan o'tish</div>
+    <div class="card" id="googleAuthCard">
+      <h2>Kirish / Ro'yxatdan o'tish</h2>
+      <p style="font-size:13px;color:var(--muted);text-align:center;margin-bottom:16px;">Google hisobingiz orqali bir bosishda kiring .</p>
+      <div id="gSignInBtn" style="display:flex;justify-content:center;"></div>
+      <div class="error hide" id="googleErr" style="margin-top:12px;"></div>
     </div>
 
-    <div class="card" id="loginCard">
-      <h2>Kirish</h2>
-      <label>ID raqamingiz</label>
-      <input id="loginId" placeholder="Masalan: 482913">
-      <label>Telefon raqam</label>
-      <input id="loginTel" placeholder="998901234567">
-      <button class="btn" id="loginBtn" onclick="doLogin()">Kirish</button>
-      <div class="error hide" id="loginErr"></div>
-    </div>
-
-    <div class="card hide" id="regCard">
-      <h2>Ro'yxatdan o'tish</h2>
-      <label>Ism</label><input id="regIsm">
-      <label>Familiya</label><input id="regFamiliya">
-      <label>Telefon raqam</label><input id="regTel" placeholder="998901234567">
-      <label>Taklif kodi </label><input id="regReferral" placeholder="Do'stingiz ID raqami">
-      <button class="btn" id="regBtn" onclick="doRegister()">Ro'yxatdan o'tish</button>
-      <div class="error hide" id="regErr"></div>
+    <!-- NEW USER: extra info + referral -->
+    <div class="card hide" id="newUserCard">
+      <h2>Deyarli tayyor!</h2>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:6px;">Google hisobingizdan olingan ma'lumot:</p>
+      <label>Ism</label><input id="gIsm">
+      <label>Familiya</label><input id="gFamiliya">
+      <label>Taklif kodi (ixtiyoriy)</label><input id="gReferral" placeholder="Do'stingiz ID raqami">
+      <button class="btn" id="gCompleteBtn" onclick="completeGoogleRegister()">Ro'yxatdan o'tishni yakunlash</button>
+      <div class="error hide" id="gCompleteErr"></div>
     </div>
   </div>
 
@@ -280,7 +284,6 @@ button{cursor:pointer;border:none;}
 
     <div class="card">
       <h2>🏆 Reyting (TOP 20)</h2>
-      <h2>📅 Har oy boshida reyting 0 dan boshlanadi</h2>
       <div id="rankingList"></div>
     </div>
   </div>
@@ -336,20 +339,22 @@ button{cursor:pointer;border:none;}
   </div>
 
 </div>
+
+<div class="site-footer">
+  © <span id="footerYear"></span> <b>ABITUR DTM</b>. Barcha huquqlar himoyalangan.
+</div>
+
 </div>
 
 <script>
-const GAS_URL = "https://script.google.com/macros/s/AKfycbwdLedPsc3sQ6yB8poSNRZGOyjTLJbpCLAR5ExK37V1fPGVRXK9VnkV2aDDZ1YD9xCe/exec";
+const GOOGLE_CLIENT_ID = "https://323960187871-77jganuhhpo1hba8t7ooh252kqeh9sc2.apps.googleusercontent.com";
+
+document.getElementById('footerYear').textContent = new Date().getFullYear();
 
 async function api(params){
-  try{
-    const url = GAS_URL + '?' + new URLSearchParams(params).toString();
-    const res = await fetch(url);
-    return await res.json();
-  }catch(err){
-    console.error('API xatosi:', err);
-    return { ok:false, error:'Internet aloqasida xatolik. Qayta urinib ko\'ring.' };
-  }
+  const url = GAS_URL + '?' + new URLSearchParams(params).toString();
+  const res = await fetch(url);
+  return res.json();
 }
 
 function show(id){ document.getElementById(id).classList.remove('hide'); }
@@ -358,15 +363,9 @@ function hideAllScreens(){
   ['authScreen','regSuccess','dashboard','testSetScreen','paymentScreen','testScreen','resultScreen'].forEach(hide);
 }
 
-function switchTab(t){
-  document.getElementById('tabLogin').classList.toggle('active', t==='login');
-  document.getElementById('tabReg').classList.toggle('active', t==='register');
-  document.getElementById('loginCard').classList.toggle('hide', t!=='login');
-  document.getElementById('regCard').classList.toggle('hide', t!=='register');
-}
-
 let currentUser = null;
 let settingsCache = {};
+let pendingGoogleEmail = null;
 
 function setLoading(btn, on, loadingText){
   if(!btn) return;
@@ -382,23 +381,52 @@ function setLoading(btn, on, loadingText){
   }
 }
 
-async function doRegister(){
-  const ism = document.getElementById('regIsm').value.trim();
-  const familiya = document.getElementById('regFamiliya').value.trim();
-  const tel = document.getElementById('regTel').value.trim();
-  const referralId = document.getElementById('regReferral').value.trim();
-  const errEl = document.getElementById('regErr');
+function decodeJwt(token){
+  const payload = token.split('.')[1];
+  const json = decodeURIComponent(atob(payload.replace(/-/g,'+').replace(/_/g,'/')).split('').map(c=>
+    '%' + ('00'+c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+  return JSON.parse(json);
+}
+
+async function handleGoogleCredential(response){
+  const errEl = document.getElementById('googleErr');
   errEl.classList.add('hide');
-  if(!ism || !familiya || !tel){ errEl.textContent='Barcha maydonlarni to\'ldiring'; errEl.classList.remove('hide'); return; }
-  const btn = document.getElementById('regBtn');
+  const payload = decodeJwt(response.credential);
+  const email = payload.email;
+  pendingGoogleEmail = email;
+
+  const res = await api({action:'googleLogin', email});
+  if(res.ok){
+    localStorage.setItem('abitur_email', email);
+    await loadDashboard();
+    return;
+  }
+  if(res.notFound){
+    document.getElementById('googleAuthCard').classList.add('hide');
+    document.getElementById('gIsm').value = payload.given_name || '';
+    document.getElementById('gFamiliya').value = payload.family_name || '';
+    show('newUserCard');
+    return;
+  }
+  errEl.textContent = res.error || 'Xatolik yuz berdi';
+  errEl.classList.remove('hide');
+}
+
+async function completeGoogleRegister(){
+  const ism = document.getElementById('gIsm').value.trim();
+  const familiya = document.getElementById('gFamiliya').value.trim();
+  const referralId = document.getElementById('gReferral').value.trim();
+  const errEl = document.getElementById('gCompleteErr');
+  errEl.classList.add('hide');
+  if(!ism || !familiya){ errEl.textContent = 'Ism va familiyani kiriting'; errEl.classList.remove('hide'); return; }
+  const btn = document.getElementById('gCompleteBtn');
   setLoading(btn, true, 'Yuborilmoqda...');
-  const res = await api({action:'register', ism, familiya, telefon:tel, referralId});
+  const res = await api({action:'googleRegister', email: pendingGoogleEmail, ism, familiya, referralId});
   setLoading(btn, false);
-  if(!res.ok){ errEl.textContent=res.error; errEl.classList.remove('hide'); return; }
+  if(!res.ok){ errEl.textContent = res.error; errEl.classList.remove('hide'); return; }
+  localStorage.setItem('abitur_email', pendingGoogleEmail);
   hideAllScreens();
   document.getElementById('regSuccess').innerHTML = document.getElementById('regSuccess').innerHTML.replace('{{ID}}', res.id);
-  document.getElementById('regSuccess').dataset.id = res.id;
-  document.getElementById('regSuccess').dataset.tel = tel;
   const bonusMsg = document.getElementById('regBonusMsg');
   if(bonusMsg){
     if(res.bonus && res.bonus > 0){
@@ -412,40 +440,22 @@ async function doRegister(){
 }
 
 async function goDashboardAfterReg(){
-  const id = document.getElementById('regSuccess').dataset.id;
-  const tel = document.getElementById('regSuccess').dataset.tel;
-  localStorage.setItem('abitur_id', id);
-  localStorage.setItem('abitur_tel', tel);
-  await loadDashboard();
-}
-
-async function doLogin(){
-  const id = document.getElementById('loginId').value.trim();
-  const tel = document.getElementById('loginTel').value.trim();
-  const errEl = document.getElementById('loginErr');
-  errEl.classList.add('hide');
-  const btn = document.getElementById('loginBtn');
-  setLoading(btn, true, 'Kirilmoqda...');
-  const res = await api({action:'login', id, telefon:tel});
-  setLoading(btn, false);
-  if(!res.ok){ errEl.textContent=res.error; errEl.classList.remove('hide'); return; }
-  localStorage.setItem('abitur_id', id);
-  localStorage.setItem('abitur_tel', tel);
   await loadDashboard();
 }
 
 function logout(){
-  localStorage.removeItem('abitur_id');
-  localStorage.removeItem('abitur_tel');
+  localStorage.removeItem('abitur_email');
   currentUser = null;
   hideAllScreens();
   show('authScreen');
+  document.getElementById('newUserCard').classList.add('hide');
+  document.getElementById('googleAuthCard').classList.remove('hide');
 }
 
 async function loadDashboard(){
-  const id = localStorage.getItem('abitur_id');
+  const email = localStorage.getItem('abitur_email');
   const [res, set, rank] = await Promise.all([
-    api({action:'getUser', id}),
+    api({action:'getUserByEmail', email}),
     api({action:'getSettings'}),
     api({action:'getRanking'})
   ]);
@@ -537,7 +547,7 @@ async function openTestType(type){
   const listEl = document.getElementById('testSetList');
   listEl.innerHTML = '';
   Object.keys(groups).forEach(base=>{
-    const variants = Object.values(groups[base]); // array of question-arrays, each in original order
+    const variants = Object.values(groups[base]);
     let displayCount = variants[0].length;
     const div = document.createElement('div');
     div.className = 'test-btn';
@@ -652,10 +662,6 @@ async function finishTest(){
     }
   });
 
-  // Floating-point xatolarini tuzatish (masalan 188.999977 -> 189, 57.4499999 -> 57.44)
-  score = Math.trunc(score * 100) / 100;
-  maxScore = Math.round(maxScore * 100) / 100;
-
   await api({action:'submitResult', id: currentUser.id, testTuri: activeTestType, testNomi: activeQuestions._name, ball: score, maxBall: maxScore});
 
   hideAllScreens();
@@ -715,17 +721,31 @@ function getGrade(score, subject){
 
 // ===== INIT =====
 window.addEventListener('load', async ()=>{
-  const id = localStorage.getItem('abitur_id');
-  const tel = localStorage.getItem('abitur_tel');
-  const loginPromise = (id && tel) ? api({action:'login', id, telefon:tel}) : Promise.resolve(null);
-  const minIntro = new Promise(r=>setTimeout(r, 1200));
-  await minIntro;
-  if(id && tel){
+  const email = localStorage.getItem('abitur_email');
+  if(email){
+    const minIntro = new Promise(r=>setTimeout(r, 1200));
+    const loginPromise = api({action:'getUserByEmail', email});
+    await minIntro;
     const res = await loginPromise;
     if(res && res.ok){ await loadDashboard(); return; }
+  } else {
+    await new Promise(r=>setTimeout(r, 1200));
   }
   hideAllScreens();
   show('authScreen');
+
+  if(window.google && GOOGLE_CLIENT_ID.indexOf('YOUR_GOOGLE_CLIENT_ID') === -1){
+    google.accounts.id.initialize({
+      client_id: GOOGLE_CLIENT_ID,
+      callback: handleGoogleCredential
+    });
+    google.accounts.id.renderButton(document.getElementById('gSignInBtn'), {
+      theme: 'filled_black', size: 'large', shape: 'pill', text: 'continue_with', width: 280
+    });
+  } else {
+    document.getElementById('googleErr').textContent = 'Google Client ID sozlanmagan. Iltimos, GOOGLE_CLIENT_ID ni to\'ldiring.';
+    document.getElementById('googleErr').classList.remove('hide');
+  }
 });
 </script>
 </body>
