@@ -392,7 +392,7 @@ let currentUser = null;
 let settingsCache = {};
 let pendingGoogleEmail = null;
 
-function getQuality(avg) {
+  function getQuality(avg) {
   avg = Math.max(1, Math.min(100, Math.round(Number(avg) || 1)));
 
   const data = {
@@ -544,29 +544,8 @@ function getQuality(avg) {
     circumference: 2 * Math.PI * 52,
     dashOffset: 2 * Math.PI * 52 * (1 - avg / 100)
   };
-}
+  }
   
-// ==========================================
-// FOIZNI TO‘LIQ NATIJA OBYEKTIGA AYLANTRISH
-// ==========================================
-
-function getQuality(avg) {
-
-  avg = Math.max(1, Math.min(100, Math.round(avg)));
-
-  return {
-    percent: avg,
-    label: qualityLabel(avg),
-    color: qualityColor(avg),
-    description: qualityDescription(avg),
-    circumference: QUALITY_RING_CIRCUMFERENCE,
-
-    // SVG progress circle uchun
-    dashOffset:
-      QUALITY_RING_CIRCUMFERENCE -
-      (QUALITY_RING_CIRCUMFERENCE * avg / 100)
-  };
-}
 function renderQualityStat(avg){
   const ringBg = document.querySelector('.ring-bg');
   const ringFg = document.getElementById('qualityRingFg');
