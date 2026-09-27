@@ -133,6 +133,7 @@ button{cursor:pointer;border:none;}
 .quality-ring-text{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;}
 .quality-percent{font-size:30px;font-weight:800;color:var(--text);line-height:1;}
 .quality-label{font-size:12px;color:var(--muted);margin-top:4px;letter-spacing:.3px;}
+.quality-desc{text-align:center;font-size:13px;color:var(--muted);line-height:1.45;max-width:280px;margin:0 auto 18px;}
 .stat-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.06);font-size:14px;}
 .stat-row b{color:var(--gold2);}
 .rank-item{display:flex;justify-content:space-between;padding:8px 6px;font-size:13px;border-bottom:1px solid rgba(255,255,255,.05);}
@@ -272,6 +273,7 @@ button{cursor:pointer;border:none;}
           <div class="quality-label" id="qualityLabelText">Bilim sifati</div>
         </div>
       </div>
+      <p class="quality-desc" id="qualityDescText">Bilim sifatingizni ko'rish uchun kamida bitta test yeching.</p>
 
       <div class="stat-row"><span>ID</span><b id="dId">-</b></div>
       <div class="stat-row"><span>Reyting o'rni</span><b id="dRank">-</b></div>
@@ -424,25 +426,40 @@ function qualityColor(avg){
   return '#e74c3c';                 // qizil — past
 }
 
+const QUALITY_DESC = {
+  "A'lo": "Ajoyib natija! Bilim darajangiz juda yuqori — shu tarzda davom eting.",
+  "Yaxshi": "Yaxshi natija. Mukammal darajaga yetish uchun yana bir oz mashq qiling.",
+  "Qoniqarli": "O'rtacha daraja. Ko'proq test yechib bilimingizni mustahkamlang.",
+  "Past": "Bilim darajangiz hozircha past. Mavzularni qaytarib, ko'proq mashq qiling."
+};
+
 function renderQualityStat(){
+  const ringBg = document.querySelector('.ring-bg');
   const ringFg = document.getElementById('qualityRingFg');
   const percentText = document.getElementById('qualityPercentText');
   const labelText = document.getElementById('qualityLabelText');
+  const descText = document.getElementById('qualityDescText');
   if(!ringFg) return;
   const avg = getAverageQuality();
   if(avg === null){
     ringFg.style.stroke = 'rgba(255,255,255,.15)';
+    if(ringBg) ringBg.style.stroke = 'rgba(255,255,255,.08)';
     ringFg.style.strokeDashoffset = QUALITY_RING_CIRCUMFERENCE;
     percentText.textContent = '—';
     labelText.textContent = "Hali test yo'q";
+    if(descText) descText.textContent = "Bilim sifatingizni ko'rish uchun kamida bitta test yeching.";
     return;
   }
   const pct = Math.max(0, Math.min(100, avg));
-  const offset = QUALITY_RING_CIRCUMFERENCE - (pct / 100) * QUALITY_RING_CIRCUMFERENCE;
-  ringFg.style.stroke = qualityColor(pct);
-  ringFg.style.strokeDashoffset = offset;
+  const color = qualityColor(pct);
+  const label = qualityLabel(pct);
+  // Doira to'liq shu rangda chiziladi (qisman emas)
+  ringFg.style.stroke = color;
+  ringFg.style.strokeDashoffset = 0;
+  if(ringBg) ringBg.style.stroke = color;
   percentText.textContent = Math.round(avg) + '%';
-  labelText.textContent = qualityLabel(avg);
+  labelText.textContent = label;
+  if(descText) descText.textContent = QUALITY_DESC[label] || '';
 }
 
 function setLoading(btn, on, loadingText){
@@ -740,6 +757,10 @@ async function finishTest(){
       if(String(ans).toUpperCase() === String(q.togri).toUpperCase()) score += Number(q.ball);
     }
   });
+
+  // Floating-point yig'indi xatoliklarini yo'qotish (masalan 34.5677 -> 34.56, 188.999999999 -> 189)
+  score = Math.round(score * 100) / 100;
+  maxScore = Math.round(maxScore);
 
   const percent = maxScore > 0 ? Math.round((score/maxScore)*100) : 0;
   saveHistoryEntry(percent);
