@@ -391,26 +391,7 @@ let currentUser = null;
 let settingsCache = {};
 let pendingGoogleEmail = null;
 
-// ===== BILIM SIFATI (o'rtacha foiz) =====
-function historyKey(){
-  const key = (currentUser && currentUser.id) ? currentUser.id : (localStorage.getItem('abitur_email') || 'anon');
-  return 'abitur_history_' + key;
-}
-function loadHistory(){
-  try{ return JSON.parse(localStorage.getItem(historyKey())) || []; }catch(e){ return []; }
-}
-function saveHistoryEntry(percent){
-  const hist = loadHistory();
-  hist.push(percent);
-  if(hist.length > 200) hist.shift(); // juda uzun bo'lib ketmasin
-  localStorage.setItem(historyKey(), JSON.stringify(hist));
-}
-function getAverageQuality(){
-  const hist = loadHistory();
-  if(hist.length === 0) return null;
-  const sum = hist.reduce((a,b)=>a+b,0);
-  return sum / hist.length;
-}
+// ===== BILIM SIFATI (server tomonidan hisoblangan umumiy o'rtacha foiz) =====
 function qualityLabel(avg){
   if(avg >= 85) return "A'lo";
   if(avg >= 70) return 'Yaxshi';
@@ -433,15 +414,14 @@ const QUALITY_DESC = {
   "Past": "Bilim darajangiz hozircha past. Mavzularni qaytarib, ko'proq mashq qiling."
 };
 
-function renderQualityStat(){
+function renderQualityStat(avg){
   const ringBg = document.querySelector('.ring-bg');
   const ringFg = document.getElementById('qualityRingFg');
   const percentText = document.getElementById('qualityPercentText');
   const labelText = document.getElementById('qualityLabelText');
   const descText = document.getElementById('qualityDescText');
   if(!ringFg) return;
-  const avg = getAverageQuality();
-  if(avg === null){
+  if(avg === null || avg === undefined || isNaN(avg)){
     ringFg.style.stroke = 'rgba(255,255,255,.15)';
     if(ringBg) ringBg.style.stroke = 'rgba(255,255,255,.08)';
     ringFg.style.strokeDashoffset = QUALITY_RING_CIRCUMFERENCE;
@@ -562,7 +542,10 @@ async function loadDashboard(){
   document.getElementById('dCount').textContent = res.testsCount;
   document.getElementById('dScore').textContent = res.totalScore;
   document.getElementById('dBalans').textContent = res.balans + ' so\'m';
-  renderQualityStat();
+  const lastPct = (res.lastTest && res.lastTest.maxBall > 0)
+    ? Math.round((res.lastTest.ball / res.lastTest.maxBall) * 100)
+    : null;
+  renderQualityStat(lastPct);
 
   settingsCache = set.settings || {};
   document.getElementById('priceSinov').textContent = (settingsCache.price_sinov||0) + ' so\'m';
@@ -763,7 +746,6 @@ async function finishTest(){
   maxScore = Math.round(maxScore);
 
   const percent = maxScore > 0 ? Math.round((score/maxScore)*100) : 0;
-  saveHistoryEntry(percent);
 
   await api({action:'submitResult', id: currentUser.id, testTuri: activeTestType, testNomi: activeQuestions._name, ball: score, maxBall: maxScore});
 
