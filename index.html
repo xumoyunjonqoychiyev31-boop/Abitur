@@ -1887,141 +1887,52 @@ function getQuality(avg){
    QUALITY DISPLAY
 ========================================================= */
 
-function renderQualityStat(avg){
+function renderQualityStat(avg) {
+  const ringBg = document.querySelector('.ring-bg');
+  const ringFg = document.getElementById('qualityRingFg');
+  const percentText = document.getElementById('qualityPercentText');
+  const labelText = document.getElementById('qualityLabelText');
+  const descText = document.getElementById('qualityDescText');
 
-  const ringBg =
-    document.querySelector('.ring-bg');
+  if (!ringFg) return;
 
-  const ringFg =
-    document.getElementById(
-      'qualityRingFg'
-    );
-
-  const percentText =
-    document.getElementById(
-      'qualityPercentText'
-    );
-
-  const labelText =
-    document.getElementById(
-      'qualityLabelText'
-    );
-
-  const descText =
-    document.getElementById(
-      'qualityDescText'
-    );
-
-
-  if(
-    !ringFg ||
-    !percentText ||
-    !labelText
-  ){
-    return;
-  }
-
-
-  /* TEST YO'Q */
-
-  if(
-    avg === null ||
-    avg === undefined ||
-    avg === '' ||
-    !Number.isFinite(Number(avg))
-  ){
-
-    ringFg.style.stroke =
-      'rgba(255,255,255,.15)';
-
-    ringFg.style.strokeDasharray =
-      QUALITY_RING_CIRCUMFERENCE;
-
-    ringFg.style.strokeDashoffset =
-      QUALITY_RING_CIRCUMFERENCE;
-
-    if(ringBg){
-      ringBg.style.stroke =
-        'rgba(255,255,255,.08)';
+  if (avg === null || avg === undefined || isNaN(avg)) {
+    ringFg.style.stroke = 'rgba(255,255,255,.15)';
+    
+    if (ringBg) {
+      ringBg.style.stroke = 'rgba(255,255,255,.08)';
     }
 
-    percentText.textContent =
-      '—';
+    percentText.textContent = '—';
+    labelText.textContent = "Hali test yo'q";
 
-    labelText.textContent =
-      "Hali test yo‘q";
-
-    labelText.style.color =
-      'var(--muted)';
-
-    if(descText){
-
+    if (descText) {
       descText.textContent =
-        "Bilim sifatingizni ko‘rish uchun kamida bitta test yeching.";
-
-      descText.style.color =
-        'var(--muted)';
+        "Bilim sifatingizni ko'rish uchun kamida bitta test yeching.";
     }
 
     return;
   }
 
+  const quality = getQuality(avg);
 
-  const quality =
-    getQuality(avg);
+  // Aylana doimo 100% to'liq
+  ringFg.style.strokeDasharray = '326.73';
+  ringFg.style.strokeDashoffset = '0';
 
-  if(!quality){
-    return;
+  // Foizga qarab rang
+  ringFg.style.stroke = quality.color;
+
+  if (ringBg) {
+    ringBg.style.stroke = 'rgba(255,255,255,.08)';
   }
 
+  percentText.textContent = quality.percent + '%';
+  labelText.textContent = quality.label;
 
-  /* RANG */
-
-  ringFg.style.stroke =
-    quality.color;
-
-
-  /* DOIRA */
-
-  ringFg.style.strokeDasharray =
-    quality.circumference;
-
-  ringFg.style.strokeDashoffset =
-    quality.dashOffset;
-
-
-  if(ringBg){
-    ringBg.style.stroke =
-      'rgba(255,255,255,.08)';
+  if (descText) {
+    descText.textContent = quality.description;
   }
-
-
-  /* FOIZ */
-
-  percentText.textContent =
-    quality.percent + '%';
-
-
-  /* LABEL */
-
-  labelText.textContent =
-    quality.label;
-
-  labelText.style.color =
-    quality.color;
-
-
-  /* TAVSIF */
-
-  if(descText){
-
-    descText.textContent =
-      quality.description;
-
-    descText.style.color =
-      quality.color;
-  }
-
 }
 
 
