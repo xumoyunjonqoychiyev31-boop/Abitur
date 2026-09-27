@@ -393,28 +393,330 @@ let settingsCache = {};
 let pendingGoogleEmail = null;
 
 // ===== BILIM SIFATI (server tomonidan hisoblangan umumiy o'rtacha foiz) =====
-function qualityLabel(avg){
-  if(avg >= 85) return "A'lo";
-  if(avg >= 70) return 'Yaxshi';
-  if(avg >= 50) return 'Qoniqarli';
-  return 'Past';
-}
-const QUALITY_RING_CIRCUMFERENCE = 2 * Math.PI * 52; // r=52
+// ==========================================
+// NATIJA SIFATI — 1% DAN 100% GACHA
+// ==========================================
 
-function qualityColor(avg){
-  if(avg >= 85) return '#2ecc71';   // yashil — a'lo
-  if(avg >= 70) return '#f5d98a';   // oltin-sariq — yaxshi
-  if(avg >= 50) return '#f39c12';   // to'q sariq — qoniqarli
-  return '#e74c3c';                 // qizil — past
+const QUALITY_RING_CIRCUMFERENCE = 2 * Math.PI * 52;
+
+
+// ==========================================
+// FOIZ NOMI
+// ==========================================
+
+function qualityLabel(avg) {
+  avg = Math.max(1, Math.min(100, Math.round(avg)));
+
+  const labels = {
+    1: "Juda past",
+    2: "Juda past",
+    3: "Juda past",
+    4: "Juda past",
+    5: "Juda past",
+    6: "Past",
+    7: "Past",
+    8: "Past",
+    9: "Past",
+    10: "Past",
+
+    11: "Past",
+    12: "Past",
+    13: "Past",
+    14: "Past",
+    15: "Boshlang‘ich",
+    16: "Boshlang‘ich",
+    17: "Boshlang‘ich",
+    18: "Boshlang‘ich",
+    19: "Boshlang‘ich",
+    20: "Boshlang‘ich",
+
+    21: "Boshlang‘ich+",
+    22: "Boshlang‘ich+",
+    23: "Rivojlanayotgan",
+    24: "Rivojlanayotgan",
+    25: "Rivojlanayotgan",
+    26: "Rivojlanayotgan",
+    27: "Rivojlanayotgan",
+    28: "Rivojlanayotgan",
+    29: "Rivojlanayotgan",
+    30: "Rivojlanayotgan",
+
+    31: "O‘sayotgan",
+    32: "O‘sayotgan",
+    33: "O‘sayotgan",
+    34: "O‘sayotgan",
+    35: "O‘sayotgan",
+    36: "O‘sayotgan",
+    37: "O‘sayotgan",
+    38: "O‘sayotgan",
+    39: "O‘sayotgan",
+    40: "O‘sayotgan",
+
+    41: "O‘rtachaga yaqin",
+    42: "O‘rtachaga yaqin",
+    43: "O‘rtachaga yaqin",
+    44: "O‘rtachaga yaqin",
+    45: "O‘rtachaga yaqin",
+    46: "O‘rtacha",
+    47: "O‘rtacha",
+    48: "O‘rtacha",
+    49: "O‘rtacha",
+    50: "O‘rtacha",
+
+    51: "O‘rtachadan yuqori",
+    52: "O‘rtachadan yuqori",
+    53: "O‘rtachadan yuqori",
+    54: "O‘rtachadan yuqori",
+    55: "O‘rtachadan yuqori",
+    56: "Yaxshilanmoqda",
+    57: "Yaxshilanmoqda",
+    58: "Yaxshilanmoqda",
+    59: "Yaxshilanmoqda",
+    60: "Yaxshilanmoqda",
+
+    61: "Yaxshi",
+    62: "Yaxshi",
+    63: "Yaxshi",
+    64: "Yaxshi",
+    65: "Yaxshi",
+    66: "Yaxshi+",
+    67: "Yaxshi+",
+    68: "Yaxshi+",
+    69: "Yaxshi+",
+    70: "Yaxshi",
+
+    71: "Juda yaxshi",
+    72: "Juda yaxshi",
+    73: "Juda yaxshi",
+    74: "Juda yaxshi",
+    75: "Juda yaxshi",
+    76: "Yuqori",
+    77: "Yuqori",
+    78: "Yuqori",
+    79: "Yuqori",
+    80: "Yuqori",
+
+    81: "Yuqori daraja",
+    82: "Yuqori daraja",
+    83: "Yuqori daraja",
+    84: "Yuqori daraja",
+    85: "A’lo",
+    86: "A’lo",
+    87: "A’lo",
+    88: "A’lo",
+    89: "A’lo",
+    90: "A’lo",
+
+    91: "Juda a’lo",
+    92: "Juda a’lo",
+    93: "Juda a’lo",
+    94: "Juda a’lo",
+    95: "Mukammallikka yaqin",
+    96: "Mukammallikka yaqin",
+    97: "Mukammal daraja",
+    98: "Mukammal daraja",
+    99: "Mukammal daraja",
+    100: "Mukammal"
+  };
+
+  return labels[avg];
 }
+
+
+// ==========================================
+// 1% = QIZIL
+// 100% = YASHIL
+// HAR BIR FOIZDA ALOHIDA RGB RANG
+// ==========================================
+
+function qualityColor(avg) {
+  avg = Math.max(1, Math.min(100, Math.round(avg)));
+
+  let r, g, b;
+
+  // 1% → 50%
+  // Qizil → Sariq
+  if (avg <= 50) {
+
+    const t = (avg - 1) / 49;
+
+    const start = [231, 76, 60];   // #e74c3c
+    const end   = [241, 196, 15];  // #f1c40f
+
+    r = Math.round(start[0] + (end[0] - start[0]) * t);
+    g = Math.round(start[1] + (end[1] - start[1]) * t);
+    b = Math.round(start[2] + (end[2] - start[2]) * t);
+
+  }
+
+  // 51% → 100%
+  // Sariq → Yashil
+  else {
+
+    const t = (avg - 50) / 50;
+
+    const start = [241, 196, 15];  // #f1c40f
+    const end   = [46, 204, 113];  // #2ecc71
+
+    r = Math.round(start[0] + (end[0] - start[0]) * t);
+    g = Math.round(start[1] + (end[1] - start[1]) * t);
+    b = Math.round(start[2] + (end[2] - start[2]) * t);
+  }
+
+  return `rgb(${r}, ${g}, ${b})`;
+}
+
+
+// ==========================================
+// 1% — 100% UCHUN 100 TA TAVSIF
+// ==========================================
 
 const QUALITY_DESC = {
-  "A'lo": "Ajoyib natija! Bilim darajangiz juda yuqori — shu tarzda davom eting.",
-  "Yaxshi": "Yaxshi natija. Mukammal darajaga yetish uchun yana bir oz mashq qiling.",
-  "Qoniqarli": "O'rtacha daraja. Ko'proq test yechib bilimingizni mustahkamlang.",
-  "Past": "Bilim darajangiz hozircha past. Mavzularni qaytarib, ko'proq mashq qiling."
+
+  1: "Bilim darajasi juda past. Asosiy mavzularni o‘rganishdan boshlang.",
+  2: "Bilim darajasi juda past. Eng asosiy tushunchalarni takrorlash kerak.",
+  3: "Boshlang‘ich bilimlar hali yetarli emas. Mavzularni qayta ko‘rib chiqing.",
+  4: "Bilim darajasi past. Nazariyani o‘rganib, sodda testlardan boshlang.",
+  5: "Boshlang‘ich natija. Muntazam mashq qilish orqali natijani oshirish mumkin.",
+  6: "Bilimlar endi shakllanmoqda. Asosiy mavzularga ko‘proq e’tibor bering.",
+  7: "Natija past. Xatolarni tahlil qilib, mavzularni qayta mustahkamlang.",
+  8: "Boshlang‘ich daraja. Ko‘proq test ishlash foydali bo‘ladi.",
+  9: "Bilim darajasi hali past. Muntazam tayyorgarlikni boshlang.",
+  10: "10% natija. Asosiy bilimlarni shakllantirishga e’tibor qarating.",
+
+  11: "Bilim darajasi past, ammo rivojlanish uchun yaxshi imkoniyat bor.",
+  12: "Asosiy tushunchalarni mustahkamlash va ko‘proq mashq qilish kerak.",
+  13: "Natija asta-sekin shakllanmoqda. Xatolar ustida ishlang.",
+  14: "Bilimlarni oshirish uchun mavzularni muntazam takrorlang.",
+  15: "Boshlang‘ich daraja. Har kuni ozgina mashq qilish foydali.",
+  16: "Bilimlar rivojlanmoqda. O‘rganilgan mavzularni test bilan mustahkamlang.",
+  17: "Natija hali past, lekin rivojlanish uchun yaxshi poydevor mavjud.",
+  18: "Ko‘proq test ishlash orqali bilim darajangizni oshiring.",
+  19: "Xatolarni tahlil qilsangiz, keyingi natija yaxshilanadi.",
+  20: "20% natija. Asosiy mavzularni yaxshiroq o‘zlashtirish kerak.",
+
+  21: "Bilim darajasi rivojlanish bosqichida. Mashqni davom ettiring.",
+  22: "Asosiy bilimlar shakllanmoqda. Ko‘proq savollar yeching.",
+  23: "Natija asta-sekin yaxshilanmoqda. Zaif mavzularni takrorlang.",
+  24: "Bilimlar mustahkamlanmoqda. Har bir xatodan saboq oling.",
+  25: "25% natija. Yaxshi natijaga chiqish uchun muntazam mashq qiling.",
+  26: "Bilim darajasi o‘smoqda. Nazariya va amaliyotni birga olib boring.",
+  27: "Natija yaxshilanmoqda. Xatolar sonini kamaytirishga harakat qiling.",
+  28: "Asosiy mavzular bo‘yicha bilim mavjud. Endi ularni mustahkamlang.",
+  29: "Bilim darajasi rivojlanmoqda. Murakkabroq savollarni sinab ko‘ring.",
+  30: "30% natija. Tayanch bilimlar shakllangan, endi ularni chuqurlashtiring.",
+
+  31: "Natija o‘sish bosqichida. Muntazam test ishlashni davom ettiring.",
+  32: "Bilimlar asta-sekin mustahkamlanmoqda. Mashqlarni ko‘paytiring.",
+  33: "Asosiy tushunchalar yaxshi shakllanmoqda. Aniqlik ustida ishlang.",
+  34: "Natija yaxshilanmoqda. Xatolarni tahlil qilishni odat qiling.",
+  35: "35% natija. Bilimlarni mustahkamlash uchun ko‘proq mashq qiling.",
+  36: "Rivojlanish yaxshi ketmoqda. Muntazamlikni saqlang.",
+  37: "Bilim darajasi o‘smoqda. Qiyin mavzularga e’tibor bering.",
+  38: "Natija o‘rtacha darajaga yaqinlashmoqda.",
+  39: "Yaxshi rivojlanish bor. Xatolarni kamaytirishga harakat qiling.",
+  40: "40% natija. Asosiy bilimlar mavjud, endi ularni chuqurlashtiring.",
+
+  41: "Natija o‘rtacha darajaga yaqin. Mashqni davom ettiring.",
+  42: "Bilimlar mustahkamlanmoqda. Mavzular orasidagi bog‘liqlikni tushuning.",
+  43: "Natija yaxshilanmoqda. To‘g‘ri javoblar sonini oshiring.",
+  44: "Bilim darajasi o‘rtacha chegarasiga yaqinlashmoqda.",
+  45: "45% natija. Yana biroz mashq bilan yaxshi o‘sishga erishish mumkin.",
+  46: "Bilimlar ancha shakllangan. Zaif mavzularni mustahkamlang.",
+  47: "Natija yaxshi tomonga o‘zgarmoqda. Xatolarni tahlil qiling.",
+  48: "O‘rtacha darajaga juda yaqin. Mashqlarni davom ettiring.",
+  49: "50% chegarasiga yaqin. Yana biroz harakat qiling.",
+  50: "50% natija. Bilim darajasi o‘rtacha. Endi uni yuqoriga ko‘tarish kerak.",
+
+  51: "O‘rtacha darajadan yuqoriga chiqdingiz. Rivojlanishni davom ettiring.",
+  52: "Bilimlar yaxshi shakllanmoqda. Murakkabroq savollarni ishlang.",
+  53: "Natija qoniqarli darajadan yuqori. Muntazam mashq qiling.",
+  54: "Bilim darajasi barqarorlashmoqda. Xatolarni kamaytiring.",
+  55: "55% natija. Yaxshi rivojlanish bor, aniqlikni oshiring.",
+  56: "Bilim darajasi yaxshi tomonga o‘smoqda.",
+  57: "Natija yaxshi. Har bir testdan keyin xatolarni tahlil qiling.",
+  58: "Bilimlar mustahkamlanmoqda. Qiyin mavzularni ham mashq qiling.",
+  59: "60% chegarasiga yaqin. Keyingi maqsadni yuqoriroq qo‘ying.",
+  60: "60% natija. Yaxshi poydevor mavjud. Endi yuqori natijaga intiling.",
+
+  61: "Bilim darajasi yaxshi yo‘nalishda. Mashqlarni davom ettiring.",
+  62: "Natija barqaror o‘smoqda. Murakkab savollarga e’tibor bering.",
+  63: "Bilimlaringiz yaxshi shakllangan. Aniqlikni oshiring.",
+  64: "Yaxshi natija. Zaif mavzularni mustahkamlash orqali o‘sing.",
+  65: "65% natija. Bilim darajasi yaxshi, lekin yanada o‘sish mumkin.",
+  66: "Natijangiz yaxshi. Murakkab testlar bilan o‘zingizni sinang.",
+  67: "Bilim darajasi barqaror. Xatolarni yanada kamaytiring.",
+  68: "Yaxshi rivojlanish. Mavzularni chuqurroq o‘rganing.",
+  69: "70% chegarasiga juda yaqin. Yana ozgina harakat qiling.",
+  70: "70% natija. Yaxshi daraja. Endi yuqori natijaga intiling.",
+
+  71: "Yaxshi natija. Bilimlaringiz ancha mustahkamlangan.",
+  72: "Natija yuqori darajaga ko‘tarilmoqda.",
+  73: "Bilim darajasi yaxshi. Murakkab mavzularda ham mashq qiling.",
+  74: "Natijangiz barqaror. Mayda xatolarni kamaytiring.",
+  75: "75% natija. Juda yaxshi ko‘rsatkich. Yuqori darajaga intiling.",
+  76: "Bilim darajasi yaxshi shakllangan. Qiyin savollarni ko‘paytiring.",
+  77: "Yaxshi natija. Bilimlarni muntazam takrorlab turing.",
+  78: "Natija yuqori. Xatolarni tahlil qilib yanada rivojlaning.",
+  79: "80% chegarasiga yaqin. Tayyorgarlikni davom ettiring.",
+  80: "80% natija. Juda yaxshi daraja. Endi yanada yuqori natijaga intiling.",
+
+  81: "Bilim darajasi yuqori. Natijangizni barqaror saqlang.",
+  82: "Juda yaxshi natija. Murakkab savollarni ko‘proq ishlang.",
+  83: "Bilimlaringiz yuqori darajada. Aniqlikni yanada oshiring.",
+  84: "85% chegarasiga juda yaqin. A’lo natijaga bir qadam qoldi.",
+  85: "85% natija. A’lo daraja! Bilimlaringiz juda yaxshi.",
+  86: "Juda yuqori natija. Bilimlaringiz yaxshi mustahkamlangan.",
+  87: "Ajoyib ko‘rsatkich. Murakkab savollarda ham o‘zingizni sinang.",
+  88: "Natija juda yuqori. Bilimlaringizni muntazam takrorlang.",
+  89: "Ajoyib natija. Yuqori darajadagi tayyorgarlik ko‘rinmoqda.",
+  90: "90% natija. Juda yuqori bilim darajasi.",
+
+  91: "A’lo natija. Bilimlaringiz juda yaxshi shakllangan.",
+  92: "Ajoyib natija. Yuqori aniqlikni saqlab qoling.",
+  93: "Juda yuqori ko‘rsatkich. Tayyorgarligingiz kuchli.",
+  94: "A’lo daraja. Natijangiz juda yuqori.",
+  95: "95% natija. Deyarli mukammal ko‘rsatkich.",
+  96: "Ajoyib! Bilim darajangiz juda yuqori.",
+  97: "Deyarli mukammal natija. Bilimlaringiz juda yaxshi.",
+  98: "98% natija. Juda yuqori darajadagi tayyorgarlik.",
+  99: "99% natija. Mukammallikka juda yaqin.",
+  100: "100% natija! Mukammal ko‘rsatkich — barcha savollar to‘g‘ri."
 };
 
+
+// ==========================================
+// TAVSIFNI OLISH
+// ==========================================
+
+function qualityDescription(avg) {
+  avg = Math.max(1, Math.min(100, Math.round(avg)));
+
+  return QUALITY_DESC[avg];
+}
+
+
+// ==========================================
+// FOIZNI TO‘LIQ NATIJA OBYEKTIGA AYLANTRISH
+// ==========================================
+
+function getQuality(avg) {
+
+  avg = Math.max(1, Math.min(100, Math.round(avg)));
+
+  return {
+    percent: avg,
+    label: qualityLabel(avg),
+    color: qualityColor(avg),
+    description: qualityDescription(avg),
+    circumference: QUALITY_RING_CIRCUMFERENCE,
+
+    // SVG progress circle uchun
+    dashOffset:
+      QUALITY_RING_CIRCUMFERENCE -
+      (QUALITY_RING_CIRCUMFERENCE * avg / 100)
+  };
+}
 function renderQualityStat(avg){
   const ringBg = document.querySelector('.ring-bg');
   const ringFg = document.getElementById('qualityRingFg');
