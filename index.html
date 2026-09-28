@@ -4,3965 +4,686 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ABITUR DTM</title>
+<link rel="preconnect" href="https://script.google.com">
+<link rel="preconnect" href="https://accounts.google.com">
 <script src="https://accounts.google.com/gsi/client" async defer></script>
-
 <style>
-:root{
-  --gold:#e8b84b;
-  --gold2:#f5d98a;
-  --bg:#0c0d10;
-  --panel:#15171c;
-  --text:#f0efe9;
-  --muted:#9a9a9a;
-}
+:root{--gold:#e8b84b;--gold2:#f5d98a;--bg:#0c0d10;--panel:#15171c;--text:#f0efe9;--muted:#9a9a9a}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;font-family:'Segoe UI',system-ui,sans-serif;color:var(--text)}
+body{background-color:#0b0c0f;background-image:repeating-linear-gradient(45deg,rgba(232,184,75,.055) 0,rgba(232,184,75,.055) 1px,transparent 1px,transparent 17px),repeating-linear-gradient(-45deg,rgba(232,184,75,.055) 0,rgba(232,184,75,.055) 1px,transparent 1px,transparent 17px),radial-gradient(ellipse at 50% 0%,rgba(232,184,75,.05),transparent 55%),linear-gradient(160deg,#0b0c0f 0%,#101116 50%,#0b0c0f 100%);background-attachment:fixed;min-height:100vh;position:relative;overflow-x:hidden}
+body::before,body::after{content:'';position:fixed;width:340px;height:340px;border-top:3px solid var(--gold);filter:drop-shadow(0 0 8px rgba(232,184,75,.5));z-index:0;pointer-events:none;clip-path:polygon(30% 0,100% 0,100% 8%,38% 8%,12% 62%,6% 62%,6% 54%)}
+body::before{top:-40px;left:-120px}
+body::after{bottom:-40px;right:-120px;transform:rotate(180deg)}
+.overlay-bg{min-height:100vh;position:relative;z-index:1;display:flex;flex-direction:column}
 
-*{
-  box-sizing:border-box;
-  margin:0;
-  padding:0;
-}
-
-html,body{
-  height:100%;
-  font-family:'Segoe UI',system-ui,sans-serif;
-  color:var(--text);
-}
-
-body{
-  background-color:#0b0c0f;
-  background-image:
-    repeating-linear-gradient(
-      45deg,
-      rgba(232,184,75,0.055) 0,
-      rgba(232,184,75,0.055) 1px,
-      transparent 1px,
-      transparent 17px
-    ),
-    repeating-linear-gradient(
-      -45deg,
-      rgba(232,184,75,0.055) 0,
-      rgba(232,184,75,0.055) 1px,
-      transparent 1px,
-      transparent 17px
-    ),
-    radial-gradient(
-      ellipse at 50% 0%,
-      rgba(232,184,75,0.05),
-      transparent 55%
-    ),
-    linear-gradient(
-      160deg,
-      #0b0c0f 0%,
-      #101116 50%,
-      #0b0c0f 100%
-    );
-
-  background-attachment:fixed;
-  min-height:100vh;
-  position:relative;
-  overflow-x:hidden;
-}
-
-body::before,
-body::after{
-  content:'';
-  position:fixed;
-  width:340px;
-  height:340px;
-  border-top:3px solid var(--gold);
-  filter:drop-shadow(0 0 8px rgba(232,184,75,.5));
-  z-index:0;
-  pointer-events:none;
-}
-
-body::before{
-  top:-40px;
-  left:-120px;
-  clip-path:polygon(
-    30% 0,
-    100% 0,
-    100% 8%,
-    38% 8%,
-    12% 62%,
-    6% 62%,
-    6% 54%
-  );
-}
-
-body::after{
-  bottom:-40px;
-  right:-120px;
-  clip-path:polygon(
-    30% 0,
-    100% 0,
-    100% 8%,
-    38% 8%,
-    12% 62%,
-    6% 62%,
-    6% 54%
-  );
-  transform:rotate(180deg);
-}
-
-.overlay-bg{
-  min-height:100vh;
-  position:relative;
-  z-index:1;
-  display:flex;
-  flex-direction:column;
-}
-
-/* INTRO */
-
-#intro{
-  position:fixed;
-  inset:0;
-  z-index:9999;
-  background:radial-gradient(
-    circle at 50% 40%,
-    #1a1a1a,
-    #000 75%
-  );
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  overflow:hidden;
-  animation:introOut .6s ease forwards;
-  animation-delay:1.1s;
-}
-
-.intro-rings{
-  position:absolute;
-  width:320px;
-  height:320px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-
-.ring{
-  position:absolute;
-  border-radius:50%;
-  border:1.5px solid transparent;
-  opacity:0;
-  animation:ringFade .6s ease forwards;
-}
-
-.ring1{
-  width:300px;
-  height:300px;
-  border-top-color:var(--gold);
-  border-right-color:rgba(232,184,75,.35);
-  animation:
-    ringFade .6s ease forwards,
-    spin 5s linear infinite;
-  animation-delay:.1s,.1s;
-}
-
-.ring2{
-  width:245px;
-  height:245px;
-  border-bottom-color:var(--gold2);
-  border-left-color:rgba(245,217,138,.3);
-  animation:
-    ringFade .6s ease forwards,
-    spin 3.6s linear infinite reverse;
-  animation-delay:.25s,.25s;
-}
-
-.ring3{
-  width:195px;
-  height:195px;
-  border:1px dashed rgba(232,184,75,.4);
-  animation:
-    ringFade .6s ease forwards,
-    spin 8s linear infinite;
-  animation-delay:.4s,.4s;
-}
-
-.ping{
-  position:absolute;
-  width:70px;
-  height:70px;
-  border-radius:50%;
-  border:2px solid var(--gold2);
-  opacity:0;
-  animation:ping 1.3s ease-out .15s 1;
-}
-
-.sparkles span{
-  position:absolute;
-  width:4px;
-  height:4px;
-  background:var(--gold2);
-  border-radius:50%;
-  opacity:0;
-  box-shadow:0 0 8px 2px rgba(245,217,138,.85);
-  animation:sparkle 2.4s ease-in-out infinite;
-}
-
-.sparkles span:nth-child(1){
-  top:8%;
-  left:50%;
-  animation-delay:.6s;
-}
-
-.sparkles span:nth-child(2){
-  top:20%;
-  left:85%;
-  animation-delay:1s;
-}
-
-.sparkles span:nth-child(3){
-  top:50%;
-  left:94%;
-  animation-delay:1.4s;
-}
-
-.sparkles span:nth-child(4){
-  top:80%;
-  left:82%;
-  animation-delay:.8s;
-}
-
-.sparkles span:nth-child(5){
-  top:92%;
-  left:50%;
-  animation-delay:1.2s;
-}
-
-.sparkles span:nth-child(6){
-  top:80%;
-  left:18%;
-  animation-delay:1.6s;
-}
-
-.sparkles span:nth-child(7){
-  top:50%;
-  left:6%;
-  animation-delay:1s;
-}
-
-.sparkles span:nth-child(8){
-  top:20%;
-  left:15%;
-  animation-delay:1.8s;
-}
-
-.logo-wrap{
-  position:relative;
-  width:180px;
-  height:180px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  z-index:2;
-}
-
-#intro img{
-  width:180px;
-  filter:drop-shadow(
-    0 0 25px rgba(232,184,75,.45)
-  );
-  animation:
-    pop 1s cubic-bezier(.22,1,.36,1) forwards,
-    glowPulse 2.2s ease-in-out 1.1s infinite;
-  opacity:0;
-  transform:scale(.6);
-  position:relative;
-  z-index:2;
-}
-
-.shine{
-  position:absolute;
-  inset:-6px;
-  overflow:hidden;
-  border-radius:50%;
-  pointer-events:none;
-  z-index:3;
-}
-
-.shine::before{
-  content:'';
-  position:absolute;
-  top:-60%;
-  left:-160%;
-  width:55%;
-  height:220%;
-  background:linear-gradient(
-    75deg,
-    transparent,
-    rgba(255,255,255,.65),
-    transparent
-  );
-  transform:rotate(18deg);
-  animation:shine 1.4s ease-in-out 1.05s 1;
-}
-
-#intro .brand{
-  position:absolute;
-  bottom:20%;
-  left:0;
-  right:0;
-  text-align:center;
-  letter-spacing:8px;
-  font-size:15px;
-  font-weight:600;
-
-  background:linear-gradient(
-    90deg,
-    var(--gold) 0%,
-    var(--gold2) 45%,
-    #fff 50%,
-    var(--gold2) 55%,
-    var(--gold) 100%
-  );
-
-  background-size:220% auto;
-  -webkit-background-clip:text;
-  background-clip:text;
-  color:transparent;
-  opacity:0;
-
-  animation:
-    fadeUp .7s ease forwards,
-    shimmer 2.4s linear infinite;
-
-  animation-delay:1.35s,1.35s;
-}
-
-@keyframes pop{
-  0%{
-    opacity:0;
-    transform:scale(.5) rotate(-8deg);
-  }
-
-  60%{
-    opacity:1;
-    transform:scale(1.1) rotate(2deg);
-  }
-
-  100%{
-    opacity:1;
-    transform:scale(1) rotate(0);
-  }
-}
-
-@keyframes glowPulse{
-  0%,100%{
-    filter:drop-shadow(
-      0 0 18px rgba(232,184,75,.35)
-    );
-  }
-
-  50%{
-    filter:drop-shadow(
-      0 0 42px rgba(232,184,75,.7)
-    );
-  }
-}
-
-@keyframes fadeUp{
-  from{
-    opacity:0;
-    transform:translateY(10px);
-  }
-
-  to{
-    opacity:1;
-    transform:translateY(0);
-  }
-}
-
-@keyframes shimmer{
-  to{
-    background-position:-220% center;
-  }
-}
-
-@keyframes introOut{
-  to{
-    opacity:0;
-    visibility:hidden;
-    pointer-events:none;
-  }
-}
-
-@keyframes spin{
-  to{
-    transform:rotate(360deg);
-  }
-}
-
-@keyframes ringFade{
-  to{
-    opacity:1;
-  }
-}
-
-@keyframes ping{
-  0%{
-    transform:scale(.4);
-    opacity:.9;
-  }
-
-  100%{
-    transform:scale(4.4);
-    opacity:0;
-  }
-}
-
-@keyframes sparkle{
-  0%,100%{
-    opacity:0;
-    transform:scale(.4);
-  }
-
-  50%{
-    opacity:1;
-    transform:scale(1.3);
-  }
-}
-
-@keyframes shine{
-  0%{
-    left:-160%;
-  }
-
-  100%{
-    left:160%;
-  }
-}
+/* INTRO (tezlashtirilgan) */
+#intro{position:fixed;inset:0;z-index:9999;background:radial-gradient(circle at 50% 40%,#1a1a1a,#000 75%);display:flex;align-items:center;justify-content:center;overflow:hidden;animation:introOut .4s ease forwards;animation-delay:.5s}
+.intro-rings{position:absolute;width:320px;height:320px;display:flex;align-items:center;justify-content:center}
+.ring{position:absolute;border-radius:50%;border:1.5px solid transparent;opacity:0;animation:ringFade .4s ease forwards}
+.ring1{width:300px;height:300px;border-top-color:var(--gold);border-right-color:rgba(232,184,75,.35);animation:ringFade .4s ease forwards,spin 5s linear infinite}
+.ring2{width:245px;height:245px;border-bottom-color:var(--gold2);border-left-color:rgba(245,217,138,.3);animation:ringFade .4s ease forwards,spin 3.6s linear infinite reverse}
+.ring3{width:195px;height:195px;border:1px dashed rgba(232,184,75,.4);animation:ringFade .4s ease forwards,spin 8s linear infinite}
+.ping{position:absolute;width:70px;height:70px;border-radius:50%;border:2px solid var(--gold2);opacity:0;animation:ping 1s ease-out .05s 1}
+.sparkles span{position:absolute;width:4px;height:4px;background:var(--gold2);border-radius:50%;opacity:0;box-shadow:0 0 8px 2px rgba(245,217,138,.85);animation:sparkle 2s ease-in-out infinite}
+.sparkles span:nth-child(1){top:8%;left:50%}
+.sparkles span:nth-child(2){top:20%;left:85%;animation-delay:.3s}
+.sparkles span:nth-child(3){top:50%;left:94%;animation-delay:.6s}
+.sparkles span:nth-child(4){top:80%;left:82%;animation-delay:.2s}
+.sparkles span:nth-child(5){top:92%;left:50%;animation-delay:.5s}
+.sparkles span:nth-child(6){top:80%;left:18%;animation-delay:.7s}
+.sparkles span:nth-child(7){top:50%;left:6%;animation-delay:.3s}
+.sparkles span:nth-child(8){top:20%;left:15%;animation-delay:.8s}
+.logo-wrap{position:relative;width:180px;height:180px;display:flex;align-items:center;justify-content:center;z-index:2}
+#intro img{width:180px;filter:drop-shadow(0 0 25px rgba(232,184,75,.45));animation:pop .6s cubic-bezier(.22,1,.36,1) forwards,glowPulse 2.2s ease-in-out .6s infinite;opacity:0;transform:scale(.6);position:relative;z-index:2}
+.shine{position:absolute;inset:-6px;overflow:hidden;border-radius:50%;pointer-events:none;z-index:3}
+.shine::before{content:'';position:absolute;top:-60%;left:-160%;width:55%;height:220%;background:linear-gradient(75deg,transparent,rgba(255,255,255,.65),transparent);transform:rotate(18deg);animation:shine 1s ease-in-out .4s 1}
+#intro .brand{position:absolute;bottom:20%;left:0;right:0;text-align:center;letter-spacing:8px;font-size:15px;font-weight:600;background:linear-gradient(90deg,var(--gold) 0%,var(--gold2) 45%,#fff 50%,var(--gold2) 55%,var(--gold) 100%);background-size:220% auto;-webkit-background-clip:text;background-clip:text;color:transparent;opacity:0;animation:fadeUp .4s ease forwards,shimmer 2.4s linear infinite;animation-delay:.3s,.3s}
+@keyframes pop{0%{opacity:0;transform:scale(.5) rotate(-8deg)}60%{opacity:1;transform:scale(1.1) rotate(2deg)}100%{opacity:1;transform:scale(1) rotate(0)}}
+@keyframes glowPulse{0%,100%{filter:drop-shadow(0 0 18px rgba(232,184,75,.35))}50%{filter:drop-shadow(0 0 42px rgba(232,184,75,.7))}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes shimmer{to{background-position:-220% center}}
+@keyframes introOut{to{opacity:0;visibility:hidden;pointer-events:none}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes ringFade{to{opacity:1}}
+@keyframes ping{0%{transform:scale(.4);opacity:.9}100%{transform:scale(4.4);opacity:0}}
+@keyframes sparkle{0%,100%{opacity:0;transform:scale(.4)}50%{opacity:1;transform:scale(1.3)}}
+@keyframes shine{0%{left:-160%}100%{left:160%}}
 
 /* LAYOUT */
-
-.container{
-  max-width:480px;
-  margin:0 auto;
-  padding:24px 18px 20px;
-  flex:1;
-  width:100%;
-}
-
-.hide{
-  display:none !important;
-}
-
-.top-logo{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:10px;
-  margin-bottom:22px;
-}
-
-.top-logo img{
-  width:44px;
-}
-
-.top-logo span{
-  font-weight:700;
-  letter-spacing:3px;
-  font-size:20px;
-  color:var(--gold2);
-}
-
-.card{
-  background:var(--panel);
-  border:1px solid rgba(232,184,75,.2);
-  border-radius:16px;
-  padding:24px 20px;
-  margin-bottom:16px;
-}
-
-h2{
-  color:var(--gold2);
-  margin-bottom:16px;
-  font-size:19px;
-  text-align:center;
-}
-
-label{
-  display:block;
-  font-size:13px;
-  color:var(--muted);
-  margin:12px 0 6px;
-}
-
-input,
-select{
-  width:100%;
-  padding:12px;
-  border-radius:10px;
-  border:1px solid rgba(255,255,255,.12);
-  background:#0f1013;
-  color:var(--text);
-  font-size:15px;
-}
-
-input:focus,
-select:focus{
-  outline:none;
-  border-color:var(--gold);
-}
-
-button{
-  cursor:pointer;
-  border:none;
-}
-
-.btn{
-  width:100%;
-  padding:13px;
-  border-radius:10px;
-  background:linear-gradient(
-    135deg,
-    var(--gold2),
-    var(--gold)
-  );
-  color:#111;
-  font-weight:700;
-  font-size:15px;
-  margin-top:18px;
-  letter-spacing:.5px;
-}
-
-.btn:active{
-  transform:scale(.98);
-}
-
-.btn-outline{
-  background:transparent;
-  border:1px solid var(--gold);
-  color:var(--gold2);
-}
-
-.link-btn{
-  background:none;
-  border:none;
-  color:var(--gold2);
-  font-size:13px;
-  text-decoration:underline;
-  margin-top:14px;
-  display:block;
-  text-align:center;
-  width:100%;
-}
-
-.tabs{
-  display:flex;
-  gap:8px;
-  margin-bottom:18px;
-}
-
-.tab{
-  flex:1;
-  text-align:center;
-  padding:10px;
-  border-radius:10px;
-  background:#0f1013;
-  color:var(--muted);
-  font-size:14px;
-}
-
-.tab.active{
-  background:var(--gold);
-  color:#111;
-  font-weight:700;
-}
-
-.error{
-  color:#ff6b6b;
-  font-size:13px;
-  margin-top:10px;
-  text-align:center;
-}
-
-.msg{
-  color:#8bd17c;
-  font-size:13px;
-  margin-top:10px;
-  text-align:center;
-}
+.container{max-width:480px;margin:0 auto;padding:24px 18px 20px;flex:1;width:100%}
+.hide{display:none!important}
+.top-logo{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:22px}
+.top-logo img{width:44px}
+.top-logo span{font-weight:700;letter-spacing:3px;font-size:20px;color:var(--gold2)}
+.card{background:var(--panel);border:1px solid rgba(232,184,75,.2);border-radius:16px;padding:24px 20px;margin-bottom:16px}
+h2{color:var(--gold2);margin-bottom:16px;font-size:19px;text-align:center}
+label{display:block;font-size:13px;color:var(--muted);margin:12px 0 6px}
+input,select{width:100%;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:#0f1013;color:var(--text);font-size:15px}
+input:focus,select:focus{outline:none;border-color:var(--gold)}
+button{cursor:pointer;border:none}
+.btn{width:100%;padding:13px;border-radius:10px;background:linear-gradient(135deg,var(--gold2),var(--gold));color:#111;font-weight:700;font-size:15px;margin-top:18px;letter-spacing:.5px}
+.btn:active{transform:scale(.98)}
+.btn-outline{background:transparent;border:1px solid var(--gold);color:var(--gold2)}
+.error{color:#ff6b6b;font-size:13px;margin-top:10px;text-align:center}
+.msg{color:#8bd17c;font-size:13px;margin-top:10px;text-align:center}
 
 /* DASHBOARD */
+.quality-ring-wrap{position:relative;width:140px;height:140px;margin:6px auto 20px}
+.quality-ring{width:100%;height:100%;transform:rotate(-90deg);display:block}
+.ring-bg{fill:none;stroke:rgba(255,255,255,.08);stroke-width:10}
+.ring-fg{fill:none;stroke:var(--gold);stroke-width:10;stroke-linecap:round;stroke-dasharray:326.73;stroke-dashoffset:326.73;transition:stroke-dashoffset .9s ease,stroke .4s ease}
+.quality-ring-text{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.quality-percent{font-size:30px;font-weight:800;color:var(--text);line-height:1}
+.quality-label{font-size:12px;color:var(--muted);margin-top:4px;letter-spacing:.3px;max-width:125px}
+.quality-desc{text-align:center;font-size:13px;color:var(--muted);line-height:1.45;max-width:280px;margin:0 auto 18px}
+.stat-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.06);font-size:14px}
+.stat-row b{color:var(--gold2)}
+.rank-item{display:flex;justify-content:space-between;padding:8px 6px;font-size:13px;border-bottom:1px solid rgba(255,255,255,.05)}
+.rank-item.me{background:rgba(232,184,75,.1);border-radius:8px}
+.test-btn{display:flex;justify-content:space-between;align-items:center;padding:16px;background:#0f1013;border-radius:12px;margin-bottom:10px;cursor:pointer;transition:background .15s,transform .1s}
+.test-btn:active{background:#181a1f;transform:scale(.98)}
+.test-btn .name{font-weight:600;color:var(--gold2)}
+.test-btn .sub{font-size:12px;color:var(--muted)}
+.badge{background:var(--gold);color:#111;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700}
 
-.quality-ring-wrap{
-  position:relative;
-  width:140px;
-  height:140px;
-  margin:6px auto 20px;
-}
-
-.quality-ring{
-  width:100%;
-  height:100%;
-  transform:rotate(-90deg);
-  display:block;
-}
-
-.ring-bg{
-  fill:none;
-  stroke:rgba(255,255,255,.08);
-  stroke-width:10;
-}
-
-.ring-fg{
-  fill:none;
-  stroke:var(--gold);
-  stroke-width:10;
-  stroke-linecap:round;
-  stroke-dasharray:326.7256;
-  stroke-dashoffset:326.7256;
-  transition:
-    stroke-dashoffset .9s ease,
-    stroke .4s ease;
-}
-
-.quality-ring-text{
-  position:absolute;
-  inset:0;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-}
-
-.quality-percent{
-  font-size:30px;
-  font-weight:800;
-  color:var(--text);
-  line-height:1;
-}
-
-.quality-label{
-  font-size:12px;
-  color:var(--muted);
-  margin-top:4px;
-  letter-spacing:.3px;
-  max-width:125px;
-}
-
-.quality-desc{
-  text-align:center;
-  font-size:13px;
-  color:var(--muted);
-  line-height:1.45;
-  max-width:280px;
-  margin:0 auto 18px;
-  transition:color .4s ease;
-}
-
-.stat-row{
-  display:flex;
-  justify-content:space-between;
-  padding:10px 0;
-  border-bottom:1px solid rgba(255,255,255,.06);
-  font-size:14px;
-}
-
-.stat-row b{
-  color:var(--gold2);
-}
-
-.rank-item{
-  display:flex;
-  justify-content:space-between;
-  padding:8px 6px;
-  font-size:13px;
-  border-bottom:1px solid rgba(255,255,255,.05);
-}
-
-.rank-item.me{
-  background:rgba(232,184,75,.1);
-  border-radius:8px;
-}
-
-.test-btn{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:16px;
-  background:#0f1013;
-  border-radius:12px;
-  margin-bottom:10px;
-  cursor:pointer;
-  transition:
-    background .15s,
-    transform .1s;
-}
-
-.test-btn:active{
-  background:#181a1f;
-  transform:scale(.98);
-}
-
-.test-btn .name{
-  font-weight:600;
-  color:var(--gold2);
-}
-
-.test-btn .sub{
-  font-size:12px;
-  color:var(--muted);
-}
-
-.badge{
-  background:var(--gold);
-  color:#111;
-  padding:4px 10px;
-  border-radius:20px;
-  font-size:12px;
-  font-weight:700;
-}
-
-/* TEST TAKING */
-
-#timer{
-  position:sticky;
-  top:0;
-  background:var(--gold);
-  color:#111;
-  text-align:center;
-  padding:10px;
-  font-weight:700;
-  border-radius:10px;
-  margin-bottom:14px;
-  z-index:5;
-}
-
-.qnum{
-  font-size:12px;
-  color:var(--muted);
-  margin-bottom:6px;
-}
-
-.qtext{
-  font-size:16px;
-  margin-bottom:16px;
-  line-height:1.5;
-}
-
-.opt{
-  display:block;
-  width:100%;
-  text-align:left;
-  padding:12px;
-  margin-bottom:8px;
-  border-radius:10px;
-  background:#0f1013;
-  border:1px solid rgba(255,255,255,.1);
-  color:var(--text);
-  font-size:14px;
-}
-
-.opt.selected{
-  border-color:var(--gold);
-  background:rgba(232,184,75,.15);
-}
-
-.nav-row{
-  display:flex;
-  gap:10px;
-  margin-top:18px;
-}
-
-.nav-row button{
-  flex:1;
-  padding:12px;
-  border-radius:10px;
-}
+/* TEST */
+#timer{position:sticky;top:0;background:var(--gold);color:#111;text-align:center;padding:10px;font-weight:700;border-radius:10px;margin-bottom:14px;z-index:5}
+.qnum{font-size:12px;color:var(--muted);margin-bottom:6px}
+.qtext{font-size:16px;margin-bottom:16px;line-height:1.5}
+.opt{display:block;width:100%;text-align:left;padding:12px;margin-bottom:8px;border-radius:10px;background:#0f1013;border:1px solid rgba(255,255,255,.1);color:var(--text);font-size:14px}
+.opt.selected{border-color:var(--gold);background:rgba(232,184,75,.15)}
+.nav-row{display:flex;gap:10px;margin-top:18px}
+.nav-row button{flex:1;padding:12px;border-radius:10px}
 
 /* CERTIFICATE */
-
-.cert-fail{
-  background:#fff;
-  color:#111;
-  border-radius:14px;
-  padding:30px 20px;
-  text-align:center;
-}
-
-.cert-fail h2{
-  color:#c0392b;
-}
-
-.cert-pass{
-  position:relative;
-  background:
-    radial-gradient(
-      circle at 50% 0%,
-      #fffdf5,
-      #f6ecd2 70%
-    );
-  color:#3a2c0a;
-  border-radius:6px;
-  padding:26px 22px 22px;
-  text-align:center;
-  border:3px solid #c99c2e;
-  box-shadow:
-    inset 0 0 0 6px #fdf6e3,
-    inset 0 0 0 8px #c99c2e;
-  overflow:hidden;
-  font-family:'Georgia','Times New Roman',serif;
-}
-
-.cert-pass::before,
-.cert-pass::after{
-  content:'';
-  position:absolute;
-  width:70px;
-  height:70px;
-  background:
-    repeating-linear-gradient(
-      45deg,
-      #c99c2e 0 3px,
-      transparent 3px 9px
-    ),
-    repeating-linear-gradient(
-      -45deg,
-      #c99c2e 0 3px,
-      transparent 3px 9px
-    );
-  opacity:.5;
-}
-
-.cert-pass::before{
-  top:-6px;
-  left:-6px;
-  clip-path:polygon(
-    0 0,
-    100% 0,
-    0 100%
-  );
-}
-
-.cert-pass::after{
-  bottom:-6px;
-  right:-6px;
-  clip-path:polygon(
-    100% 100%,
-    100% 0,
-    0 100%
-  );
-}
-
-.cert-pass img{
-  width:64px;
-  margin-bottom:6px;
-  filter:drop-shadow(
-    0 2px 3px rgba(0,0,0,.3)
-  );
-}
-
-.cert-pass h3{
-  font-size:15px;
-  letter-spacing:.5px;
-  line-height:1.4;
-  font-weight:700;
-  color:#2a2005;
-  margin-bottom:4px;
-}
-
-.cert-divider{
-  border:none;
-  border-top:1px solid #c99c2e;
-  margin:10px auto;
-  width:80%;
-  opacity:.6;
-}
-
-.cert-row{
-  display:flex;
-  justify-content:space-between;
-  font-size:13px;
-  padding:5px 6px;
-  text-align:left;
-}
-
-.cert-row span:first-child{
-  color:#6b5a2e;
-}
-
-.cert-row b{
-  color:#2a2005;
-}
-
-.cert-fish{
-  font-size:13px;
-  text-align:left;
-  padding:4px 6px 8px;
-  border-bottom:1px solid #c99c2e;
-  margin-bottom:6px;
-}
-
-.grade-big{
-  font-size:46px;
-  font-weight:800;
-  margin:8px 0 4px;
-  color:#8a5a00;
-  text-shadow:0 1px 0 #fff8e0;
-}
-
-.cert-contact{
-  font-size:11px;
-  color:#6b5a2e;
-  margin-top:12px;
-}
+.cert-fail{background:#fff;color:#111;border-radius:14px;padding:30px 20px;text-align:center}
+.cert-fail h2{color:#c0392b}
+.cert-pass{position:relative;background:radial-gradient(circle at 50% 0%,#fffdf5,#f6ecd2 70%);color:#3a2c0a;border-radius:6px;padding:26px 22px 22px;text-align:center;border:3px solid #c99c2e;box-shadow:inset 0 0 0 6px #fdf6e3,inset 0 0 0 8px #c99c2e;overflow:hidden;font-family:Georgia,'Times New Roman',serif}
+.cert-pass::before,.cert-pass::after{content:'';position:absolute;width:70px;height:70px;background:repeating-linear-gradient(45deg,#c99c2e 0 3px,transparent 3px 9px),repeating-linear-gradient(-45deg,#c99c2e 0 3px,transparent 3px 9px);opacity:.5}
+.cert-pass::before{top:-6px;left:-6px;clip-path:polygon(0 0,100% 0,0 100%)}
+.cert-pass::after{bottom:-6px;right:-6px;clip-path:polygon(100% 100%,100% 0,0 100%)}
+.cert-pass img{width:64px;margin-bottom:6px;filter:drop-shadow(0 2px 3px rgba(0,0,0,.3))}
+.cert-pass h3{font-size:15px;letter-spacing:.5px;line-height:1.4;font-weight:700;color:#2a2005;margin-bottom:4px}
+.cert-divider{border:none;border-top:1px solid #c99c2e;margin:10px auto;width:80%;opacity:.6}
+.cert-row{display:flex;justify-content:space-between;font-size:13px;padding:5px 6px;text-align:left}
+.cert-row span:first-child{color:#6b5a2e}
+.cert-row b{color:#2a2005}
+.cert-fish{font-size:13px;text-align:left;padding:4px 6px 8px;border-bottom:1px solid #c99c2e;margin-bottom:6px}
+.grade-big{font-size:46px;font-weight:800;margin:8px 0 4px;color:#8a5a00;text-shadow:0 1px 0 #fff8e0}
+.cert-contact{font-size:11px;color:#6b5a2e;margin-top:12px}
 
 /* FOOTER */
-
-.site-footer{
-  text-align:center;
-  padding:16px 18px 22px;
-  font-size:12px;
-  color:var(--muted);
-  position:relative;
-  z-index:1;
-}
-
-.site-footer b{
-  color:var(--gold2);
-}
+.site-footer{text-align:center;padding:16px 18px 22px;font-size:12px;color:var(--muted);position:relative;z-index:1}
+.site-footer b{color:var(--gold2)}
 </style>
 </head>
-
 <body>
-
 <div class="overlay-bg">
 
 <!-- INTRO -->
-
 <div id="intro">
-
-  <div class="intro-rings">
-    <div class="ring ring1"></div>
-    <div class="ring ring2"></div>
-    <div class="ring ring3"></div>
-    <div class="ping"></div>
-  </div>
-
-  <div class="sparkles">
-    <span></span>
-    <span></span>
-    <span></span>
-    <span></span>
-    <span></span>
-    <span></span>
-    <span></span>
-    <span></span>
-  </div>
-
-  <div class="logo-wrap">
-    <img src="assets/logo.png" alt="logo">
-    <div class="shine"></div>
-  </div>
-
-  <div class="brand">
-    A B I T U R &nbsp; D T M
-  </div>
-
+  <div class="intro-rings"><div class="ring ring1"></div><div class="ring ring2"></div><div class="ring ring3"></div><div class="ping"></div></div>
+  <div class="sparkles"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+  <div class="logo-wrap"><img src="assets/logo.png" alt="logo"><div class="shine"></div></div>
+  <div class="brand">A B I T U R &nbsp; D T M</div>
 </div>
-
 
 <div class="container">
 
-  <!-- TOP LOGO -->
-
-  <div class="top-logo">
-    <img src="assets/logo.png" alt="logo">
-    <span>ABITUR DTM</span>
-  </div>
-
+  <div class="top-logo"><img src="assets/logo.png" alt="logo"><span>ABITUR DTM</span></div>
 
   <!-- AUTH -->
-
   <div id="authScreen">
-
     <div class="card" id="googleAuthCard">
-
       <h2>Kirish / Ro'yxatdan o'tish</h2>
-
-      <p style="
-        font-size:13px;
-        color:var(--muted);
-        text-align:center;
-        margin-bottom:16px;
-      ">
-        Google hisobingiz orqali bir bosishda kiring.
-      </p>
-
-      <div
-        id="gSignInBtn"
-        style="display:flex;justify-content:center;"
-      ></div>
-
-      <div
-        class="error hide"
-        id="googleErr"
-        style="margin-top:12px;"
-      ></div>
-
+      <p style="font-size:13px;color:var(--muted);text-align:center;margin-bottom:16px">Google hisobingiz orqali bir bosishda kiring.</p>
+      <div id="gSignInBtn" style="display:flex;justify-content:center"></div>
+      <div class="error hide" id="googleErr" style="margin-top:12px"></div>
     </div>
-
-
-    <!-- NEW USER -->
 
     <div class="card hide" id="newUserCard">
-
       <h2>Deyarli tayyor!</h2>
-
-      <p style="
-        font-size:13px;
-        color:var(--muted);
-        margin-bottom:6px;
-      ">
-        Google hisobingizdan olingan ma'lumot:
-      </p>
-
-      <label>Ism</label>
-      <input id="gIsm">
-
-      <label>Familiya</label>
-      <input id="gFamiliya">
-
-      <label>Taklif kodi (ixtiyoriy)</label>
-      <input
-        id="gReferral"
-        placeholder="Do'stingiz ID raqami"
-      >
-
-      <button
-        class="btn"
-        id="gCompleteBtn"
-        onclick="completeGoogleRegister()"
-      >
-        Ro'yxatdan o'tishni yakunlash
-      </button>
-
-      <div
-        class="error hide"
-        id="gCompleteErr"
-      ></div>
-
+      <p style="font-size:13px;color:var(--muted);margin-bottom:6px">Google hisobingizdan olingan ma'lumot:</p>
+      <label>Ism</label><input id="gIsm">
+      <label>Familiya</label><input id="gFamiliya">
+      <label>Taklif kodi (ixtiyoriy)</label><input id="gReferral" placeholder="Do'stingiz ID raqami">
+      <button class="btn" id="gCompleteBtn" onclick="completeGoogleRegister()">Ro'yxatdan o'tishni yakunlash</button>
+      <div class="error hide" id="gCompleteErr"></div>
     </div>
-
   </div>
-
 
   <!-- REGISTER SUCCESS -->
-
-  <div
-    id="regSuccess"
-    class="card hide"
-    style="text-align:center;"
-  >
-
+  <div id="regSuccess" class="card hide" style="text-align:center">
     <h2>Tabriklaymiz!</h2>
-
-    <p style="
-      color:var(--muted);
-      margin-bottom:10px;
-    ">
-      Sizning shaxsiy ID raqamingiz:
-    </p>
-
-    <div
-      id="registeredId"
-      style="
-        font-size:34px;
-        font-weight:800;
-        color:var(--gold2);
-        letter-spacing:3px;
-      "
-    >
-      —
-    </div>
-
-    <p style="
-      color:var(--muted);
-      margin-top:10px;
-      font-size:13px;
-    ">
-      Bu ID'ni saqlab qo'ying!
-    </p>
-
-    <p
-      class="msg hide"
-      id="regBonusMsg"
-      style="margin-top:8px;"
-    ></p>
-
-    <button
-      class="btn"
-      onclick="goDashboardAfterReg()"
-    >
-      Kabinetga o'tish
-    </button>
-
+    <p style="color:var(--muted);margin-bottom:10px">Sizning shaxsiy ID raqamingiz:</p>
+    <div id="registeredId" style="font-size:34px;font-weight:800;color:var(--gold2);letter-spacing:3px">—</div>
+    <p style="color:var(--muted);margin-top:10px;font-size:13px">Bu ID'ni saqlab qo'ying!</p>
+    <p class="msg hide" id="regBonusMsg" style="margin-top:8px"></p>
+    <button class="btn" onclick="loadDashboard()">Kabinetga o'tish</button>
   </div>
 
-
   <!-- DASHBOARD -->
-
   <div id="dashboard" class="hide">
 
     <div class="card">
-
       <h2 id="dashName">—</h2>
-
-
-      <!-- QUALITY -->
-
       <div class="quality-ring-wrap">
-
-        <svg
-          class="quality-ring"
-          viewBox="0 0 120 120"
-        >
-
-          <circle
-            class="ring-bg"
-            cx="60"
-            cy="60"
-            r="52"
-          ></circle>
-
-          <circle
-            class="ring-fg"
-            id="qualityRingFg"
-            cx="60"
-            cy="60"
-            r="52"
-          ></circle>
-
+        <svg class="quality-ring" viewBox="0 0 120 120">
+          <circle class="ring-bg" cx="60" cy="60" r="52"></circle>
+          <circle class="ring-fg" id="qualityRingFg" cx="60" cy="60" r="52"></circle>
         </svg>
-
-
         <div class="quality-ring-text">
-
-          <div
-            class="quality-percent"
-            id="qualityPercentText"
-          >
-            —
-          </div>
-
-          <div
-            class="quality-label"
-            id="qualityLabelText"
-          >
-            Bilim sifati
-          </div>
-
+          <div class="quality-percent" id="qualityPercentText">—</div>
+          <div class="quality-label" id="qualityLabelText">Bilim sifati</div>
         </div>
-
       </div>
+      <p class="quality-desc" id="qualityDescText">Bilim sifatingizni ko'rish uchun kamida bitta test yeching.</p>
 
+      <div class="stat-row"><span>ID</span><b id="dId">-</b></div>
+      <div class="stat-row"><span>Reyting o'rni</span><b id="dRank">-</b></div>
+      <div class="stat-row"><span>Yechilgan testlar soni</span><b id="dCount">-</b></div>
+      <div class="stat-row"><span>Umumiy ball</span><b id="dScore">-</b></div>
+      <div class="stat-row"><span>Balans</span><b id="dBalans">-</b></div>
 
-      <p
-        class="quality-desc"
-        id="qualityDescText"
-      >
-        Bilim sifatingizni ko'rish uchun
-        kamida bitta test yeching.
-      </p>
-
-
-      <!-- STATS -->
-
-      <div class="stat-row">
-        <span>ID</span>
-        <b id="dId">-</b>
-      </div>
-
-      <div class="stat-row">
-        <span>Reyting o'rni</span>
-        <b id="dRank">-</b>
-      </div>
-
-      <div class="stat-row">
-        <span>Yechilgan testlar soni</span>
-        <b id="dCount">-</b>
-      </div>
-
-      <div class="stat-row">
-        <span>Umumiy ball</span>
-        <b id="dScore">-</b>
-      </div>
-
-      <div class="stat-row">
-        <span>Balans</span>
-        <b id="dBalans">-</b>
-      </div>
-
-
-      <button
-        class="btn btn-outline"
-        onclick="showPayment()"
-      >
-        💳 Balansni to'ldirish
-      </button>
-
-      <button
-        class="btn btn-outline"
-        onclick="logout()"
-      >
-        Chiqish
-      </button>
-
+      <button class="btn btn-outline" onclick="showPayment()">💳 Balansni to'ldirish</button>
+      <button class="btn btn-outline" onclick="logout()">Chiqish</button>
     </div>
 
-
-    <!-- REFERRAL -->
-
     <div class="card">
-
       <h2>🎁 Do'stlarni taklif qiling</h2>
-
-      <h2 style="font-size:15px;">
-        Do'stingiz ro'yxatdan o'tishda
-        sizning ID raqamingizni
-        "Taklif kodi" maydoniga kiritsa,
-        hisobinggizga 2000 so'm tushadi!
-      </h2>
-
+      <h2 style="font-size:15px">Do'stingiz ro'yxatdan o'tishda sizning ID raqamingizni "Taklif kodi" maydoniga kiritsa, hisobingizga 2000 so'm tushadi!</h2>
     </div>
 
-
-    <!-- TESTS -->
-
     <div class="card">
-
       <h2>Testlar</h2>
-
-      <div
-        class="test-btn"
-        onclick="openTestType('sinov')"
-      >
-
-        <div>
-          <div class="name">Sinov test</div>
-          <div class="sub">
-            30 ta savol · jami 30 ball
-          </div>
-        </div>
-
-        <div
-          class="badge"
-          id="priceSinov"
-        >
-          ...
-        </div>
-
+      <div class="test-btn" onclick="openTestType('sinov')">
+        <div><div class="name">Sinov test</div><div class="sub">30 ta savol · jami 30 ball</div></div>
+        <div class="badge" id="priceSinov">...</div>
       </div>
-
-
-      <div
-        class="test-btn"
-        onclick="openTestType('blok')"
-      >
-
-        <div>
-          <div class="name">Blok test</div>
-          <div class="sub">
-            90 ta savol · jami 189 ball
-          </div>
-        </div>
-
-        <div
-          class="badge"
-          id="priceBlok"
-        >
-          ...
-        </div>
-
+      <div class="test-btn" onclick="openTestType('blok')">
+        <div><div class="name">Blok test</div><div class="sub">90 ta savol · jami 189 ball</div></div>
+        <div class="badge" id="priceBlok">...</div>
       </div>
-
-
-      <div
-        class="test-btn"
-        onclick="openTestType('sertifikat')"
-      >
-
-        <div>
-          <div class="name">Sertifikat test</div>
-          <div class="sub">
-            45 ta savol · jami 100 ball
-          </div>
-        </div>
-
-        <div
-          class="badge"
-          id="priceSert"
-        >
-          ...
-        </div>
-
+      <div class="test-btn" onclick="openTestType('sertifikat')">
+        <div><div class="name">Sertifikat test</div><div class="sub">45 ta savol · jami 100 ball</div></div>
+        <div class="badge" id="priceSert">...</div>
       </div>
-
     </div>
 
-
-    <!-- RANKING -->
-
     <div class="card">
-
       <h2>🏆 Reyting (TOP 20)</h2>
-
-      <h2 style="font-size:15px;">
-        📅 Har oy boshida reyting 0 dan boshlanadi.
-      </h2>
-
+      <h2 style="font-size:15px">📅 Har oy boshida reyting 0 dan boshlanadi.</h2>
       <div id="rankingList"></div>
-
-    </div>
-  
-  <footer style="max-width:420px;margin:32px auto 16px;padding:16px 20px;background:transparent;border:1px solid rgba(255,255,255,.35);border-radius:14px;font-family:system-ui,sans-serif;text-align:center;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.7);">
-    <div style="font-size:12px;letter-spacing:1px;text-transform:uppercase;opacity:.85;">Sayt yaratuvchisi</div>
-    <strong style="display:block;margin-top:4px;font-size:18px;">Xumoyun Qo'ychiyev</strong>
-
-    <div style="margin-top:10px;display:flex;justify-content:center;gap:18px;flex-wrap:wrap;">
-      <a href="https://t.me/Xumoyun_1509" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;color:#fff;text-decoration:none;">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
-      Telegram
-      </a>
-      <a href="https://instagram.com/uzbek_.___" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;color:#fff;text-decoration:none;">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.16c3.2 0 3.58.01 4.85.07 3.25.15 4.77 1.69 4.92 4.92.06 1.27.07 1.65.07 4.85s-.01 3.58-.07 4.85c-.15 3.23-1.66 4.77-4.92 4.92-1.27.06-1.64.07-4.85.07s-3.58-.01-4.85-.07c-3.26-.15-4.77-1.7-4.92-4.92C2.17 15.58 2.16 15.2 2.16 12s.01-3.58.07-4.85C2.38 3.92 3.9 2.38 7.15 2.23 8.42 2.17 8.8 2.16 12 2.16zM12 0C8.74 0 8.33.01 7.05.07 2.7.27.27 2.69.07 7.05.01 8.33 0 8.74 0 12s.01 3.67.07 4.95c.2 4.36 2.62 6.78 6.98 6.98C8.33 23.99 8.74 24 12 24s3.67-.01 4.95-.07c4.35-.2 6.78-2.62 6.98-6.98.06-1.28.07-1.69.07-4.95s-.01-3.67-.07-4.95c-.2-4.35-2.62-6.78-6.98-6.98C15.67.01 15.26 0 12 0zm0 5.84a6.16 6.16 0 1 0 0 12.32 6.16 6.16 0 0 0 0-12.32zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.4-11.85a1.44 1.44 0 1 0 0 2.88 1.44 1.44 0 0 0 0-2.88z"/></svg>
-      Instagram
-      </a>
     </div>
 
-    <div style="margin-top:10px;">
-      <a href="tel:+998773081500" style="color:#fff;text-decoration:none;font-size:15px;font-weight:600;">📞 +998 (77)308 15-00</a>
-    </div>
-  </footer>
+    <!-- YARATUVCHI CARD (faqat kabinetda) -->
+    <footer style="max-width:420px;margin:32px auto 16px;padding:16px 20px;background:transparent;border:1px solid rgba(255,255,255,.35);border-radius:14px;font-family:system-ui,sans-serif;text-align:center;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.7)">
+      <div style="font-size:12px;letter-spacing:1px;text-transform:uppercase;opacity:.85">Sayt yaratuvchisi</div>
+      <strong style="display:block;margin-top:4px;font-size:18px">Xumoyun Qo'ychiyev</strong>
+      <div style="margin-top:10px;display:flex;justify-content:center;gap:18px;flex-wrap:wrap">
+        <a href="https://t.me/Xumoyun_1509" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;color:#fff;text-decoration:none">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+          Telegram
+        </a>
+        <a href="https://instagram.com/uzbek_.___" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;color:#fff;text-decoration:none">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.16c3.2 0 3.58.01 4.85.07 3.25.15 4.77 1.69 4.92 4.92.06 1.27.07 1.65.07 4.85s-.01 3.58-.07 4.85c-.15 3.23-1.66 4.77-4.92 4.92-1.27.06-1.64.07-4.85.07s-3.58-.01-4.85-.07c-3.26-.15-4.77-1.7-4.92-4.92C2.17 15.58 2.16 15.2 2.16 12s.01-3.58.07-4.85C2.38 3.92 3.9 2.38 7.15 2.23 8.42 2.17 8.8 2.16 12 2.16zM12 0C8.74 0 8.33.01 7.05.07 2.7.27.27 2.69.07 7.05.01 8.33 0 8.74 0 12s.01 3.67.07 4.95c.2 4.36 2.62 6.78 6.98 6.98C8.33 23.99 8.74 24 12 24s3.67-.01 4.95-.07c4.35-.2 6.78-2.62 6.98-6.98.06-1.28.07-1.69.07-4.95s-.01-3.67-.07-4.95c-.2-4.35-2.62-6.78-6.98-6.98C15.67.01 15.26 0 12 0zm0 5.84a6.16 6.16 0 1 0 0 12.32 6.16 6.16 0 0 0 0-12.32zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.4-11.85a1.44 1.44 0 1 0 0 2.88 1.44 1.44 0 0 0 0-2.88z"/></svg>
+          Instagram
+        </a>
+      </div>
+      <div style="margin-top:10px">
+        <a href="tel:+998773081500" style="color:#fff;text-decoration:none;font-size:15px;font-weight:600">📞 +998 (77) 308 15-00</a>
+      </div>
+    </footer>
 
   </div>
-  
-  
+
   <!-- TEST SET SELECT -->
-
-  <div
-    id="testSetScreen"
-    class="hide"
-  >
-
+  <div id="testSetScreen" class="hide">
     <div class="card">
-
-      <h2 id="testSetTitle">
-        Testni tanlang
-      </h2>
-
+      <h2 id="testSetTitle">Testni tanlang</h2>
       <div id="testSetList"></div>
-
-      <button
-        class="btn btn-outline"
-        onclick="backToDashboard()"
-      >
-        Orqaga
-      </button>
-
+      <button class="btn btn-outline" onclick="backToDashboard()">Orqaga</button>
     </div>
-
   </div>
-
 
   <!-- PAYMENT -->
-
-  <div
-    id="paymentScreen"
-    class="hide"
-  >
-
+  <div id="paymentScreen" class="hide">
     <div class="card">
-
       <h2>Balansni to'ldirish</h2>
-
-      <p style="
-        font-size:14px;
-        color:var(--muted);
-      ">
-        Quyidagi kartaga to'lov qiling:
-      </p>
-
-      <div style="
-        background:#0f1013;
-        padding:14px;
-        border-radius:10px;
-        margin:12px 0;
-        text-align:center;
-      ">
-
-        <div
-          style="
-            font-size:20px;
-            letter-spacing:2px;
-            font-weight:700;
-            color:var(--gold2)
-          "
-          id="cardNum"
-        >
-          -
-        </div>
-
-        <div
-          style="
-            font-size:13px;
-            color:var(--muted);
-            margin-top:4px;
-          "
-          id="cardOwner"
-        >
-          -
-        </div>
-
+      <p style="font-size:14px;color:var(--muted)">Quyidagi kartaga to'lov qiling:</p>
+      <div style="background:#0f1013;padding:14px;border-radius:10px;margin:12px 0;text-align:center">
+        <div style="font-size:20px;letter-spacing:2px;font-weight:700;color:var(--gold2)" id="cardNum">-</div>
+        <div style="font-size:13px;color:var(--muted);margin-top:4px" id="cardOwner">-</div>
       </div>
-
       <label>To'lov summasi</label>
-
-      <input
-        id="paySumma"
-        type="number"
-        placeholder="Masalan: 50000"
-      >
-
-      <label>
-        Pul tashlangan vaqt (format 09 34)
-      </label>
-
-      <input
-        id="payIzoh"
-        placeholder="Masalan: 12 37"
-      >
-
-      <button
-        class="btn"
-        onclick="submitPayment()"
-      >
-        Yuborish
-      </button>
-
-      <p style="
-        font-size:12px;
-        color:var(--muted);
-        margin-top:10px;
-      ">
-        To'lovingiz "Kutilmoqda" holatida saqlanadi.
-        Admin tasdiqlagach balansingizga qo'shiladi.
-        ADMIN : <b>+998773081500</b>
-      </p>
-
-      <div
-        class="msg hide"
-        id="payMsg"
-      ></div>
-
-      <button
-        class="btn btn-outline"
-        onclick="backToDashboard()"
-      >
-        Orqaga
-      </button>
-
+      <input id="paySumma" type="number" placeholder="Masalan: 50000">
+      <label>Pul tashlangan vaqt (format 09 34)</label>
+      <input id="payIzoh" placeholder="Masalan: 12 37">
+      <button class="btn" onclick="submitPayment()">Yuborish</button>
+      <p style="font-size:12px;color:var(--muted);margin-top:10px">To'lovingiz "Kutilmoqda" holatida saqlanadi. Admin tasdiqlagach balansingizga qo'shiladi. ADMIN : <b>+998773081500</b></p>
+      <div class="msg hide" id="payMsg"></div>
+      <button class="btn btn-outline" onclick="backToDashboard()">Orqaga</button>
     </div>
-
   </div>
-
 
   <!-- TEST TAKING -->
-
-  <div
-    id="testScreen"
-    class="hide"
-  >
-
-    <div id="timer">
-      00:00:00
-    </div>
-
+  <div id="testScreen" class="hide">
+    <div id="timer">00:00:00</div>
     <div class="card">
-
-      <div
-        class="qnum"
-        id="qNum"
-      >
-        Savol 1 / 30
-      </div>
-
-      <div
-        class="qtext"
-        id="qText"
-      >
-        -
-      </div>
-
+      <div class="qnum" id="qNum">Savol 1 / 30</div>
+      <div class="qtext" id="qText">-</div>
       <div id="qOpts"></div>
-
-      <input
-        id="qTextAnswer"
-        class="hide"
-        placeholder="Javobingizni yozing"
-      >
-
+      <input id="qTextAnswer" class="hide" placeholder="Javobingizni yozing">
       <div class="nav-row">
-
-        <button
-          class="btn btn-outline"
-          onclick="prevQ()"
-        >
-          Oldingi
-        </button>
-
-        <button
-          class="btn"
-          onclick="nextQ()"
-          id="nextBtn"
-        >
-          Keyingi
-        </button>
-
+        <button class="btn btn-outline" onclick="prevQ()">Oldingi</button>
+        <button class="btn" onclick="nextQ()" id="nextBtn">Keyingi</button>
       </div>
-
     </div>
-
   </div>
-
 
   <!-- RESULT -->
-
-  <div
-    id="resultScreen"
-    class="hide"
-  >
-
+  <div id="resultScreen" class="hide">
     <div id="resultBox"></div>
-
-    <button
-      class="btn btn-outline"
-      onclick="backToDashboard()"
-    >
-      Kabinetga qaytish
-    </button>
-
+    <button class="btn btn-outline" onclick="backToDashboard()">Kabinetga qaytish</button>
   </div>
 
 </div>
 
-
-<!-- FOOTER -->
-
-<div class="site-footer">
-
-  © <span id="footerYear"></span>
-  <b>ABITUR DTM</b>.
-  Barcha huquqlar himoyalangan.
-
+<div class="site-footer">© <span id="footerYear"></span> <b>ABITUR DTM</b>. Barcha huquqlar himoyalangan.</div>
 </div>
-
-</div>
-
 
 <script>
+/* ===== SOZLAMALAR ===== */
+const GOOGLE_CLIENT_ID="323960187871-77jganuhhpo1hba8t7ooh252kqeh9sc2.apps.googleusercontent.com";
+const GAS_URL="https://script.google.com/macros/s/AKfycbyXj58b-E6r8pUjq216npYb-6YdO6X-RrA3RTACzQ1lnsFPL9cqboy_qK_kXWU5UIVLAQ/exec";
 
-/* =========================================================
-   GOOGLE / GAS SOZLAMALARI
-========================================================= */
+document.getElementById('footerYear').textContent=new Date().getFullYear();
 
-const GOOGLE_CLIENT_ID =
-"323960187871-77jganuhhpo1hba8t7ooh252kqeh9sc2.apps.googleusercontent.com";
-
-const GAS_URL =
-"https://script.google.com/macros/s/AKfycbyXj58b-E6r8pUjq216npYb-6YdO6X-RrA3RTACzQ1lnsFPL9cqboy_qK_kXWU5UIVLAQ/exec";
-
-
-document.getElementById('footerYear').textContent =
-new Date().getFullYear();
-
-
-/* =========================================================
-   API
-========================================================= */
-
+/* ===== YORDAMCHI ===== */
 async function api(params){
-
   try{
-
-    const url =
-      GAS_URL +
-      '?' +
-      new URLSearchParams(params).toString();
-
-    const res = await fetch(url);
-
+    const res=await fetch(GAS_URL+'?'+new URLSearchParams(params).toString());
     return await res.json();
-
-  }catch(error){
-
-    console.error('API ERROR:',error);
-
-    return {
-      ok:false,
-      error:'Server bilan bog‘lanishda xatolik yuz berdi.'
-    };
-
+  }catch(e){
+    console.error('API ERROR:',e);
+    return {ok:false,network:true,error:'Server bilan bog‘lanishda xatolik yuz berdi.'};
   }
-
 }
+const $=id=>document.getElementById(id);
+const show=id=>{const e=$(id);if(e)e.classList.remove('hide')};
+const hide=id=>{const e=$(id);if(e)e.classList.add('hide')};
+const hideAllScreens=()=>['authScreen','regSuccess','dashboard','testSetScreen','paymentScreen','testScreen','resultScreen'].forEach(hide);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
+let currentUser=null,settingsCache={},pendingGoogleEmail=null;
 
-/* =========================================================
-   SCREEN FUNKSIYALARI
-========================================================= */
-
-function show(id){
-
-  const el = document.getElementById(id);
-
-  if(el){
-    el.classList.remove('hide');
-  }
-
+/* ===== BILIM SIFATI ===== */
+const QUALITY_RANGES=[
+ [5,"Juda past","Bilim darajasi juda past. Eng asosiy mavzularni o‘rganishdan boshlang."],
+ [14,"Past","Asosiy bilimlarda bo‘shliqlar bor. Ularni bosqichma-bosqich to‘ldiring."],
+ [20,"Boshlang‘ich","Nazariya va amaliyotni birga olib boring, xatolarni tahlil qiling."],
+ [25,"Rivojlanish","Bilim asta-sekin rivojlanmoqda. Mashqni davom ettiring."],
+ [30,"O‘sish","Bilim darajasi o‘smoqda. Tayanch bilimlarni mustahkamlang."],
+ [35,"Rivojlanayotgan","Natija yaxshi tomonga o‘smoqda. Mashqni davom ettiring."],
+ [40,"O‘sayotgan","Rivojlanish yaxshi ketmoqda. Qiyin mavzularga e’tibor bering."],
+ [45,"O‘rtachaga yaqin","O‘rtacha darajaga yaqinlashdingiz. Mavzularni takrorlang."],
+ [50,"O‘rtacha","Bilim darajasi o‘rtacha. Zaif mavzularni mustahkamlang."],
+ [55,"O‘rtachadan yuqori","O‘rtacha darajadan yuqoriga chiqdingiz. Aniqlikni oshiring."],
+ [60,"Yaxshilanayotgan","Yaxshi bilim poydevori bor. Xatolarni tahlil qiling."],
+ [65,"Yaxshi","Bilimlaringiz yaxshi shakllangan. Yanada yuqoriga chiqish mumkin."],
+ [70,"Yaxshi+","Natijangiz yaxshi. Murakkab testlarni sinab ko‘ring."],
+ [75,"Juda yaxshi","Bilimlaringiz mustahkam. Mayda xatolarni kamaytiring."],
+ [80,"Yuqori","Juda yaxshi daraja. Bilimlarni muntazam takrorlang."],
+ [84,"Yuqori daraja","Bilim darajasi yuqori. Murakkab savollarni ko‘proq ishlang."],
+ [90,"A’lo","A’lo daraja. Murakkab savollarni ham sinab ko‘ring."],
+ [94,"Juda a’lo","Ajoyib natija. Yuqori aniqlikni saqlang."],
+ [96,"Mukammallikka yaqin","Deyarli mukammal ko‘rsatkich."],
+ [99,"Mukammal daraja","Juda yuqori darajadagi tayyorgarlik."],
+ [100,"Mukammal","100% natija! Mukammal ko‘rsatkich."]
+];
+function qualityColor(a){
+  a=Math.max(1,Math.min(100,Number(a)));
+  const mix=(x,y,t)=>Math.round(x+(y-x)*t);
+  if(a<=50){const t=(a-1)/49;return `rgb(${mix(231,241,t)}, ${mix(76,196,t)}, ${mix(60,15,t)})`}
+  const t=(a-50)/50;return `rgb(${mix(241,46,t)}, ${mix(196,204,t)}, ${mix(15,113,t)})`;
 }
-
-
-function hide(id){
-
-  const el = document.getElementById(id);
-
-  if(el){
-    el.classList.add('hide');
-  }
-
-}
-
-
-function hideAllScreens(){
-
-  [
-    'authScreen',
-    'regSuccess',
-    'dashboard',
-    'testSetScreen',
-    'paymentScreen',
-    'testScreen',
-    'resultScreen'
-  ].forEach(hide);
-
-}
-
-
-/* =========================================================
-   GLOBAL O'ZGARUVCHILAR
-========================================================= */
-
-let currentUser = null;
-
-let settingsCache = {};
-
-let pendingGoogleEmail = null;
-
-
-/* =========================================================
-   QUALITY
-   1% → QIZIL
-   50% → SARIQ
-   100% → YASHIL
-========================================================= */
-
-const QUALITY_RING_CIRCUMFERENCE =
-  2 * Math.PI * 52;
-
-
-/* =========================================================
-   1 DAN 100 GACHA TAVSIFLAR
-========================================================= */
-
-const QUALITY_DATA = {
-
-1:["Juda past — 1%","Bilim darajasi juda past. Eng asosiy mavzularni o‘rganishdan boshlang."],
-2:["Juda past — 2%","Asosiy tushunchalarni o‘zlashtirishga e’tibor bering."],
-3:["Juda past — 3%","Boshlang‘ich bilimlarni shakllantirish uchun ko‘proq mashq qiling."],
-4:["Juda past — 4%","Asosiy mavzularni qayta ko‘rib chiqish foydali bo‘ladi."],
-5:["Juda past — 5%","Boshlash uchun yaxshi imkoniyat bor. Muntazam test ishlashni boshlang."],
-
-6:["Past — 6%","Asosiy bilimlarda bo‘shliqlar mavjud. Ularni bosqichma-bosqich to‘ldiring."],
-7:["Past — 7%","Xatolarni tahlil qilib, asosiy mavzularni qayta takrorlang."],
-8:["Past — 8%","Ko‘proq test ishlash bilimlarni rivojlantirishga yordam beradi."],
-9:["Past — 9%","Bilimlarni mustahkamlash uchun muntazam mashq qiling."],
-10:["Past — 10%","Natijani oshirish uchun asosiy mavzularga ko‘proq e’tibor bering."],
-
-11:["Past — 11%","Rivojlanish uchun imkoniyat katta. Muntazam tayyorgarlikni davom ettiring."],
-12:["Past — 12%","Asosiy tushunchalarni takrorlash va savollar yechish foydali."],
-13:["Past — 13%","Bilim darajasini oshirish uchun muntazam mashq kerak."],
-14:["Past — 14%","Xatolar ustida ishlash orqali natijani sezilarli oshirish mumkin."],
-15:["Boshlang‘ich — 15%","Boshlang‘ich daraja. Nazariya va amaliyotni birga olib boring."],
-
-16:["Boshlang‘ich — 16%","Bilimlar shakllanmoqda. Testlar orqali ularni mustahkamlang."],
-17:["Boshlang‘ich — 17%","Asosiy bilimlarni rivojlantirish uchun ko‘proq mashq qiling."],
-18:["Boshlang‘ich — 18%","Nazariy bilimlarni amaliy savollar bilan mustahkamlang."],
-19:["Boshlang‘ich — 19%","Xatolarni tahlil qilish orqali natijangizni oshiring."],
-20:["Boshlang‘ich — 20%","20% natija. Asosiy mavzularni yaxshiroq o‘zlashtiring."],
-
-21:["Rivojlanish — 21%","Bilim darajasi asta-sekin rivojlanmoqda. Mashqni davom ettiring."],
-22:["Rivojlanish — 22%","Asosiy bilimlar shakllanmoqda. Ko‘proq savollar yeching."],
-23:["Rivojlanish — 23%","Natija yaxshilanmoqda. Zaif mavzularni aniqlang."],
-24:["Rivojlanish — 24%","Mavzularni takrorlash orqali natijani yanada oshiring."],
-25:["Rivojlanish — 25%","25% natija. Muntazam mashq qilish juda muhim."],
-
-26:["O‘sish — 26%","Bilim darajasi o‘smoqda. Test ishlashni davom ettiring."],
-27:["O‘sish — 27%","Xatolar sonini kamaytirishga e’tibor qarating."],
-28:["O‘sish — 28%","Asosiy mavzular bo‘yicha bilimlar shakllanmoqda."],
-29:["O‘sish — 29%","Murakkabroq savollarni yechishni boshlang."],
-30:["O‘sish — 30%","30% natija. Tayanch bilimlarni yanada mustahkamlang."],
-
-31:["Rivojlanayotgan — 31%","Natija yaxshi tomonga o‘smoqda. Mashqni davom ettiring."],
-32:["Rivojlanayotgan — 32%","Bilimlar asta-sekin mustahkamlanmoqda."],
-33:["Rivojlanayotgan — 33%","Asosiy tushunchalar yaxshi shakllanmoqda."],
-34:["Rivojlanayotgan — 34%","Xatolarni tahlil qilish natijangizni oshiradi."],
-35:["Rivojlanayotgan — 35%","35% natija. Bilimlarni mustahkamlashda davom eting."],
-
-36:["O‘sayotgan — 36%","Rivojlanish yaxshi ketmoqda. Muntazamlikni saqlang."],
-37:["O‘sayotgan — 37%","Qiyin mavzularga ko‘proq e’tibor bering."],
-38:["O‘sayotgan — 38%","Natija o‘rtacha darajaga yaqinlashmoqda."],
-39:["O‘sayotgan — 39%","Yaxshi rivojlanish bor. Xatolarni kamaytiring."],
-40:["O‘sayotgan — 40%","40% natija. Asosiy bilimlarni chuqurlashtiring."],
-
-41:["O‘rtachaga yaqin — 41%","Natija o‘rtacha darajaga yaqin. Mashqni davom ettiring."],
-42:["O‘rtachaga yaqin — 42%","Bilimlar mustahkamlanmoqda. Mavzularni takrorlang."],
-43:["O‘rtachaga yaqin — 43%","To‘g‘ri javoblar sonini oshirishga harakat qiling."],
-44:["O‘rtachaga yaqin — 44%","O‘rtacha darajaga yaqinlashdingiz."],
-45:["O‘rtachaga yaqin — 45%","Yana biroz mashq bilan yaxshi natijaga chiqish mumkin."],
-
-46:["O‘rtacha — 46%","Bilimlar ancha shakllangan. Zaif mavzularni mustahkamlang."],
-47:["O‘rtacha — 47%","Natija yaxshi tomonga o‘zgarmoqda."],
-48:["O‘rtacha — 48%","O‘rtacha darajaga yaqin. Mashqlarni davom ettiring."],
-49:["O‘rtacha — 49%","50% chegarasiga juda yaqin. Yana biroz harakat qiling."],
-50:["O‘rtacha — 50%","50% natija. Bilim darajasi o‘rtacha."],
-
-51:["O‘rtachadan yuqori — 51%","O‘rtacha darajadan yuqoriga chiqdingiz."],
-52:["O‘rtachadan yuqori — 52%","Bilimlar yaxshi shakllanmoqda."],
-53:["O‘rtachadan yuqori — 53%","Natija qoniqarli darajadan yuqori."],
-54:["O‘rtachadan yuqori — 54%","Bilim darajasi barqarorlashmoqda."],
-55:["O‘rtachadan yuqori — 55%","55% natija. Aniqlikni yanada oshiring."],
-
-56:["Yaxshilanayotgan — 56%","Bilim darajasi yaxshi tomonga o‘smoqda."],
-57:["Yaxshilanayotgan — 57%","Natija yaxshi. Xatolarni tahlil qiling."],
-58:["Yaxshilanayotgan — 58%","Bilimlar mustahkamlanmoqda."],
-59:["Yaxshilanayotgan — 59%","60% chegarasiga yaqinlashdingiz."],
-60:["Yaxshilanayotgan — 60%","60% natija. Yaxshi bilim poydevori mavjud."],
-
-61:["Yaxshi — 61%","Bilim darajasi yaxshi yo‘nalishda."],
-62:["Yaxshi — 62%","Natija barqaror o‘smoqda."],
-63:["Yaxshi — 63%","Bilimlaringiz yaxshi shakllangan."],
-64:["Yaxshi — 64%","Zaif mavzularni mustahkamlashda davom eting."],
-65:["Yaxshi — 65%","65% natija. Yana yuqoriroq natijaga chiqish mumkin."],
-
-66:["Yaxshi+ — 66%","Natijangiz yaxshi. Murakkab testlarni sinab ko‘ring."],
-67:["Yaxshi+ — 67%","Bilim darajasi barqaror."],
-68:["Yaxshi+ — 68%","Mavzularni chuqurroq o‘rganishga harakat qiling."],
-69:["Yaxshi+ — 69%","70% chegarasiga juda yaqin."],
-70:["Yaxshi — 70%","70% natija. Yaxshi bilim darajasi."],
-
-71:["Juda yaxshi — 71%","Bilimlaringiz ancha mustahkamlangan."],
-72:["Juda yaxshi — 72%","Natija yuqori darajaga ko‘tarilmoqda."],
-73:["Juda yaxshi — 73%","Bilim darajasi yaxshi. Murakkab mavzularni mashq qiling."],
-74:["Juda yaxshi — 74%","Natijangiz barqaror. Mayda xatolarni kamaytiring."],
-75:["Juda yaxshi — 75%","75% natija. Juda yaxshi ko‘rsatkich."],
-
-76:["Yuqori — 76%","Bilim darajasi yaxshi shakllangan."],
-77:["Yuqori — 77%","Yaxshi natija. Bilimlarni muntazam takrorlang."],
-78:["Yuqori — 78%","Natija yuqori. Xatolarni yanada kamaytiring."],
-79:["Yuqori — 79%","80% chegarasiga yaqinlashdingiz."],
-80:["Yuqori — 80%","80% natija. Juda yaxshi daraja."],
-
-81:["Yuqori daraja — 81%","Bilim darajasi yuqori."],
-82:["Yuqori daraja — 82%","Juda yaxshi natija. Murakkab savollarni ko‘proq ishlang."],
-83:["Yuqori daraja — 83%","Bilimlaringiz yuqori darajada."],
-84:["Yuqori daraja — 84%","85% chegarasiga juda yaqin."],
-85:["A’lo — 85%","85% natija. A’lo daraja."],
-
-86:["A’lo — 86%","Juda yuqori natija. Bilimlaringiz yaxshi mustahkamlangan."],
-87:["A’lo — 87%","Ajoyib ko‘rsatkich. Murakkab savollarni ham sinab ko‘ring."],
-88:["A’lo — 88%","Natija juda yuqori."],
-89:["A’lo — 89%","Yuqori darajadagi tayyorgarlik ko‘rinmoqda."],
-90:["A’lo — 90%","90% natija. Juda yuqori bilim darajasi."],
-
-91:["Juda a’lo — 91%","Bilimlaringiz juda yaxshi shakllangan."],
-92:["Juda a’lo — 92%","Ajoyib natija. Yuqori aniqlikni saqlang."],
-93:["Juda a’lo — 93%","Juda yuqori ko‘rsatkich."],
-94:["Juda a’lo — 94%","A’lo daraja. Natijangiz juda yuqori."],
-95:["Mukammallikka yaqin — 95%","95% natija. Deyarli mukammal ko‘rsatkich."],
-
-96:["Mukammallikka yaqin — 96%","Ajoyib! Mukammal natijaga juda yaqin."],
-97:["Mukammal daraja — 97%","Deyarli mukammal natija. Bilimlaringiz juda yuqori."],
-98:["Mukammal daraja — 98%","98% natija. Juda yuqori darajadagi tayyorgarlik."],
-99:["Mukammal daraja — 99%","99% natija. Mukammallikka juda yaqin."],
-100:["Mukammal — 100%","100% natija! Mukammal ko‘rsatkich."]
-};
-
-
-/* =========================================================
-   RANG
-========================================================= */
-
-function qualityColor(avg){
-
-  avg = Math.max(
-    1,
-    Math.min(100, Number(avg))
-  );
-
-  let r,g,b;
-
-  if(avg <= 50){
-
-    const t =
-      (avg - 1) / 49;
-
-    r = Math.round(
-      231 + (241 - 231) * t
-    );
-
-    g = Math.round(
-      76 + (196 - 76) * t
-    );
-
-    b = Math.round(
-      60 + (15 - 60) * t
-    );
-
-  }else{
-
-    const t =
-      (avg - 50) / 50;
-
-    r = Math.round(
-      241 + (46 - 241) * t
-    );
-
-    g = Math.round(
-      196 + (204 - 196) * t
-    );
-
-    b = Math.round(
-      15 + (113 - 15) * t
-    );
-
-  }
-
-  return `rgb(${r}, ${g}, ${b})`;
-}
-
-
-/* =========================================================
-   QUALITY OBYEKT
-========================================================= */
-
 function getQuality(avg){
-
-  avg = Number(avg);
-
-  if(!Number.isFinite(avg)){
-    return null;
-  }
-
-  avg = Math.max(
-    1,
-    Math.min(100, Math.round(avg))
-  );
-
-  const item =
-    QUALITY_DATA[avg] || [
-      `${avg}%`,
-      `${avg}% natija. Bilimlaringizni yanada mustahkamlang.`
-    ];
-
-  const color =
-    qualityColor(avg);
-
-  return {
-
-    percent:avg,
-
-    label:item[0],
-
-    description:item[1],
-
-    color:color,
-
-    circumference:
-      QUALITY_RING_CIRCUMFERENCE,
-
-    dashOffset:
-      QUALITY_RING_CIRCUMFERENCE *
-      (1 - avg / 100)
-
-  };
+  avg=Number(avg);
+  if(!Number.isFinite(avg))return null;
+  avg=Math.max(1,Math.min(100,Math.round(avg)));
+  const r=QUALITY_RANGES.find(x=>avg<=x[0]);
+  return {percent:avg,label:`${r[1]} — ${avg}%`,description:r[2],color:qualityColor(avg)};
 }
-
-
-/* =========================================================
-   QUALITY DISPLAY
-========================================================= */
-
-function renderQualityStat(avg) {
-  const ringBg = document.querySelector('.ring-bg');
-  const ringFg = document.getElementById('qualityRingFg');
-  const percentText = document.getElementById('qualityPercentText');
-  const labelText = document.getElementById('qualityLabelText');
-  const descText = document.getElementById('qualityDescText');
-
-  if (!ringFg) return;
-
-  if (avg === null || avg === undefined || isNaN(avg)) {
-    ringFg.style.stroke = 'rgba(255,255,255,.15)';
-    
-    if (ringBg) {
-      ringBg.style.stroke = 'rgba(255,255,255,.08)';
-    }
-
-    percentText.textContent = '—';
-    labelText.textContent = "Hali test yo'q";
-
-    if (descText) {
-      descText.textContent =
-        "Bilim sifatingizni ko'rish uchun kamida bitta test yeching.";
-    }
-
+function renderQualityStat(avg){
+  const fg=$('qualityRingFg'),pt=$('qualityPercentText'),lt=$('qualityLabelText'),dt=$('qualityDescText');
+  if(!fg)return;
+  if(avg===null||avg===undefined||isNaN(avg)){
+    fg.style.stroke='rgba(255,255,255,.15)';
+    pt.textContent='—';lt.textContent="Hali test yo'q";
+    dt.textContent="Bilim sifatingizni ko'rish uchun kamida bitta test yeching.";
     return;
   }
-
-  const quality = getQuality(avg);
-
-  // Aylana doimo 100% to'liq
-  ringFg.style.strokeDasharray = '326.73';
-  ringFg.style.strokeDashoffset = '0';
-
-  // Foizga qarab rang
-  ringFg.style.stroke = quality.color;
-
-  if (ringBg) {
-    ringBg.style.stroke = 'rgba(255,255,255,.08)';
-  }
-
-  percentText.textContent = quality.percent + '%';
-  labelText.textContent = quality.label;
-
-  if (descText) {
-    descText.textContent = quality.description;
-  }
+  const q=getQuality(avg);
+  fg.style.strokeDasharray='326.73';fg.style.strokeDashoffset='0';fg.style.stroke=q.color;
+  pt.textContent=q.percent+'%';lt.textContent=q.label;dt.textContent=q.description;
 }
 
-
-/* =========================================================
-   LOADING
-========================================================= */
-
-function setLoading(
-  btn,
-  on,
-  loadingText
-){
-
-  if(!btn) return;
-
-  if(on){
-
-    btn.dataset.origText =
-      btn.textContent;
-
-    btn.textContent =
-      loadingText || '...';
-
-    btn.disabled =
-      true;
-
-    btn.style.opacity =
-      '0.7';
-
-  }else{
-
-    btn.textContent =
-      btn.dataset.origText ||
-      btn.textContent;
-
-    btn.disabled =
-      false;
-
-    btn.style.opacity =
-      '';
-
-  }
-
+function setLoading(btn,on,txt){
+  if(!btn)return;
+  if(on){btn.dataset.origText=btn.textContent;btn.textContent=txt||'...';btn.disabled=true;btn.style.opacity='0.7'}
+  else{btn.textContent=btn.dataset.origText||btn.textContent;btn.disabled=false;btn.style.opacity=''}
 }
 
-
-/* =========================================================
-   JWT
-========================================================= */
-
+/* ===== GOOGLE LOGIN ===== */
 function decodeJwt(token){
-
-  const payload =
-    token.split('.')[1];
-
-  const json =
-    decodeURIComponent(
-      atob(
-        payload
-          .replace(/-/g,'+')
-          .replace(/_/g,'/')
-      )
-      .split('')
-      .map(c =>
-        '%' +
-        ('00' +
-          c.charCodeAt(0)
-          .toString(16)
-        ).slice(-2)
-      )
-      .join('')
-    );
-
-  return JSON.parse(json);
+  const p=token.split('.')[1].replace(/-/g,'+').replace(/_/g,'/');
+  return JSON.parse(decodeURIComponent(atob(p).split('').map(c=>'%'+('00'+c.charCodeAt(0).toString(16)).slice(-2)).join('')));
 }
-
-
-/* =========================================================
-   GOOGLE LOGIN
-========================================================= */
-
 async function handleGoogleCredential(response){
-
+  const errEl=$('googleErr');
   try{
-
-    const errEl =
-      document.getElementById(
-        'googleErr'
-      );
-
     errEl.classList.add('hide');
-
-
-    const payload =
-      decodeJwt(
-        response.credential
-      );
-
-    const email =
-      payload.email;
-
-    pendingGoogleEmail =
-      email;
-
-
-    const res =
-      await api({
-        action:'googleLogin',
-        email:email
-      });
-
-
+    const payload=decodeJwt(response.credential);
+    const email=payload.email;
+    pendingGoogleEmail=email;
+    const res=await api({action:'googleLogin',email:email});
     if(res.ok){
-
-      localStorage.setItem(
-        'abitur_email',
-        email
-      );
-
+      localStorage.setItem('abitur_email',email);
       await loadDashboard();
-
       return;
     }
-
-
     if(res.notFound){
-
-      document
-        .getElementById(
-          'googleAuthCard'
-        )
-        .classList.add('hide');
-
-
-      document
-        .getElementById('gIsm')
-        .value =
-          payload.given_name || '';
-
-
-      document
-        .getElementById('gFamiliya')
-        .value =
-          payload.family_name || '';
-
-
+      $('googleAuthCard').classList.add('hide');
+      $('gIsm').value=payload.given_name||'';
+      $('gFamiliya').value=payload.family_name||'';
       show('newUserCard');
-
       return;
     }
-
-
-    errEl.textContent =
-      res.error ||
-      'Xatolik yuz berdi';
-
+    errEl.textContent=res.error||'Xatolik yuz berdi';
     errEl.classList.remove('hide');
-
-  }catch(error){
-
-    console.error(error);
-
-    const errEl =
-      document.getElementById(
-        'googleErr'
-      );
-
-    errEl.textContent =
-      'Google orqali kirishda xatolik yuz berdi.';
-
+  }catch(e){
+    console.error(e);
+    errEl.textContent='Google orqali kirishda xatolik yuz berdi.';
     errEl.classList.remove('hide');
-
   }
-
 }
-
-
-/* =========================================================
-   GOOGLE REGISTER
-========================================================= */
-
 async function completeGoogleRegister(){
-
-  const ism =
-    document.getElementById(
-      'gIsm'
-    ).value.trim();
-
-  const familiya =
-    document.getElementById(
-      'gFamiliya'
-    ).value.trim();
-
-  const referralId =
-    document.getElementById(
-      'gReferral'
-    ).value.trim();
-
-  const errEl =
-    document.getElementById(
-      'gCompleteErr'
-    );
-
-
+  const ism=$('gIsm').value.trim(),familiya=$('gFamiliya').value.trim(),referralId=$('gReferral').value.trim();
+  const errEl=$('gCompleteErr');
   errEl.classList.add('hide');
-
-
-  if(!ism || !familiya){
-
-    errEl.textContent =
-      'Ism va familiyani kiriting';
-
-    errEl.classList.remove(
-      'hide'
-    );
-
-    return;
-  }
-
-
-  const btn =
-    document.getElementById(
-      'gCompleteBtn'
-    );
-
-
-  setLoading(
-    btn,
-    true,
-    'Yuborilmoqda...'
-  );
-
-
-  const res =
-    await api({
-
-      action:'googleRegister',
-
-      email:
-        pendingGoogleEmail,
-
-      ism:ism,
-
-      familiya:familiya,
-
-      referralId:referralId
-
-    });
-
-
-  setLoading(
-    btn,
-    false
-  );
-
-
-  if(!res.ok){
-
-    errEl.textContent =
-      res.error ||
-      'Ro‘yxatdan o‘tishda xatolik';
-
-    errEl.classList.remove(
-      'hide'
-    );
-
-    return;
-  }
-
-
-  localStorage.setItem(
-    'abitur_email',
-    pendingGoogleEmail
-  );
-
-
+  if(!ism||!familiya){errEl.textContent='Ism va familiyani kiriting';errEl.classList.remove('hide');return}
+  const btn=$('gCompleteBtn');
+  setLoading(btn,true,'Yuborilmoqda...');
+  const res=await api({action:'googleRegister',email:pendingGoogleEmail,ism:ism,familiya:familiya,referralId:referralId});
+  setLoading(btn,false);
+  if(!res.ok){errEl.textContent=res.error||'Ro‘yxatdan o‘tishda xatolik';errEl.classList.remove('hide');return}
+  localStorage.setItem('abitur_email',pendingGoogleEmail);
   hideAllScreens();
-
-
-  document
-    .getElementById(
-      'registeredId'
-    )
-    .textContent =
-      res.id || '—';
-
-
-  const bonusMsg =
-    document.getElementById(
-      'regBonusMsg'
-    );
-
-
-  if(bonusMsg){
-
-    if(
-      res.bonus &&
-      res.bonus > 0
-    ){
-
-      bonusMsg.textContent =
-        "Taklif kodi qabul qilindi — taklif qilgan do‘stingizga bonus tushdi!";
-
-      bonusMsg.classList.remove(
-        'hide'
-      );
-
-    }else{
-
-      bonusMsg.classList.add(
-        'hide'
-      );
-
-    }
-
-  }
-
-
+  $('registeredId').textContent=res.id||'—';
+  const b=$('regBonusMsg');
+  if(res.bonus&&res.bonus>0){b.textContent="Taklif kodi qabul qilindi — taklif qilgan do‘stingizga bonus tushdi!";b.classList.remove('hide')}
+  else b.classList.add('hide');
   show('regSuccess');
-
 }
-
-
-/* =========================================================
-   DASHBOARD AFTER REGISTER
-========================================================= */
-
-async function goDashboardAfterReg(){
-
-  await loadDashboard();
-
-}
-
-
-/* =========================================================
-   LOGOUT
-========================================================= */
-
 function logout(){
-
-  localStorage.removeItem(
-    'abitur_email'
-  );
-
-  currentUser =
-    null;
-
-  hideAllScreens();
-
-  show('authScreen');
-
-
-  document
-    .getElementById(
-      'newUserCard'
-    )
-    .classList.add('hide');
-
-
-  document
-    .getElementById(
-      'googleAuthCard'
-    )
-    .classList.remove('hide');
-
+  localStorage.removeItem('abitur_email');
+  localStorage.removeItem('abitur_cache');
+  currentUser=null;
+  hideAllScreens();show('authScreen');
+  $('newUserCard').classList.add('hide');
+  $('googleAuthCard').classList.remove('hide');
 }
 
+/* ===== DASHBOARD (keshli) ===== */
+function renderDashboard(res,set,rank){
+  currentUser=res;
+  $('dashName').textContent=(res.ism||'')+' '+(res.familiya||'');
+  $('dId').textContent=res.id||'-';
+  $('dRank').textContent=res.rank?'#'+res.rank:'-';
+  $('dCount').textContent=res.testsCount??0;
+  $('dScore').textContent=res.totalScore??0;
+  $('dBalans').textContent=(res.balans??0)+" so'm";
 
-/* =========================================================
-   LOAD DASHBOARD
-========================================================= */
+  const lastPct=(res.lastTest&&Number(res.lastTest.maxBall)>0)?Math.round(Number(res.lastTest.ball)/Number(res.lastTest.maxBall)*100):null;
+  renderQualityStat(lastPct);
+
+  settingsCache=(set&&set.settings)?set.settings:{};
+  $('priceSinov').textContent=(settingsCache.price_sinov||0)+" so'm";
+  $('priceBlok').textContent=(settingsCache.price_blok||0)+" so'm";
+  $('priceSert').textContent=(settingsCache.price_sertifikat||0)+" so'm";
+  $('cardNum').textContent=settingsCache.card_number||'-';
+  $('cardOwner').textContent=settingsCache.card_owner||'-';
+
+  const list=$('rankingList');
+  list.innerHTML='';
+  ((rank&&rank.list)?rank.list:[]).slice(0,20).forEach((u,i)=>{
+    const div=document.createElement('div');
+    div.className='rank-item'+(String(u.id)===String(res.id)?' me':'');
+    div.innerHTML=`<span>#${i+1} ${esc(u.ism)} ${esc(u.familiya)}</span><b>${esc(u.totalScore||0)} ball</b>`;
+    list.appendChild(div);
+  });
+
+  hideAllScreens();show('dashboard');
+}
 
 async function loadDashboard(){
-
-  const email =
-    localStorage.getItem(
-      'abitur_email'
-    );
-
-
-  if(!email){
-
-    logout();
-
-    return;
-  }
-
-
+  const email=localStorage.getItem('abitur_email');
+  if(!email){logout();return}
   try{
-
-    const [
-      res,
-      set,
-      rank
-    ] = await Promise.all([
-
-      api({
-        action:'getUserByEmail',
-        email:email
-      }),
-
-      api({
-        action:'getSettings'
-      }),
-
-      api({
-        action:'getRanking'
-      })
-
+    const [res,set,rank]=await Promise.all([
+      api({action:'getUserByEmail',email:email}),
+      api({action:'getSettings'}),
+      api({action:'getRanking'})
     ]);
-
-
-    if(!res || !res.ok){
-
-      logout();
-
+    if(!res||!res.ok){
+      if(!res||!res.network)logout(); // internet bo'lmasa chiqarib yubormaydi
       return;
     }
-
-
-    currentUser =
-      res;
-
-
-    /* ISM */
-
-    document
-      .getElementById(
-        'dashName'
-      )
-      .textContent =
-        (res.ism || '') +
-        ' ' +
-        (res.familiya || '');
-
-
-    /* ID */
-
-    document
-      .getElementById(
-        'dId'
-      )
-      .textContent =
-        res.id || '-';
-
-
-    /* RANK */
-
-    document
-      .getElementById(
-        'dRank'
-      )
-      .textContent =
-        res.rank
-          ? '#' + res.rank
-          : '-';
-
-
-    /* COUNT */
-
-    document
-      .getElementById(
-        'dCount'
-      )
-      .textContent =
-        res.testsCount ?? 0;
-
-
-    /* SCORE */
-
-    document
-      .getElementById(
-        'dScore'
-      )
-      .textContent =
-        res.totalScore ?? 0;
-
-
-    /* BALANCE */
-
-    document
-      .getElementById(
-        'dBalans'
-      )
-      .textContent =
-        (res.balans ?? 0) +
-        " so'm";
-
-
-    /* =====================================================
-       OXIRGI TEST FOIZI
-    ===================================================== */
-
-    const lastPct =
-      (
-        res.lastTest &&
-        Number(res.lastTest.maxBall) > 0
-      )
-
-      ?
-
-      Math.round(
-        (
-          Number(res.lastTest.ball) /
-          Number(res.lastTest.maxBall)
-        ) * 100
-      )
-
-      :
-
-      null;
-
-
-    /* QUALITY */
-
-    renderQualityStat(
-      lastPct
-    );
-
-
-    /* SETTINGS */
-
-    settingsCache =
-      (set && set.settings)
-        ? set.settings
-        : {};
-
-
-    document
-      .getElementById(
-        'priceSinov'
-      )
-      .textContent =
-        (settingsCache.price_sinov || 0) +
-        " so'm";
-
-
-    document
-      .getElementById(
-        'priceBlok'
-      )
-      .textContent =
-        (settingsCache.price_blok || 0) +
-        " so'm";
-
-
-    document
-      .getElementById(
-        'priceSert'
-      )
-      .textContent =
-        (settingsCache.price_sertifikat || 0) +
-        " so'm";
-
-
-    document
-      .getElementById(
-        'cardNum'
-      )
-      .textContent =
-        settingsCache.card_number ||
-        '-';
-
-
-    document
-      .getElementById(
-        'cardOwner'
-      )
-      .textContent =
-        settingsCache.card_owner ||
-        '-';
-
-
-    /* =====================================================
-       RANKING
-    ===================================================== */
-
-    const list =
-      document.getElementById(
-        'rankingList'
-      );
-
-    list.innerHTML =
-      '';
-
-
-    (
-      (rank && rank.list)
-        ? rank.list
-        : []
-    )
-      .slice(0,20)
-      .forEach((u,i)=>{
-
-        const div =
-          document.createElement(
-            'div'
-          );
-
-
-        div.className =
-          'rank-item' +
-          (
-            String(u.id) ===
-            String(res.id)
-              ? ' me'
-              : ''
-          );
-
-
-        div.innerHTML = `
-
-          <span>
-            #${i+1}
-            ${u.ism || ''}
-            ${u.familiya || ''}
-          </span>
-
-          <b>
-            ${u.totalScore || 0} ball
-          </b>
-
-        `;
-
-
-        list.appendChild(
-          div
-        );
-
-      });
-
-
-    hideAllScreens();
-
-    show('dashboard');
-
-
-  }catch(error){
-
-    console.error(
-      'Dashboard error:',
-      error
-    );
-
-  }
-
+    try{localStorage.setItem('abitur_cache',JSON.stringify({res,set,rank}))}catch(e){}
+    renderDashboard(res,set,rank);
+  }catch(e){console.error('Dashboard error:',e)}
 }
+function backToDashboard(){loadDashboard()}
 
-
-/* =========================================================
-   BACK TO DASHBOARD
-========================================================= */
-
-function backToDashboard(){
-
-  loadDashboard();
-
-}
-
-
-/* =========================================================
-   PAYMENT
-========================================================= */
-
-function showPayment(){
-
-  hideAllScreens();
-
-  show('paymentScreen');
-
-}
-
-
+/* ===== TO'LOV ===== */
+function showPayment(){hideAllScreens();show('paymentScreen')}
 async function submitPayment(){
-
-  const summa =
-    document.getElementById(
-      'paySumma'
-    ).value;
-
-  const izoh =
-    document.getElementById(
-      'payIzoh'
-    ).value;
-
-  const msg =
-    document.getElementById(
-      'payMsg'
-    );
-
-
-  if(
-    !summa ||
-    Number(summa) <= 0
-  ){
-
-    msg.textContent =
-      "To‘lov summasini kiriting.";
-
-    msg.classList.remove(
-      'hide'
-    );
-
-    return;
-  }
-
-
-  const res =
-    await api({
-
-      action:'submitPayment',
-
-      id:currentUser.id,
-
-      summa:summa,
-
-      izoh:izoh
-
-    });
-
-
-  if(!res.ok){
-
-    msg.textContent =
-      res.error ||
-      "To‘lovni yuborishda xatolik.";
-
-    msg.classList.remove(
-      'hide'
-    );
-
-    return;
-  }
-
-
-  msg.textContent =
-    "Yuborildi! Admin tasdiqlashini kuting.";
-
-  msg.classList.remove(
-    'hide'
-  );
-
-
-  document
-    .getElementById(
-      'paySumma'
-    )
-    .value =
-      '';
-
-  document
-    .getElementById(
-      'payIzoh'
-    )
-    .value =
-      '';
-
+  const summa=$('paySumma').value,izoh=$('payIzoh').value,msg=$('payMsg');
+  if(!summa||Number(summa)<=0){msg.textContent="To‘lov summasini kiriting.";msg.classList.remove('hide');return}
+  const res=await api({action:'submitPayment',id:currentUser.id,summa:summa,izoh:izoh});
+  if(!res.ok){msg.textContent=res.error||"To‘lovni yuborishda xatolik.";msg.classList.remove('hide');return}
+  msg.textContent="Yuborildi! Admin tasdiqlashini kuting.";msg.classList.remove('hide');
+  $('paySumma').value='';$('payIzoh').value='';
 }
 
-
-/* =========================================================
-   TESTLAR
-========================================================= */
-
-let activeTestType =
-  null;
-
-let activeQuestions =
-  [];
-
-let activeAnswers =
-  {};
-
-let currentQIndex =
-  0;
-
-let timerInterval =
-  null;
-
-let timeLeft =
-  0;
-
-let testSubmitted =
-  false;
-
-
-function shuffleArray(arr){
-
-  const a =
-    arr.slice();
-
-  for(
-    let i=a.length-1;
-    i>0;
-    i--
-  ){
-
-    const j =
-      Math.floor(
-        Math.random() *
-        (i+1)
-      );
-
-    [
-      a[i],
-      a[j]
-    ] =
-    [
-      a[j],
-      a[i]
-    ];
-
-  }
-
-  return a;
-}
-
-
-const TEST_TIME_MIN = {
-
-  sinov:60,
-
-  blok:180,
-
-  sertifikat:150
-
-};
-
-
-const TEST_LABEL = {
-
-  sinov:'Sinov test',
-
-  blok:'Blok test',
-
-  sertifikat:'Sertifikat test'
-
-};
-
-
-/* =========================================================
-   OPEN TEST TYPE
-========================================================= */
+/* ===== TESTLAR ===== */
+let activeTestType=null,activeQuestions=[],activeAnswers={},currentQIndex=0,timerInterval=null,timeLeft=0,testSubmitted=false;
+const shuffleArray=arr=>{const a=arr.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const TEST_TIME_MIN={sinov:60,blok:180,sertifikat:150};
+const TEST_LABEL={sinov:'Sinov test',blok:'Blok test',sertifikat:'Sertifikat test'};
 
 async function openTestType(type){
+  const price=Number(settingsCache['price_'+type]||0);
+  if(Number(currentUser.balans)<price){alert("Balansingiz yetarli emas. Iltimos, balansni to'ldiring.");showPayment();return}
+  const res=await api({action:'getTests',testTuri:type});
+  if(!res.ok||!res.list||res.list.length===0){alert("Bu test turi uchun hozircha savollar mavjud emas.");return}
 
-  const price =
-    Number(
-      settingsCache[
-        'price_' + type
-      ] || 0
-    );
-
-
-  if(
-    Number(currentUser.balans) <
-    price
-  ){
-
-    alert(
-      "Balansingiz yetarli emas. Iltimos, balansni to'ldiring."
-    );
-
-    showPayment();
-
-    return;
-  }
-
-
-  const res =
-    await api({
-
-      action:'getTests',
-
-      testTuri:type
-
-    });
-
-
-  if(
-    !res.ok ||
-    !res.list ||
-    res.list.length === 0
-  ){
-
-    alert(
-      "Bu test turi uchun hozircha savollar mavjud emas."
-    );
-
-    return;
-  }
-
-
-  const baseName =
-    n =>
-      String(n || '')
-        .split('#')[0]
-        .trim();
-
-
-  const groups =
-    {};
-
-
+  const baseName=n=>String(n||'').split('#')[0].trim();
+  const groups={};
   res.list.forEach(q=>{
-
-    const base =
-      baseName(q.testNomi);
-
-
-    if(!groups[base]){
-      groups[base] = {};
-    }
-
-
-    if(
-      !groups[base][q.testNomi]
-    ){
-
-      groups[base][q.testNomi] =
-        [];
-
-    }
-
-
-    groups[base][q.testNomi]
-      .push(q);
-
+    const base=baseName(q.testNomi);
+    if(!groups[base])groups[base]={};
+    if(!groups[base][q.testNomi])groups[base][q.testNomi]=[];
+    groups[base][q.testNomi].push(q);
   });
 
+  activeTestType=type;
+  $('testSetTitle').textContent=TEST_LABEL[type];
+  const listEl=$('testSetList');
+  listEl.innerHTML='';
 
-  activeTestType =
-    type;
-
-
-  document
-    .getElementById(
-      'testSetTitle'
-    )
-    .textContent =
-      TEST_LABEL[type];
-
-
-  const listEl =
-    document.getElementById(
-      'testSetList'
-    );
-
-
-  listEl.innerHTML =
-    '';
-
-
-  Object.keys(groups)
-    .forEach(base=>{
-
-      const variants =
-        Object.values(
-          groups[base]
-        );
-
-
-      const displayCount =
-        variants[0].length;
-
-
-      const div =
-        document.createElement(
-          'div'
-        );
-
-
-      div.className =
-        'test-btn';
-
-
-      const variantNote =
-        variants.length > 1
-          ? ` (${variants.length} variant)`
-          : '';
-
-
-      div.innerHTML = `
-
-        <div>
-
-          <div class="name">
-            ${base}
-          </div>
-
-          <div class="sub">
-            ${displayCount}
-            ta savol
-            ${variantNote}
-          </div>
-
-        </div>
-
-        <span class="badge">
-          Boshlash
-        </span>
-
-      `;
-
-
-      div.onclick = ()=>{
-
-        div.style.opacity =
-          '0.6';
-
-
-        let qs =
-          variants[
-            Math.floor(
-              Math.random() *
-              variants.length
-            )
-          ];
-
-
-        if(
-          type === 'sinov' &&
-          qs.length > 30
-        ){
-
-          qs =
-            shuffleArray(qs)
-              .slice(0,30);
-
-        }
-
-
-        startTest(
-          type,
-          base,
-          qs,
-          div
-        );
-
-      };
-
-
-      listEl.appendChild(
-        div
-      );
-
-    });
-
-
-  hideAllScreens();
-
-  show('testSetScreen');
-
+  Object.keys(groups).forEach(base=>{
+    const variants=Object.values(groups[base]);
+    const div=document.createElement('div');
+    div.className='test-btn';
+    const note=variants.length>1?` (${variants.length} variant)`:'';
+    div.innerHTML=`<div><div class="name">${esc(base)}</div><div class="sub">${variants[0].length} ta savol${note}</div></div><span class="badge">Boshlash</span>`;
+    div.onclick=()=>{
+      div.style.opacity='0.6';
+      let qs=variants[Math.floor(Math.random()*variants.length)];
+      if(type==='sinov'&&qs.length>30)qs=shuffleArray(qs).slice(0,30);
+      startTest(type,base,qs,div);
+    };
+    listEl.appendChild(div);
+  });
+  hideAllScreens();show('testSetScreen');
 }
 
-
-/* =========================================================
-   START TEST
-========================================================= */
-
-async function startTest(
-  type,
-  name,
-  questions,
-  btnEl
-){
-
-  if(btnEl){
-
-    setLoading(
-      btnEl,
-      true,
-      'Yuklanmoqda...'
-    );
-
-  }
-
-
-  const pay =
-    await api({
-
-      action:'payForTest',
-
-      id:currentUser.id,
-
-      testTuri:type
-
-    });
-
-
-  if(btnEl){
-
-    setLoading(
-      btnEl,
-      false
-    );
-
-  }
-
-
-  if(!pay.ok){
-
-    alert(
-      pay.error ||
-      "To'lovda xatolik"
-    );
-
-    return;
-  }
-
-
-  currentUser.balans =
-    pay.balans;
-
-
-  activeTestType =
-    type;
-
-  activeQuestions =
-    questions;
-
-  activeAnswers =
-    {};
-
-  currentQIndex =
-    0;
-
-  activeQuestions._name =
-    name;
-
-  testSubmitted =
-    false;
-
-
-  timeLeft =
-    TEST_TIME_MIN[type] *
-    60;
-
-
-  hideAllScreens();
-
-  show('testScreen');
-
-
+async function startTest(type,name,questions,btnEl){
+  const pay=await api({action:'payForTest',id:currentUser.id,testTuri:type});
+  if(btnEl)btnEl.style.opacity='';
+  if(!pay.ok){alert(pay.error||"To'lovda xatolik");return}
+  currentUser.balans=pay.balans;
+  activeTestType=type;activeQuestions=questions;activeAnswers={};currentQIndex=0;
+  activeQuestions._name=name;testSubmitted=false;
+  timeLeft=TEST_TIME_MIN[type]*60;
+  hideAllScreens();show('testScreen');
   renderQuestion();
-
-
-  clearInterval(
-    timerInterval
-  );
-
-
-  timerInterval =
-    setInterval(()=>{
-
-      timeLeft--;
-
-      updateTimerDisplay();
-
-
-      if(timeLeft <= 0){
-
-        clearInterval(
-          timerInterval
-        );
-
-        finishTest();
-
-      }
-
-    },1000);
-
-
+  clearInterval(timerInterval);
+  timerInterval=setInterval(()=>{
+    timeLeft--;updateTimerDisplay();
+    if(timeLeft<=0){clearInterval(timerInterval);finishTest()}
+  },1000);
   updateTimerDisplay();
-
 }
-
-
-/* =========================================================
-   TIMER
-========================================================= */
-
 function updateTimerDisplay(){
-
-  const h =
-    String(
-      Math.floor(
-        timeLeft / 3600
-      )
-    ).padStart(2,'0');
-
-
-  const m =
-    String(
-      Math.floor(
-        (timeLeft % 3600) /
-        60
-      )
-    ).padStart(2,'0');
-
-
-  const s =
-    String(
-      timeLeft % 60
-    ).padStart(2,'0');
-
-
-  document
-    .getElementById(
-      'timer'
-    )
-    .textContent =
-      h + ':' +
-      m + ':' +
-      s;
-
+  const p=n=>String(n).padStart(2,'0');
+  $('timer').textContent=p(Math.floor(timeLeft/3600))+':'+p(Math.floor(timeLeft%3600/60))+':'+p(timeLeft%60);
 }
-
-
-/* =========================================================
-   QUESTION
-========================================================= */
-
 function renderQuestion(){
-
-  const q =
-    activeQuestions[
-      currentQIndex
-    ];
-
-
-  if(!q){
-    return;
-  }
-
-
-  document
-    .getElementById(
-      'qNum'
-    )
-    .textContent =
-      `Savol ${
-        currentQIndex + 1
-      } / ${
-        activeQuestions.length
-      }`;
-
-
-  document
-    .getElementById(
-      'qText'
-    )
-    .textContent =
-      q.savol || '-';
-
-
-  const isText =
-    !q.a ||
-    String(q.a).trim() === '';
-
-
-  const optsEl =
-    document.getElementById(
-      'qOpts'
-    );
-
-
-  const textEl =
-    document.getElementById(
-      'qTextAnswer'
-    );
-
-
-  optsEl.innerHTML =
-    '';
-
-
+  const q=activeQuestions[currentQIndex];
+  if(!q)return;
+  $('qNum').textContent=`Savol ${currentQIndex+1} / ${activeQuestions.length}`;
+  $('qText').textContent=q.savol||'-';
+  const isText=!q.a||String(q.a).trim()==='';
+  const optsEl=$('qOpts'),textEl=$('qTextAnswer');
+  optsEl.innerHTML='';
   if(isText){
-
-    optsEl.classList.add(
-      'hide'
-    );
-
-    textEl.classList.remove(
-      'hide'
-    );
-
-    textEl.value =
-      activeAnswers[
-        currentQIndex
-      ] || '';
-
+    optsEl.classList.add('hide');textEl.classList.remove('hide');
+    textEl.value=activeAnswers[currentQIndex]||'';
   }else{
-
-    textEl.classList.add(
-      'hide'
-    );
-
-    optsEl.classList.remove(
-      'hide'
-    );
-
-
-    [
-      'a',
-      'b',
-      'c',
-      'd'
-    ].forEach(letter=>{
-
-      if(!q[letter]){
-        return;
-      }
-
-
-      const btn =
-        document.createElement(
-          'button'
-        );
-
-
-      btn.className =
-        'opt' +
-        (
-          activeAnswers[
-            currentQIndex
-          ] ===
-          letter.toUpperCase()
-            ? ' selected'
-            : ''
-        );
-
-
-      btn.textContent =
-        letter.toUpperCase() +
-        ') ' +
-        q[letter];
-
-
-      btn.onclick = ()=>{
-
-        activeAnswers[
-          currentQIndex
-        ] =
-          letter.toUpperCase();
-
-        renderQuestion();
-
-      };
-
-
-      optsEl.appendChild(
-        btn
-      );
-
+    textEl.classList.add('hide');optsEl.classList.remove('hide');
+    ['a','b','c','d'].forEach(l=>{
+      if(!q[l])return;
+      const btn=document.createElement('button');
+      btn.className='opt'+(activeAnswers[currentQIndex]===l.toUpperCase()?' selected':'');
+      btn.textContent=l.toUpperCase()+') '+q[l];
+      btn.onclick=()=>{activeAnswers[currentQIndex]=l.toUpperCase();renderQuestion()};
+      optsEl.appendChild(btn);
     });
-
   }
-
-
-  document
-    .getElementById(
-      'nextBtn'
-    )
-    .textContent =
-      (
-        currentQIndex ===
-        activeQuestions.length - 1
-      )
-      ? 'Yakunlash'
-      : 'Keyingi';
-
+  $('nextBtn').textContent=(currentQIndex===activeQuestions.length-1)?'Yakunlash':'Keyingi';
 }
-
-
-/* =========================================================
-   PREVIOUS
-========================================================= */
-
-function prevQ(){
-
-  saveTextAnswer();
-
-
-  if(
-    currentQIndex > 0
-  ){
-
-    currentQIndex--;
-
-    renderQuestion();
-
-  }
-
-}
-
-
-/* =========================================================
-   NEXT
-========================================================= */
-
-function nextQ(){
-
-  saveTextAnswer();
-
-
-  if(
-    currentQIndex <
-    activeQuestions.length - 1
-  ){
-
-    currentQIndex++;
-
-    renderQuestion();
-
-  }else{
-
-    finishTest();
-
-  }
-
-}
-
-
-/* =========================================================
-   TEXT ANSWER
-========================================================= */
-
 function saveTextAnswer(){
-
-  const textEl =
-    document.getElementById(
-      'qTextAnswer'
-    );
-
-
-  if(
-    !textEl.classList.contains(
-      'hide'
-    )
-  ){
-
-    activeAnswers[
-      currentQIndex
-    ] =
-      textEl.value.trim();
-
-  }
-
+  const t=$('qTextAnswer');
+  if(!t.classList.contains('hide'))activeAnswers[currentQIndex]=t.value.trim();
 }
-
-
-/* =========================================================
-   FINISH TEST
-========================================================= */
+function prevQ(){saveTextAnswer();if(currentQIndex>0){currentQIndex--;renderQuestion()}}
+function nextQ(){
+  saveTextAnswer();
+  if(currentQIndex<activeQuestions.length-1){currentQIndex++;renderQuestion()}
+  else finishTest();
+}
 
 async function finishTest(){
-
-  if(testSubmitted){
-    return;
-  }
-
-
-  testSubmitted =
-    true;
-
-
-  clearInterval(
-    timerInterval
-  );
-
-
+  if(testSubmitted)return;
+  testSubmitted=true;
+  clearInterval(timerInterval);
   saveTextAnswer();
 
-
-  let score =
-    0;
-
-  let maxScore =
-    0;
-
-
-  activeQuestions.forEach(
-    (q,i)=>{
-
-      maxScore +=
-        Number(q.ball) || 0;
-
-
-      const ans =
-        activeAnswers[i];
-
-
-      if(ans === undefined){
-        return;
-      }
-
-
-      const isText =
-        !q.a ||
-        String(q.a).trim() === '';
-
-
-      if(isText){
-
-        if(
-          String(ans)
-            .trim()
-            .toLowerCase()
-          ===
-          String(q.togri)
-            .trim()
-            .toLowerCase()
-        ){
-
-          score +=
-            Number(q.ball) || 0;
-
-        }
-
-      }else{
-
-        if(
-          String(ans)
-            .toUpperCase()
-          ===
-          String(q.togri)
-            .toUpperCase()
-        ){
-
-          score +=
-            Number(q.ball) || 0;
-
-        }
-
-      }
-
-    }
-  );
-
-
-  score =
-    Math.round(
-      score * 100
-    ) / 100;
-
-
-  maxScore =
-    Math.round(
-      maxScore
-    );
-
-
-  const percent =
-    maxScore > 0
-      ? Math.round(
-          (score / maxScore) *
-          100
-        )
-      : 0;
-
-
-  await api({
-
-    action:'submitResult',
-
-    id:currentUser.id,
-
-    testTuri:
-      activeTestType,
-
-    testNomi:
-      activeQuestions._name,
-
-    ball:
-      score,
-
-    maxBall:
-      maxScore
-
+  let score=0,maxScore=0;
+  activeQuestions.forEach((q,i)=>{
+    maxScore+=Number(q.ball)||0;
+    const ans=activeAnswers[i];
+    if(ans===undefined)return;
+    const isText=!q.a||String(q.a).trim()==='';
+    const ok=isText
+      ?String(ans).trim().toLowerCase()===String(q.togri).trim().toLowerCase()
+      :String(ans).toUpperCase()===String(q.togri).toUpperCase();
+    if(ok)score+=Number(q.ball)||0;
   });
+  score=Math.round(score*100)/100;
+  maxScore=Math.round(maxScore);
+  const percent=maxScore>0?Math.round(score/maxScore*100):0;
 
+  api({action:'submitResult',id:currentUser.id,testTuri:activeTestType,testNomi:activeQuestions._name,ball:score,maxBall:maxScore});
 
-  hideAllScreens();
+  hideAllScreens();show('resultScreen');
+  const box=$('resultBox');
+  const fullName=esc(currentUser.ism)+' '+esc(currentUser.familiya);
 
-  show('resultScreen');
-
-
-  const box =
-    document.getElementById(
-      'resultBox'
-    );
-
-
-  /* =======================================================
-     SERTIFIKAT
-  ======================================================= */
-
-  if(
-    activeTestType ===
-    'sertifikat'
-  ){
-
-    const grade =
-      getGrade(
-        score,
-        activeQuestions._name
-      );
-
-
-    const percentCert =
-      Math.min(
-        100,
-        Math.round(
-          score / 75 * 100
-        )
-      );
-
-
+  if(activeTestType==='sertifikat'){
+    const grade=getGrade(score,activeQuestions._name);
+    const pc=Math.min(100,Math.round(score/75*100));
     if(!grade){
-
-      box.innerHTML = `
-
-        <div class="cert-fail">
-
-          <h2>
-            Sertifikat berilmadi
-          </h2>
-
-          <p style="margin-top:10px;">
-            ${currentUser.ism}
-            ${currentUser.familiya}
-          </p>
-
-          <p style="
-            margin-top:6px;
-            color:#666;
-          ">
-            To'plangan ball:
-            <b>
-              ${score} / 100
-            </b>
-          </p>
-
-          <p style="
-            margin-top:10px;
-            font-size:13px;
-            color:#999;
-          ">
-            Sertifikat olish uchun
-            kamida 46 ball to'plash kerak.
-          </p>
-
-        </div>
-
-      `;
-
+      box.innerHTML=`<div class="cert-fail"><h2>Sertifikat berilmadi</h2><p style="margin-top:10px">${fullName}</p><p style="margin-top:6px;color:#666">To'plangan ball: <b>${score} / 100</b></p><p style="margin-top:10px;font-size:13px;color:#999">Sertifikat olish uchun kamida 46 ball to'plash kerak.</p></div>`;
     }else{
-
-      box.innerHTML = `
-
-        <div class="cert-pass">
-
-          <img src="assets/logo.png">
-
-          <h3>
-            UMUMTA'LIM FANINI BILISH DARAJASI
-            <br>
-            TO'G'RISIDA SERTIFIKAT
-          </h3>
-
-          <div class="cert-fish">
-
-            <span style="
-              color:#6b5a2e;
-            ">
-              F.I.SH:
-            </span>
-
-            <b>
-              ${currentUser.ism}
-              ${currentUser.familiya}
-            </b>
-
-          </div>
-
-          <div class="cert-row">
-
-            <span>
-              Umumta'lim fani
-            </span>
-
-            <b>
-              ${activeQuestions._name}
-            </b>
-
-          </div>
-
-          <div class="cert-row">
-
-            <span>
-              Umumiy to'plagan bali
-            </span>
-
-            <b>
-              ${score}
-              (${percentCert}%)
-            </b>
-
-          </div>
-
-          <div class="cert-row">
-
-            <span>
-              Sertifikat darajasi
-            </span>
-
-            <b>
-              ${grade}
-            </b>
-
-          </div>
-
-          <div class="grade-big">
-            ${grade}
-          </div>
-
-          <hr class="cert-divider">
-
-          <div class="cert-row">
-
-            <span>
-              Berilgan sana
-            </span>
-
-            <b>
-              ${new Date()
-                .toLocaleDateString(
-                  'uz-UZ'
-                )}
-            </b>
-
-          </div>
-
-          <div class="cert-contact">
-            Murojat uchun:
-            +998 (77) 308 15-00
-          </div>
-
-        </div>
-
-      `;
-
+      box.innerHTML=`<div class="cert-pass"><img src="assets/logo.png"><h3>UMUMTA'LIM FANINI BILISH DARAJASI<br>TO'G'RISIDA SERTIFIKAT</h3>
+<div class="cert-fish"><span style="color:#6b5a2e">F.I.SH:</span> <b>${fullName}</b></div>
+<div class="cert-row"><span>Umumta'lim fani</span><b>${esc(activeQuestions._name)}</b></div>
+<div class="cert-row"><span>Umumiy to'plagan bali</span><b>${score} (${pc}%)</b></div>
+<div class="cert-row"><span>Sertifikat darajasi</span><b>${grade}</b></div>
+<div class="grade-big">${grade}</div><hr class="cert-divider">
+<div class="cert-row"><span>Berilgan sana</span><b>${new Date().toLocaleDateString('uz-UZ')}</b></div>
+<div class="cert-contact">Murojat uchun: +998 (77) 308 15-00</div></div>`;
     }
-
   }else{
-
-    /* =====================================================
-       ODDIY TEST NATIJASI
-    ===================================================== */
-
-    box.innerHTML = `
-
-      <div
-        class="card"
-        style="text-align:center;"
-      >
-
-        <h2>
-          Test yakunlandi!
-        </h2>
-
-        <p style="
-          font-size:15px;
-          margin-top:10px;
-        ">
-
-          Natijangiz:
-
-          <b style="
-            color:var(--gold2)
-          ">
-
-            ${score}
-            /
-            ${maxScore}
-
-          </b>
-
-          ball
-
-          (${percent}%)
-
-        </p>
-
-      </div>
-
-    `;
-
+    box.innerHTML=`<div class="card" style="text-align:center"><h2>Test yakunlandi!</h2><p style="font-size:15px;margin-top:10px">Natijangiz: <b style="color:var(--gold2)">${score} / ${maxScore}</b> ball (${percent}%)</p></div>`;
   }
-
 }
 
-
-/* =========================================================
-   CERTIFICATE GRADE
-========================================================= */
-
-function getGrade(
-  score,
-  subject
-){
-
-  const isEnglish =
-    subject &&
-    subject
-      .toLowerCase()
-      .indexOf('ingliz') !== -1;
-
-
+function getGrade(score,subject){
+  const isEnglish=subject&&subject.toLowerCase().indexOf('ingliz')!==-1;
   if(isEnglish){
-
-    if(score < 30)
-      return null;
-
-    if(score < 37)
-      return 'A2';
-
-    if(score < 51)
-      return 'B1';
-
-    if(score < 65)
-      return 'B2';
-
-    if(score < 70)
-      return 'C1';
-
-    return 'C2';
-
+    if(score<30)return null;if(score<37)return 'A2';if(score<51)return 'B1';
+    if(score<65)return 'B2';if(score<70)return 'C1';return 'C2';
   }
-
-
-  if(score < 46)
-    return null;
-
-  if(score < 50)
-    return 'C';
-
-  if(score < 55)
-    return 'C+';
-
-  if(score < 60)
-    return 'B';
-
-  if(score < 65)
-    return 'B+';
-
-  if(score < 70)
-    return 'A';
-
-  return 'A+';
-
+  if(score<46)return null;if(score<50)return 'C';if(score<55)return 'C+';
+  if(score<60)return 'B';if(score<65)return 'B+';if(score<70)return 'A';return 'A+';
 }
 
-
-/* =========================================================
-   INIT
-========================================================= */
-
-window.addEventListener(
-  'load',
-  async ()=>{
-
-    const email =
-      localStorage.getItem(
-        'abitur_email'
-      );
-
-
-    if(email){
-
-      const minIntro =
-        new Promise(
-          r =>
-            setTimeout(
-              r,
-              1200
-            )
-        );
-
-
-      const loginPromise =
-        api({
-
-          action:
-            'getUserByEmail',
-
-          email:
-            email
-
-        });
-
-
-      await minIntro;
-
-
-      const res =
-        await loginPromise;
-
-
-      if(
-        res &&
-        res.ok
-      ){
-
-        await loadDashboard();
-
-        return;
-
-      }
-
-    }else{
-
-      await new Promise(
-        r =>
-          setTimeout(
-            r,
-            1200
-          )
-      );
-
-    }
-
-
-    hideAllScreens();
-
-    show('authScreen');
-
-
-    /* =====================================================
-       GOOGLE BUTTON
-    ===================================================== */
-
-    if(
-      window.google &&
-      GOOGLE_CLIENT_ID &&
-      GOOGLE_CLIENT_ID.indexOf(
-        'YOUR_GOOGLE_CLIENT_ID'
-      ) === -1
-    ){
-
-      google.accounts.id.initialize({
-
-        client_id:
-          GOOGLE_CLIENT_ID,
-
-        callback:
-          handleGoogleCredential
-
-      });
-
-
-      google.accounts.id.renderButton(
-
-        document.getElementById(
-          'gSignInBtn'
-        ),
-
-        {
-
-          theme:
-            'filled_black',
-
-          size:
-            'large',
-
-          shape:
-            'pill',
-
-          text:
-            'continue_with',
-
-          width:
-            280
-
-        }
-
-      );
-
-    }else{
-
-      const err =
-        document.getElementById(
-          'googleErr'
-        );
-
-
-      err.textContent =
-        "Google Client ID sozlanmagan. Iltimos, GOOGLE_CLIENT_ID ni to'ldiring.";
-
-      err.classList.remove(
-        'hide'
-      );
-
-    }
-
+/* ===== ISHGA TUSHIRISH ===== */
+function initGoogleButton(){
+  if(window.google&&GOOGLE_CLIENT_ID){
+    google.accounts.id.initialize({client_id:GOOGLE_CLIENT_ID,callback:handleGoogleCredential});
+    google.accounts.id.renderButton($('gSignInBtn'),{theme:'filled_black',size:'large',shape:'pill',text:'continue_with',width:280});
+  }else{
+    // Google skripti hali yuklanmagan bo'lishi mumkin — qayta urinib ko'ramiz
+    if(initGoogleButton.tries++<20)return setTimeout(initGoogleButton,250);
+    const err=$('googleErr');
+    err.textContent="Google yuklanmadi. Internetni tekshirib, sahifani yangilang.";
+    err.classList.remove('hide');
   }
-);
+}
+initGoogleButton.tries=0;
 
+window.addEventListener('load',async()=>{
+  const email=localStorage.getItem('abitur_email');
+  if(email){
+    let cached=null;
+    try{cached=JSON.parse(localStorage.getItem('abitur_cache')||'null')}catch(e){}
+    if(cached&&cached.res){
+      renderDashboard(cached.res,cached.set,cached.rank); // darrov ko'rsatadi
+      loadDashboard();                                    // orqa fonda yangilaydi
+    }else{
+      await loadDashboard();
+    }
+    return;
+  }
+  hideAllScreens();show('authScreen');
+  initGoogleButton();
+});
 </script>
-
 </body>
-  </html>
+</html>
