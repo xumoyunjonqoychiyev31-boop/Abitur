@@ -391,14 +391,20 @@ const GAS_URL="https://script.google.com/macros/s/AKfycbyXj58b-E6r8pUjq216npYb-6
 document.getElementById('footerYear').textContent=new Date().getFullYear();
 
 /* ===== YORDAMCHI ===== */
+const SAFE_RETRY=['getUserByEmail','getSettings','getRanking','getTests','getCertificates','googleLogin'];
 async function api(params){
-  try{
-    const res=await fetch(GAS_URL+'?'+new URLSearchParams(params).toString());
-    return await res.json();
-  }catch(e){
-    console.error('API ERROR:',e);
-    return {ok:false,network:true,error:'Server bilan bog‘lanishda xatolik yuz berdi.'};
+  // Faqat o'qish so'rovlari qayta uriniladi (to'lov/natija ikki marta ketmasligi uchun)
+  const tries=SAFE_RETRY.includes(params.action)?3:1;
+  for(let a=0;a<tries;a++){
+    try{
+      const res=await fetch(GAS_URL+'?'+new URLSearchParams(params).toString());
+      return await res.json();
+    }catch(e){
+      console.error('API ERROR:',e);
+      if(a<tries-1)await new Promise(r=>setTimeout(r,700*(a+1)+Math.random()*500));
+    }
   }
+  return {ok:false,network:true,error:'Server band yoki internet uzildi. Bir ozdan keyin qayta urinib ko‘ring.'};
 }
 const $=id=>document.getElementById(id);
 const show=id=>{const e=$(id);if(e)e.classList.remove('hide');
@@ -655,6 +661,7 @@ async function openTestType(type){
   const price=Number(settingsCache['price_'+type]||0);
   if(Number(currentUser.balans)<price){alert("Balansingiz yetarli emas. Iltimos, balansni to'ldiring.");showPayment();return}
   const res=await api({action:'getTests',testTuri:type});
+  if(res.network){alert(res.error);return}
   if(!res.ok||!res.list||res.list.length===0){alert("Bu test turi uchun hozircha savollar mavjud emas.");return}
 
   const baseName=n=>String(n||'').split('#')[0].trim();
@@ -678,6 +685,8 @@ async function openTestType(type){
     const note=variants.length>1?` (${variants.length} variant)`:'';
     div.innerHTML=`<div><div class="name">${esc(base)}</div><div class="sub">${variants[0].length} ta savol${note}</div></div><span class="badge">Boshlash</span>`;
     div.onclick=()=>{
+      if(div.dataset.busy)return;   // ikki marta bosilib, ikki marta pul yechilmasin
+      div.dataset.busy='1';
       div.style.opacity='0.6';
       let qs=variants[Math.floor(Math.random()*variants.length)];
       if(type==='sinov'&&qs.length>30)qs=shuffleArray(qs).slice(0,30);
@@ -690,7 +699,8 @@ async function openTestType(type){
 
 async function startTest(type,name,questions,btnEl){
   const pay=await api({action:'payForTest',id:currentUser.id,testTuri:type});
-  if(btnEl)btnEl.style.opacity='';
+  if(btnEl){btnEl.style.opacity='';delete btnEl.dataset.busy}
+  if(pay.network){alert("Server javob bermadi. Testni qayta boshlashdan oldin balansingizni tekshiring.");return}
   if(!pay.ok){alert(pay.error||"To'lovda xatolik");return}
   currentUser.balans=pay.balans;
   activeTestType=type;activeQuestions=questions;activeAnswers={};currentQIndex=0;
