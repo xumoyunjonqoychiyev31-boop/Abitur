@@ -162,10 +162,7 @@ button{cursor:pointer;border:none}
 .nav-item.active{color:var(--gold2);background:rgba(232,184,75,.12);font-weight:700}
 .nav-item.active::before{content:'';position:absolute;top:-7px;left:25%;right:25%;height:3px;border-radius:0 0 3px 3px;background:var(--gold)}
 .section-bar{display:flex;align-items:center;justify-content:center;gap:8px;width:fit-content;max-width:100%;margin:-6px auto 16px;padding:8px 16px;font-size:14px;font-weight:700;color:var(--gold2);border:1px solid rgba(232,184,75,.35);border-radius:20px;background:rgba(232,184,75,.08)}
-.badges{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
 .cert-img{width:100%;display:block;border-radius:12px;cursor:pointer}
-.bdg{padding:6px 12px;border-radius:20px;font-size:12px;border:1px solid rgba(232,184,75,.5);color:var(--gold2)}
-.bdg.off{opacity:.35;border-color:rgba(255,255,255,.2);color:var(--muted)}
 </style>
 </head>
 <body>
@@ -237,12 +234,6 @@ button{cursor:pointer;border:none}
     </div>
 
     <div class="card" data-sec="home">
-      <h2>📊 Reyting</h2>
-      <div class="stat-row"><span>Sizning o'rningiz</span><b id="hRank">-</b></div>
-      <p class="quality-desc" id="hRankHint" style="margin:12px auto 0"></p>
-    </div>
-
-    <div class="card" data-sec="home">
       <h2>🕘 Oxirgi test</h2>
       <div id="hLast" class="quality-desc" style="margin:0 auto">Hali test yechilmagan.</div>
     </div>
@@ -251,11 +242,6 @@ button{cursor:pointer;border:none}
       <h2>📅 Sertifikat sanalari</h2>
       <img id="hCertImg" class="cert-img hide" alt="Sertifikat sanalari" onclick="window.open(this.src,'_blank')">
       <p class="quality-desc" id="hCertEmpty" style="margin:0 auto">Sanalar tez orada e'lon qilinadi.</p>
-    </div>
-
-    <div class="card" data-sec="home">
-      <h2>🏅 Yutuqlar</h2>
-      <div id="hBadges" class="badges"></div>
     </div>
 
     <div class="card" data-sec="home">
@@ -593,19 +579,6 @@ function renderDashboard(res,set,rank){
 
 /* ===== BOSH SAHIFA QO'SHIMCHALARI ===== */
 function renderHome(res,rank){
-  // 1) Reyting
-  const list=(rank&&rank.list)?rank.list:[];
-  const myScore=Number(res.totalScore)||0;
-  $('hRank').textContent=res.rank?'#'+res.rank:'-';
-  let hint;
-  if(res.rank&&Number(res.rank)<=20)hint='Siz TOP 20 dasiz. Shunday davom eting!';
-  else if(list.length>=20){
-    let need=Math.ceil(Number(list[19].totalScore||0)-myScore);
-    if(need<=0)need=1;
-    hint='TOP 20 ga kirish uchun taxminan '+need+' ball kerak.';
-  }else hint='Test yechib reytingga chiqing.';
-  $('hRankHint').textContent=hint;
-
   // 2) Oxirgi test
   const lt=res.lastTest,lastEl=$('hLast');
   let lastPct=null;
@@ -622,14 +595,6 @@ function renderHome(res,rank){
   img.onload=()=>{img.classList.remove('hide');emp.classList.add('hide')};
   img.onerror=()=>{img.classList.add('hide');emp.classList.remove('hide')};
   if(img.getAttribute('src')!==src)img.src=src;
-
-  // 4) Yutuqlar
-  const cnt=Number(res.testsCount)||0;
-  const badges=[
-    ['🎯 Birinchi test',cnt>=1],['🔥 5 ta test',cnt>=5],['🚀 10 ta test',cnt>=10],['👑 25 ta test',cnt>=25],
-    ['🏆 TOP 20',!!res.rank&&Number(res.rank)<=20],['⭐ 90%+ natija',lastPct!==null&&lastPct>=90]
-  ];
-  $('hBadges').innerHTML=badges.map(b=>'<span class="bdg'+(b[1]?'':' off')+'">'+b[0]+'</span>').join('');
 
   // 5) Taklif uchun ID
   $('hMyId').textContent=res.id||'-';
