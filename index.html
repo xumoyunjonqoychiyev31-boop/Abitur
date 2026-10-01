@@ -158,7 +158,14 @@ button{cursor:pointer;border:none}
 .bottom-nav{position:fixed;left:0;right:0;bottom:0;z-index:100;display:flex;background:rgba(21,23,28,.96);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border-top:1px solid rgba(232,184,75,.25);padding:6px 4px calc(6px + env(safe-area-inset-bottom))}
 .nav-item{flex:1;background:none;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11px;padding:6px 0}
 .nav-item .ico{font-size:20px}
-.nav-item.active{color:var(--gold2)}
+.nav-item{position:relative;border-radius:10px}
+.nav-item.active{color:var(--gold2);background:rgba(232,184,75,.12);font-weight:700}
+.nav-item.active::before{content:'';position:absolute;top:-7px;left:25%;right:25%;height:3px;border-radius:0 0 3px 3px;background:var(--gold)}
+.section-bar{display:flex;align-items:center;justify-content:center;gap:8px;width:fit-content;max-width:100%;margin:-6px auto 16px;padding:8px 16px;font-size:14px;font-weight:700;color:var(--gold2);border:1px solid rgba(232,184,75,.35);border-radius:20px;background:rgba(232,184,75,.08)}
+.badges{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.cert-img{width:100%;display:block;border-radius:12px;cursor:pointer}
+.bdg{padding:6px 12px;border-radius:20px;font-size:12px;border:1px solid rgba(232,184,75,.5);color:var(--gold2)}
+.bdg.off{opacity:.35;border-color:rgba(255,255,255,.2);color:var(--muted)}
 </style>
 </head>
 <body>
@@ -176,6 +183,8 @@ button{cursor:pointer;border:none}
 
   <div class="top-logo"><img src="assets/logo.png" alt="ABITUR DTM logotipi"><span>ABITUR DTM</span></div>
   <p style="text-align:center;color:var(--muted);font-size:12px;max-width:400px;margin:0 auto 16px;line-height:1.5">Onlayn <b style="color:var(--gold2)">DTM test</b>, <b style="color:var(--gold2)">blok test</b> va <b style="color:var(--gold2)">milliy sertifikat</b> testlari — barcha fanlardan.</p>
+
+  <div id="sectionBar" class="section-bar hide"></div>
 
   <!-- AUTH -->
   <div id="authScreen">
@@ -227,12 +236,42 @@ button{cursor:pointer;border:none}
       <div class="stat-row"><span>Umumiy ball</span><b id="dScore">-</b></div>
     </div>
 
+    <div class="card" data-sec="home">
+      <h2>📊 Reyting</h2>
+      <div class="stat-row"><span>Sizning o'rningiz</span><b id="hRank">-</b></div>
+      <p class="quality-desc" id="hRankHint" style="margin:12px auto 0"></p>
+    </div>
+
+    <div class="card" data-sec="home">
+      <h2>🕘 Oxirgi test</h2>
+      <div id="hLast" class="quality-desc" style="margin:0 auto">Hali test yechilmagan.</div>
+    </div>
+
+    <div class="card" data-sec="home">
+      <h2>📅 Sertifikat sanalari</h2>
+      <img id="hCertImg" class="cert-img hide" alt="Sertifikat sanalari" onclick="window.open(this.src,'_blank')">
+      <p class="quality-desc" id="hCertEmpty" style="margin:0 auto">Sanalar tez orada e'lon qilinadi.</p>
+    </div>
+
+    <div class="card" data-sec="home">
+      <h2>🏅 Yutuqlar</h2>
+      <div id="hBadges" class="badges"></div>
+    </div>
+
+    <div class="card" data-sec="home">
+      <h2>🎁 Do'stni taklif qiling</h2>
+      <p class="quality-desc" style="margin:0 auto 10px">Do'stingiz ro'yxatdan o'tishda ID raqamingizni kiritsa, hisobingizga 2000 so'm tushadi.</p>
+      <div id="hMyId" style="text-align:center;font-size:28px;font-weight:800;color:var(--gold2);letter-spacing:3px">-</div>
+      <button class="btn btn-outline" id="copyIdBtn" onclick="copyMyId()">ID ni nusxalash</button>
+    </div>
+
     <!-- KABINET -->
     <div class="card" data-sec="kabinet">
       <h2>Kabinet</h2>
       <div class="stat-row"><span>ID</span><b id="dId">-</b></div>
       <div class="stat-row"><span>Reyting o'rni</span><b id="dRank">-</b></div>
       <div class="stat-row"><span>Yechilgan testlar soni</span><b id="dCount">-</b></div>
+      <div class="stat-row"><span>Umumiy ball</span><b id="dScore2">-</b></div>
       <div class="stat-row"><span>Balans</span><b id="dBalans">-</b></div>
       <button class="btn btn-outline" onclick="showPayment()">💳 Balansni to'ldirish</button>
       <button class="btn btn-outline" onclick="logout()">Chiqish</button>
@@ -371,22 +410,32 @@ async function api(params){
 }
 const $=id=>document.getElementById(id);
 const show=id=>{const e=$(id);if(e)e.classList.remove('hide');
-  if(['dashboard','testSetScreen','paymentScreen','resultScreen'].includes(id))$('bottomNav').classList.remove('hide')};
+  if(['dashboard','testSetScreen','paymentScreen','resultScreen'].includes(id)){
+    $('bottomNav').classList.remove('hide');$('sectionBar').classList.remove('hide');
+    if(SUB_TAB[id])setActiveTab(SUB_TAB[id].tab,SUB_TAB[id].sub);
+  }};
 const hide=id=>{const e=$(id);if(e)e.classList.add('hide')};
-const hideAllScreens=()=>{['authScreen','regSuccess','dashboard','testSetScreen','paymentScreen','testScreen','resultScreen'].forEach(hide);hide('bottomNav')};
+const hideAllScreens=()=>{['authScreen','regSuccess','dashboard','testSetScreen','paymentScreen','testScreen','resultScreen'].forEach(hide);hide('bottomNav');hide('sectionBar')};
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
 let currentUser=null,settingsCache={},pendingGoogleEmail=null;
 
 /* ===== PASTKI MENYU ===== */
 let currentTab='home';
-function showTab(t){
+const TAB_INFO={home:['🏠','Bosh sahifa'],testlar:['📝','Testlar'],reyting:['🏆','Reyting'],kabinet:['👤','Kabinet']};
+const SUB_TAB={testSetScreen:{tab:'testlar',sub:'Test tanlash'},paymentScreen:{tab:'kabinet',sub:"Balansni to'ldirish"},resultScreen:{tab:'testlar',sub:'Natija'}};
+function setActiveTab(t,sub){
   currentTab=t;
+  document.querySelectorAll('.nav-item').forEach(b=>b.classList.toggle('active',b.dataset.tab===t));
+  const bar=$('sectionBar');
+  if(bar)bar.textContent=TAB_INFO[t][0]+' '+TAB_INFO[t][1]+(sub?' › '+sub:'');
+}
+function showTab(t){
   if($('dashboard').classList.contains('hide')){hideAllScreens();show('dashboard')}
+  setActiveTab(t);
   document.querySelectorAll('#dashboard [data-sec]').forEach(el=>{
     el.classList.toggle('tab-off', el.dataset.sec!==t);
   });
-  document.querySelectorAll('.nav-item').forEach(b=>b.classList.toggle('active',b.dataset.tab===t));
   window.scrollTo(0,0);
 }
 
@@ -516,6 +565,7 @@ function renderDashboard(res,set,rank){
   $('dRank').textContent=res.rank?'#'+res.rank:'-';
   $('dCount').textContent=res.testsCount??0;
   $('dScore').textContent=res.totalScore??0;
+  $('dScore2').textContent=res.totalScore??0;
   $('dBalans').textContent=(res.balans??0)+" so'm";
 
   const lastPct=(res.lastTest&&Number(res.lastTest.maxBall)>0)?Math.round(Number(res.lastTest.ball)/Number(res.lastTest.maxBall)*100):null;
@@ -537,7 +587,59 @@ function renderDashboard(res,set,rank){
     list.appendChild(div);
   });
 
+  renderHome(res,rank);
   hideAllScreens();show('dashboard');showTab(currentTab);
+}
+
+/* ===== BOSH SAHIFA QO'SHIMCHALARI ===== */
+function renderHome(res,rank){
+  // 1) Reyting
+  const list=(rank&&rank.list)?rank.list:[];
+  const myScore=Number(res.totalScore)||0;
+  $('hRank').textContent=res.rank?'#'+res.rank:'-';
+  let hint;
+  if(res.rank&&Number(res.rank)<=20)hint='Siz TOP 20 dasiz. Shunday davom eting!';
+  else if(list.length>=20){
+    let need=Math.ceil(Number(list[19].totalScore||0)-myScore);
+    if(need<=0)need=1;
+    hint='TOP 20 ga kirish uchun taxminan '+need+' ball kerak.';
+  }else hint='Test yechib reytingga chiqing.';
+  $('hRankHint').textContent=hint;
+
+  // 2) Oxirgi test
+  const lt=res.lastTest,lastEl=$('hLast');
+  let lastPct=null;
+  if(lt&&Number(lt.maxBall)>0){
+    lastPct=Math.round(Number(lt.ball)/Number(lt.maxBall)*100);
+    const nm=lt.testNomi||lt.nomi||lt.testTuri||'Test';
+    const dt=lt.sana||lt.date||'';
+    lastEl.innerHTML='<b style="color:var(--gold2)">'+esc(nm)+'</b><br>'+esc(lt.ball)+' / '+esc(lt.maxBall)+' ball ('+lastPct+'%)'+(dt?'<br>'+esc(dt):'');
+  }else lastEl.textContent='Hali test yechilmagan.';
+
+  // 3) Sertifikat sanalari rasmi
+  const img=$('hCertImg'),emp=$('hCertEmpty');
+  const src=settingsCache.sertifikat_rasm||'assets/sertifikat-sanalari.png';
+  img.onload=()=>{img.classList.remove('hide');emp.classList.add('hide')};
+  img.onerror=()=>{img.classList.add('hide');emp.classList.remove('hide')};
+  if(img.getAttribute('src')!==src)img.src=src;
+
+  // 4) Yutuqlar
+  const cnt=Number(res.testsCount)||0;
+  const badges=[
+    ['🎯 Birinchi test',cnt>=1],['🔥 5 ta test',cnt>=5],['🚀 10 ta test',cnt>=10],['👑 25 ta test',cnt>=25],
+    ['🏆 TOP 20',!!res.rank&&Number(res.rank)<=20],['⭐ 90%+ natija',lastPct!==null&&lastPct>=90]
+  ];
+  $('hBadges').innerHTML=badges.map(b=>'<span class="bdg'+(b[1]?'':' off')+'">'+b[0]+'</span>').join('');
+
+  // 5) Taklif uchun ID
+  $('hMyId').textContent=res.id||'-';
+}
+function copyMyId(){
+  const id=String(currentUser&&currentUser.id||'');
+  const btn=$('copyIdBtn');
+  const done=()=>{btn.textContent='Nusxalandi ✓';setTimeout(()=>btn.textContent='ID ni nusxalash',1500)};
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(id).then(done).catch(()=>{})}
+  else{const t=document.createElement('textarea');t.value=id;document.body.appendChild(t);t.select();try{document.execCommand('copy');done()}catch(e){}t.remove()}
 }
 
 async function loadDashboard(){
