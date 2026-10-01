@@ -83,8 +83,9 @@ body::after{bottom:-40px;right:-120px;transform:rotate(180deg)}
 @keyframes shine{0%{left:-160%}100%{left:160%}}
 
 /* LAYOUT */
-.container{max-width:480px;margin:0 auto;padding:24px 18px 20px;flex:1;width:100%}
+.container{max-width:480px;margin:0 auto;padding:24px 18px 90px;flex:1;width:100%}
 .hide{display:none!important}
+.tab-off{display:none!important}
 .top-logo{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:22px}
 .top-logo img{width:44px}
 .top-logo span{font-weight:700;letter-spacing:3px;font-size:20px;color:var(--gold2)}
@@ -150,8 +151,14 @@ button{cursor:pointer;border:none}
 .seo-info b{color:var(--gold2);font-weight:600}
 
 /* FOOTER */
-.site-footer{text-align:center;padding:16px 18px 22px;font-size:12px;color:var(--muted);position:relative;z-index:1}
+.site-footer{text-align:center;padding:16px 18px 80px;font-size:12px;color:var(--muted);position:relative;z-index:1}
 .site-footer b{color:var(--gold2)}
+
+/* PASTKI MENYU */
+.bottom-nav{position:fixed;left:0;right:0;bottom:0;z-index:100;display:flex;background:rgba(21,23,28,.96);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border-top:1px solid rgba(232,184,75,.25);padding:6px 4px calc(6px + env(safe-area-inset-bottom))}
+.nav-item{flex:1;background:none;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11px;padding:6px 0}
+.nav-item .ico{font-size:20px}
+.nav-item.active{color:var(--gold2)}
 </style>
 </head>
 <body>
@@ -203,7 +210,8 @@ button{cursor:pointer;border:none}
   <!-- DASHBOARD -->
   <div id="dashboard" class="hide">
 
-    <div class="card">
+    <!-- BOSH SAHIFA: foiz va ball -->
+    <div class="card" data-sec="home">
       <h2 id="dashName">—</h2>
       <div class="quality-ring-wrap">
         <svg class="quality-ring" viewBox="0 0 120 120">
@@ -216,23 +224,27 @@ button{cursor:pointer;border:none}
         </div>
       </div>
       <p class="quality-desc" id="qualityDescText">Bilim sifatingizni ko'rish uchun kamida bitta test yeching.</p>
+      <div class="stat-row"><span>Umumiy ball</span><b id="dScore">-</b></div>
+    </div>
 
+    <!-- KABINET -->
+    <div class="card" data-sec="kabinet">
+      <h2>Kabinet</h2>
       <div class="stat-row"><span>ID</span><b id="dId">-</b></div>
       <div class="stat-row"><span>Reyting o'rni</span><b id="dRank">-</b></div>
       <div class="stat-row"><span>Yechilgan testlar soni</span><b id="dCount">-</b></div>
-      <div class="stat-row"><span>Umumiy ball</span><b id="dScore">-</b></div>
       <div class="stat-row"><span>Balans</span><b id="dBalans">-</b></div>
-
       <button class="btn btn-outline" onclick="showPayment()">💳 Balansni to'ldirish</button>
       <button class="btn btn-outline" onclick="logout()">Chiqish</button>
     </div>
 
-    <div class="card">
+    <div class="card" data-sec="kabinet">
       <h2>🎁 Do'stlarni taklif qiling</h2>
       <h2 style="font-size:15px">Do'stingiz ro'yxatdan o'tishda sizning ID raqamingizni "Taklif kodi" maydoniga kiritsa, hisobingizga 2000 so'm tushadi!</h2>
     </div>
 
-    <div class="card">
+    <!-- TESTLAR -->
+    <div class="card" data-sec="testlar">
       <h2>Testlar</h2>
       <div class="test-btn" onclick="openTestType('sinov')">
         <div><div class="name">Sinov test</div><div class="sub">30 ta savol · jami 30 ball</div></div>
@@ -249,14 +261,15 @@ button{cursor:pointer;border:none}
       <p style="font-size:12px;color:var(--muted);margin-top:12px;text-align:center;line-height:1.5">Barcha fanlardan testlarini shu yerda toping.</p>
     </div>
 
-    <div class="card">
+    <!-- REYTING -->
+    <div class="card" data-sec="reyting">
       <h2>🏆 Reyting (TOP 20)</h2>
       <h2 style="font-size:15px">📅 Har oy boshida reyting 0 dan boshlanadi.</h2>
       <div id="rankingList"></div>
     </div>
 
     <!-- YARATUVCHI CARD (faqat kabinetda) -->
-    <footer style="max-width:420px;margin:32px auto 16px;padding:16px 20px;background:transparent;border:1px solid rgba(255,255,255,.35);border-radius:14px;font-family:system-ui,sans-serif;text-align:center;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.7)">
+    <footer data-sec="kabinet" style="max-width:420px;margin:32px auto 16px;padding:16px 20px;background:transparent;border:1px solid rgba(255,255,255,.35);border-radius:14px;font-family:system-ui,sans-serif;text-align:center;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.7)">
       <div style="font-size:12px;letter-spacing:1px;text-transform:uppercase;opacity:.85">Sayt yaratuvchisi</div>
       <strong style="display:block;margin-top:4px;font-size:18px">Xumoyun Qo'ychiyev</strong>
       <div style="margin-top:10px;display:flex;justify-content:center;gap:18px;flex-wrap:wrap">
@@ -329,6 +342,14 @@ button{cursor:pointer;border:none}
 </div>
 
 <div class="site-footer">© <span id="footerYear"></span> <b>ABITUR DTM</b>. Barcha huquqlar himoyalangan.</div>
+
+<!-- PASTKI MENYU -->
+<nav id="bottomNav" class="bottom-nav hide">
+  <button class="nav-item active" data-tab="home" onclick="showTab('home')"><span class="ico">🏠</span>Bosh sahifa</button>
+  <button class="nav-item" data-tab="testlar" onclick="showTab('testlar')"><span class="ico">📝</span>Testlar</button>
+  <button class="nav-item" data-tab="reyting" onclick="showTab('reyting')"><span class="ico">🏆</span>Reyting</button>
+  <button class="nav-item" data-tab="kabinet" onclick="showTab('kabinet')"><span class="ico">👤</span>Kabinet</button>
+</nav>
 </div>
 
 <script>
@@ -349,12 +370,25 @@ async function api(params){
   }
 }
 const $=id=>document.getElementById(id);
-const show=id=>{const e=$(id);if(e)e.classList.remove('hide')};
+const show=id=>{const e=$(id);if(e)e.classList.remove('hide');
+  if(['dashboard','testSetScreen','paymentScreen','resultScreen'].includes(id))$('bottomNav').classList.remove('hide')};
 const hide=id=>{const e=$(id);if(e)e.classList.add('hide')};
-const hideAllScreens=()=>['authScreen','regSuccess','dashboard','testSetScreen','paymentScreen','testScreen','resultScreen'].forEach(hide);
+const hideAllScreens=()=>{['authScreen','regSuccess','dashboard','testSetScreen','paymentScreen','testScreen','resultScreen'].forEach(hide);hide('bottomNav')};
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
 let currentUser=null,settingsCache={},pendingGoogleEmail=null;
+
+/* ===== PASTKI MENYU ===== */
+let currentTab='home';
+function showTab(t){
+  currentTab=t;
+  if($('dashboard').classList.contains('hide')){hideAllScreens();show('dashboard')}
+  document.querySelectorAll('#dashboard [data-sec]').forEach(el=>{
+    el.classList.toggle('tab-off', el.dataset.sec!==t);
+  });
+  document.querySelectorAll('.nav-item').forEach(b=>b.classList.toggle('active',b.dataset.tab===t));
+  window.scrollTo(0,0);
+}
 
 /* ===== BILIM SIFATI ===== */
 const QUALITY_RANGES=[
@@ -468,6 +502,7 @@ function logout(){
   localStorage.removeItem('abitur_email');
   localStorage.removeItem('abitur_cache');
   currentUser=null;
+  currentTab='home';
   hideAllScreens();show('authScreen');
   $('newUserCard').classList.add('hide');
   $('googleAuthCard').classList.remove('hide');
@@ -502,7 +537,7 @@ function renderDashboard(res,set,rank){
     list.appendChild(div);
   });
 
-  hideAllScreens();show('dashboard');
+  hideAllScreens();show('dashboard');showTab(currentTab);
 }
 
 async function loadDashboard(){
