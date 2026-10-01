@@ -264,6 +264,12 @@ button{cursor:pointer;border:none}
     </div>
 
     <div class="card" data-sec="kabinet">
+      <h2>🎓 Mening sertifikatlarim</h2>
+      <div id="certList"></div>
+      <p class="quality-desc" id="certEmpty" style="margin:0 auto">Hali sertifikat olinmagan. Sertifikat testidan 46+ ball to'plasangiz, shu yerda saqlanadi.</p>
+    </div>
+
+    <div class="card" data-sec="kabinet">
       <h2>🎁 Do'stlarni taklif qiling</h2>
       <h2 style="font-size:15px">Do'stingiz ro'yxatdan o'tishda sizning ID raqamingizni "Taklif kodi" maydoniga kiritsa, hisobingizga 2000 so'm tushadi!</h2>
     </div>
@@ -544,7 +550,7 @@ function logout(){
 }
 
 /* ===== DASHBOARD (keshli) ===== */
-function renderDashboard(res,set,rank){
+function renderDashboard(res,set,rank,certs){
   currentUser=res;
   $('dashName').textContent=(res.ism||'')+' '+(res.familiya||'');
   $('dId').textContent=res.id||'-';
@@ -574,6 +580,7 @@ function renderDashboard(res,set,rank){
   });
 
   renderHome(res,rank);
+  renderCerts(certs);
   hideAllScreens();show('dashboard');showTab(currentTab);
 }
 
@@ -611,17 +618,18 @@ async function loadDashboard(){
   const email=localStorage.getItem('abitur_email');
   if(!email){logout();return}
   try{
-    const [res,set,rank]=await Promise.all([
+    const [res,set,rank,certs]=await Promise.all([
       api({action:'getUserByEmail',email:email}),
       api({action:'getSettings'}),
-      api({action:'getRanking'})
+      api({action:'getRanking'}),
+      api({action:'getCertificates',email:email})
     ]);
     if(!res||!res.ok){
       if(!res||!res.network)logout(); // internet bo'lmasa chiqarib yubormaydi
       return;
     }
-    try{localStorage.setItem('abitur_cache',JSON.stringify({res,set,rank}))}catch(e){}
-    renderDashboard(res,set,rank);
+    try{localStorage.setItem('abitur_cache',JSON.stringify({res,set,rank,certs}))}catch(e){}
+    renderDashboard(res,set,rank,certs);
   }catch(e){console.error('Dashboard error:',e)}
 }
 function backToDashboard(){loadDashboard()}
@@ -769,18 +777,54 @@ async function finishTest(){
     if(!grade){
       box.innerHTML=`<div class="cert-fail"><h2>Sertifikat berilmadi</h2><p style="margin-top:10px">${fullName}</p><p style="margin-top:6px;color:#666">To'plangan ball: <b>${score} / 100</b></p><p style="margin-top:10px;font-size:13px;color:#999">Sertifikat olish uchun kamida 46 ball to'plash kerak.</p></div>`;
     }else{
-      box.innerHTML=`<div class="cert-pass"><img src="assets/logo.png"><h3>UMUMTA'LIM FANINI BILISH DARAJASI<br>TO'G'RISIDA SERTIFIKAT</h3>
-<div class="cert-fish"><span style="color:#6b5a2e">F.I.SH:</span> <b>${fullName}</b></div>
-<div class="cert-row"><span>Umumta'lim fani</span><b>${esc(activeQuestions._name)}</b></div>
-<div class="cert-row"><span>Umumiy to'plagan bali</span><b>${score} (${pc}%)</b></div>
-<div class="cert-row"><span>Sertifikat darajasi</span><b>${grade}</b></div>
-<div class="grade-big">${grade}</div><hr class="cert-divider">
-<div class="cert-row"><span>Berilgan sana</span><b>${new Date().toLocaleDateString('uz-UZ')}</b></div>
-<div class="cert-contact">Murojat uchun: +998 (77) 308 15-00</div></div>`;
+      const c={subject:activeQuestions._name,score:score,pc:pc,grade:grade,date:new Date().toLocaleDateString('uz-UZ'),name:(currentUser.ism||'')+' '+(currentUser.familiya||'')};
+      saveCert(c);
+      box.innerHTML=certHtml(c);
     }
   }else{
     box.innerHTML=`<div class="card" style="text-align:center"><h2>Test yakunlandi!</h2><p style="font-size:15px;margin-top:10px">Natijangiz: <b style="color:var(--gold2)">${score} / ${maxScore}</b> ball (${percent}%)</p></div>`;
   }
+}
+
+/* ===== SERTIFIKATLAR (server, bo'lmasa shu qurilmada) ===== */
+function certHtml(c){
+  return `<div class="cert-pass"><img src="assets/logo.png"><h3>UMUMTA'LIM FANINI BILISH DARAJASI<br>TO'G'RISIDA SERTIFIKAT</h3>
+<div class="cert-fish"><span style="color:#6b5a2e">F.I.SH:</span> <b>${esc(c.name)}</b></div>
+<div class="cert-row"><span>Umumta'lim fani</span><b>${esc(c.subject)}</b></div>
+<div class="cert-row"><span>Umumiy to'plagan bali</span><b>${esc(c.score)} (${esc(c.pc)}%)</b></div>
+<div class="cert-row"><span>Sertifikat darajasi</span><b>${esc(c.grade)}</b></div>
+<div class="grade-big">${esc(c.grade)}</div><hr class="cert-divider">
+<div class="cert-row"><span>Berilgan sana</span><b>${esc(c.date)}</b></div>
+<div class="cert-contact">Murojat uchun: +998 (77) 308 15-00</div></div>`;
+}
+const certKey=()=>'abitur_certs_'+(currentUser&&currentUser.id);
+function getCerts(){try{return JSON.parse(localStorage.getItem(certKey())||'[]')}catch(e){return[]}}
+function saveCert(c){try{const l=getCerts();l.unshift(c);localStorage.setItem(certKey(),JSON.stringify(l.slice(0,50)))}catch(e){}}
+let shownCerts=[];
+function renderCerts(serverRes){
+  const el=$('certList'),emp=$('certEmpty');
+  if(!el)return;
+  // Server ro'yxati bo'lsa — shuni ko'rsatamiz, bo'lmasa shu qurilmadagi nusxa
+  const fromServer=serverRes&&serverRes.ok&&Array.isArray(serverRes.list);
+  const nm=currentUser?((currentUser.ism||'')+' '+(currentUser.familiya||'')):'';
+  shownCerts=fromServer?serverRes.list.map(c=>Object.assign({name:nm},c)):getCerts();
+  el.innerHTML='';
+  emp.classList.toggle('hide',shownCerts.length>0);
+  shownCerts.forEach((c,i)=>{
+    const d=document.createElement('div');
+    d.className='test-btn';
+    d.innerHTML=`<div><div class="name">${esc(c.subject)}</div><div class="sub">${esc(c.score)} ball${c.date?' · '+esc(c.date):''}</div></div><span class="badge">${esc(c.grade)}</span>`;
+    d.onclick=()=>viewCert(i);
+    el.appendChild(d);
+  });
+}
+function viewCert(i){
+  const c=shownCerts[i];
+  if(!c)return;
+  hideAllScreens();show('resultScreen');
+  setActiveTab('kabinet','Sertifikat');
+  $('resultBox').innerHTML=certHtml(c);
+  window.scrollTo(0,0);
 }
 
 function getGrade(score,subject){
@@ -814,7 +858,7 @@ window.addEventListener('load',async()=>{
     let cached=null;
     try{cached=JSON.parse(localStorage.getItem('abitur_cache')||'null')}catch(e){}
     if(cached&&cached.res){
-      renderDashboard(cached.res,cached.set,cached.rank); // darrov ko'rsatadi
+      renderDashboard(cached.res,cached.set,cached.rank,cached.certs); // darrov ko'rsatadi
       loadDashboard();                                    // orqa fonda yangilaydi
     }else{
       await loadDashboard();
