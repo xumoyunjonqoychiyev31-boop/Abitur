@@ -131,6 +131,8 @@ button:focus-visible,.test-btn:focus-visible{outline:2px solid var(--gold2);outl
 .grade-big{font-size:46px;font-weight:800;margin:8px 0 4px;color:#8a5a00}
 .cert-contact{font-size:11px;color:#6b5a2e;margin-top:12px}
 .cert-img{width:100%;height:auto;display:block;border-radius:12px;cursor:pointer}
+.abar{height:6px;background:rgba(255,255,255,.1);border-radius:6px;margin:12px 0 4px;overflow:hidden}
+.abar i{display:block;height:100%;width:0;background:var(--gold);transition:width .5s linear}
 
 .site-footer{text-align:center;padding:16px 18px 80px;font-size:12px;color:var(--muted)}
 .site-footer b{color:var(--gold2)}
@@ -328,6 +330,12 @@ button:focus-visible,.test-btn:focus-visible{outline:2px solid var(--gold2);outl
 
   <div id="testScreen" class="hide">
     <div id="timer">00:00:00</div>
+    <div id="audioBox" class="card hide" style="text-align:center">
+      <div id="audioStat" style="font-size:14px;color:var(--gold2);font-weight:600">🎧 Audio</div>
+      <div class="abar"><i id="audioFill"></i></div>
+      <button class="btn btn-outline hide" id="audioBtn" onclick="playAudio()" style="margin-top:12px">▶ Audioni boshlash</button>
+    </div>
+    <audio id="lAudio" preload="auto" playsinline></audio>
     <div class="card">
       <div class="qnum" id="qNum">Savol 1 / 30</div>
       <div class="qtext" id="qText">-</div>
@@ -657,6 +665,8 @@ async function openTestType(type){
   const baseName=n=>String(n||'').split('#')[0].trim();
   const groups={};
   res.list.forEach(q=>{
+    const m=String(q.testNomi||'').match(/\s*@\s*(\S+)\s*$/);
+    if(m){q.audio=q.audio||m[1];q.testNomi=String(q.testNomi).replace(m[0],'')}
     const base=baseName(q.testNomi);
     if(!groups[base])groups[base]={};
     if(!groups[base][q.testNomi])groups[base][q.testNomi]=[];
@@ -670,10 +680,11 @@ async function openTestType(type){
     const div=document.createElement('div');
     div.className='test-btn';
     const note=variants.length>1?` (${variants.length} variant)`:'';
-    div.innerHTML=`<div><div class="name">${esc(base)}</div><div class="sub">${variants[0].length} ta savol${note}</div></div><span class="badge">Boshlash</span>`;
+    const lis=!!variants[0][0].audio;
+    div.innerHTML=`<div><div class="name">${lis?'🎧 ':''}${esc(base)}</div><div class="sub">${variants[0].length} ta savol${lis?' · audio bilan':''}${note}</div></div><span class="badge">Boshlash</span>`;
     div.onclick=()=>{
       if(div.dataset.busy)return;   // ikki marta bosilib, ikki marta pul yechilmasin
-      div.dataset.busy='1';div.style.opacity='0.6';
+      div.dataset.busy='1';div.style.opacity='0.6';if(lis)unlockAudio();
       let qs=variants[Math.floor(Math.random()*variants.length)];
       if(type==='sinov'&&qs.length>30)qs=shuffleArray(qs).slice(0,30);
       startTest(type,base,qs,div);
@@ -684,14 +695,47 @@ async function openTestType(type){
   hideAllScreens();show('testSetScreen');
 }
 
+/* ===== LISTENING: audio bilan test (audio bir marta, o'zi ijro etiladi) ===== */
+const LISTEN_MIN=45; // listening testi vaqti (daqiqa)
+let activeAudio='',lastAt=0;
+const SILENT='data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAIlYAAESsAAACABAAZGF0YQAAAAA=';
+const audioUrl=a=>/^(https?:)?\/\/|^\/|^assets\//i.test(a)?a:'assets/audio/'+a;
+function unlockAudio(){const a=$('lAudio');a.muted=true;a.src=SILENT;const p=a.play();if(p&&p.catch)p.catch(()=>{})} // Safari/iOS: foydalanuvchi bosgan lahzada "ochib" qo'yiladi
+function playAudio(){
+  const a=$('lAudio');a.muted=false;
+  if(a.error)a.load();
+  const p=a.play();
+  if(p&&p.catch)p.catch(e=>{if(e&&e.name==='NotAllowedError'){$('audioBtn').classList.remove('hide');$('audioStat').textContent='🎧 Audioni boshlash uchun tugmani bosing'}});
+}
+function setupAudio(url,at){
+  if(!url){stopAudio();return}
+  const a=$('lAudio'),st=$('audioStat'),btn=$('audioBtn'),fill=$('audioFill');
+  $('audioBox').classList.remove('hide');btn.classList.add('hide');fill.style.width='0';st.textContent='🎧 Audio yuklanmoqda...';
+  btn.textContent=at>0?'▶ Davom ettirish':'▶ Audioni boshlash';
+  a.onplaying=()=>{btn.classList.add('hide');st.textContent='🎧 Audio ijro etilmoqda...'};
+  a.onpause=()=>{if(!a.ended&&!testSubmitted){btn.textContent='▶ Davom ettirish';btn.classList.remove('hide');st.textContent='⏸ Audio to‘xtadi'}};
+  a.ontimeupdate=()=>{if(a.duration)fill.style.width=(a.currentTime/a.duration*100)+'%';if(Date.now()-lastAt>3000){lastAt=Date.now();saveRun()}};
+  a.onended=()=>{fill.style.width='100%';btn.classList.add('hide');st.textContent='✓ Audio tugadi';saveRun()};
+  a.onerror=()=>{btn.textContent='↻ Qayta urinish';btn.classList.remove('hide');st.textContent='Audio yuklanmadi'};
+  a.onloadedmetadata=at>0?()=>{a.currentTime=at;a.onloadedmetadata=null}:null;
+  a.muted=false;a.src=url;
+  playAudio();
+}
+function stopAudio(){
+  const a=$('lAudio');
+  a.onplaying=a.onpause=a.ontimeupdate=a.onended=a.onerror=a.onloadedmetadata=null;
+  try{a.pause();a.removeAttribute('src');a.load()}catch(e){}
+  activeAudio='';$('audioBox').classList.add('hide');
+}
+
 /* test holati saqlanadi: sahifa yangilansa yoki brauzer yopilib qolsa ham test davom etadi */
-const saveRun=()=>LS.set('abitur_run_s',{uid:currentUser.id,type:activeTestType,name:activeQuestions._name,ans:activeAnswers,idx:currentQIndex,deadline:deadline});
+const saveRun=()=>LS.set('abitur_run_s',{uid:currentUser.id,type:activeTestType,name:activeQuestions._name,ans:activeAnswers,idx:currentQIndex,deadline:deadline,audio:activeAudio,at:activeAudio?$('lAudio').currentTime:0});
 const clearRun=()=>{LS.del('abitur_run_q');LS.del('abitur_run_s')};
 function resumeRun(){
   const q=LS.get('abitur_run_q'),s=LS.get('abitur_run_s');
   if(!q||!q.length||!s||!currentUser||String(s.uid)!==String(currentUser.id)){if(q||s)clearRun();return false}
   activeTestType=s.type;activeQuestions=q;activeQuestions._name=s.name;activeAnswers=s.ans||{};
-  currentQIndex=Math.min(s.idx||0,q.length-1);deadline=s.deadline;testSubmitted=false;
+  currentQIndex=Math.min(s.idx||0,q.length-1);deadline=s.deadline;testSubmitted=false;activeAudio=s.audio||'';setupAudio(activeAudio,s.at||0);
   hideAllScreens();show('testScreen');renderQuestion();
   clearInterval(timerInterval);timerInterval=setInterval(tick,1000);tick();
   return true;
@@ -707,7 +751,7 @@ async function startTest(type,name,questions,btnEl){
   currentUser.balans=pay.balans;persist();
   activeTestType=type;activeQuestions=questions;activeAnswers={};currentQIndex=0;
   activeQuestions._name=name;testSubmitted=false;
-  deadline=Date.now()+TEST_TIME_MIN[type]*60000;
+  const au=questions[0]&&questions[0].audio?audioUrl(questions[0].audio):'';activeAudio=au;deadline=Date.now()+(au?LISTEN_MIN:TEST_TIME_MIN[type])*60000;setupAudio(au,0);
   LS.set('abitur_run_q',questions);saveRun();
   hideAllScreens();show('testScreen');
   renderQuestion();
@@ -779,7 +823,7 @@ async function flushOutbox(){
 }
 async function finishTest(){
   if(testSubmitted)return;
-  testSubmitted=true;deadline=0;
+  testSubmitted=true;deadline=0;stopAudio();
   clearInterval(timerInterval);
   saveTextAnswer();
 
@@ -810,8 +854,8 @@ async function finishTest(){
   const fullName=esc(currentUser.ism)+' '+esc(currentUser.familiya);
 
   if(activeTestType==='sertifikat'){
-    const grade=getGrade(score,activeQuestions._name);
-    const pc=Math.min(100,Math.round(score/75*100));
+    const lis=!!(activeQuestions[0]&&activeQuestions[0].audio),grade=getGrade(score,activeQuestions._name,lis);
+    const pc=Math.min(100,Math.round(score/(lis?maxScore:75)*100));
     if(!grade){
       box.innerHTML=`<div class="cert-fail"><h2>Sertifikat berilmadi</h2><p style="margin-top:10px">${fullName}</p><p style="margin-top:6px;color:#666">To'plangan ball: <b>${score} / 100</b></p><p style="margin-top:10px;font-size:13px;color:#999">Sertifikat olish uchun kamida 46 ball to'plash kerak.</p></div>`;
     }else{
@@ -855,8 +899,8 @@ function viewCert(i){
   $('resultBox').innerHTML=certHtml(c);
   window.scrollTo(0,0);
 }
-function getGrade(score,subject){
-  const isEnglish=subject&&subject.toLowerCase().indexOf('ingliz')!==-1;
+function getGrade(score,subject,listening){
+  const isEnglish=listening||(subject&&subject.toLowerCase().indexOf('ingliz')!==-1);
   if(isEnglish){
     if(score<30)return null;if(score<37)return 'A2';if(score<51)return 'B1';
     if(score<65)return 'B2';if(score<70)return 'C1';return 'C2';
