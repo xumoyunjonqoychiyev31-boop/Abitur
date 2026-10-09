@@ -142,6 +142,34 @@ button:focus-visible,.test-btn:focus-visible{outline:2px solid var(--gold2);outl
 .nav-item.active{color:var(--gold2);background:rgba(232,184,75,.12);font-weight:700}
 .nav-item.active::before{content:'';position:absolute;top:-7px;left:25%;right:25%;height:3px;border-radius:0 0 3px 3px;background:var(--gold)}
 .section-bar{display:flex;align-items:center;justify-content:center;gap:8px;width:fit-content;max-width:100%;margin:-6px auto 16px;padding:8px 16px;font-size:14px;font-weight:700;color:var(--gold2);border:1px solid rgba(232,184,75,.35);border-radius:20px;background:rgba(232,184,75,.08)}
+
+/* CHAT (SMS uslubi) */
+.cl-row{display:flex;align-items:center;gap:12px;padding:12px 4px;border-bottom:1px solid rgba(255,255,255,.06);cursor:pointer}
+.cl-row:active{background:rgba(232,184,75,.08)}
+.cl-av{width:46px;height:46px;border-radius:50%;background:rgba(232,184,75,.18);color:var(--gold2);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;flex:none}
+.cl-av.all{background:var(--gold);color:#111}
+.cl-m{flex:1;min-width:0}
+.cl-n{display:flex;justify-content:space-between;gap:8px;font-weight:600;font-size:15px}
+.cl-n span{font-size:11px;color:var(--muted);font-weight:400;flex:none}
+.cl-l{display:flex;justify-content:space-between;gap:8px;font-size:13px;color:var(--muted);margin-top:2px}
+.cl-l span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cl-l em{font-style:normal;background:var(--gold);color:#111;border-radius:10px;padding:0 7px;font-size:11px;font-weight:700;flex:none}
+.bdg{position:absolute;top:0;right:20%;min-width:16px;height:16px;border-radius:8px;background:#e74c3c;color:#fff;font-size:10px;line-height:16px;padding:0 4px;font-weight:700}
+#chatRoom{position:fixed;inset:0;height:100dvh;z-index:200;background:#0b0c0f;display:flex;flex-direction:column}
+.cr-head{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--panel);border-bottom:1px solid rgba(232,184,75,.25)}
+.cr-head .back{background:none;color:var(--gold2);font-size:26px;padding:0 6px;line-height:1}
+.cr-head b{display:block;color:var(--gold2);font-size:16px}
+.cr-head small{color:var(--muted);font-size:11px}
+#chatBox{flex:1;overflow-y:auto;padding:10px;display:flex;flex-direction:column;gap:6px;background:#0f1013}
+.cm{max-width:80%;padding:8px 11px;border-radius:14px;background:#1d1f25;font-size:15px;line-height:1.4;word-break:break-word;align-self:flex-start;border-bottom-left-radius:4px}
+.cm small{display:block;font-size:11px;color:var(--gold2);margin-bottom:2px}
+.cm.me{align-self:flex-end;background:rgba(232,184,75,.2);border-bottom-left-radius:14px;border-bottom-right-radius:4px}
+.cm i{display:block;font-size:10px;color:var(--muted);font-style:normal;text-align:right;margin-top:2px}
+.cdate{align-self:center;font-size:11px;color:var(--muted);background:var(--panel);padding:2px 10px;border-radius:10px;margin:6px 0}
+.cr-send{display:flex;gap:8px;padding:10px 10px calc(10px + env(safe-area-inset-bottom));background:var(--panel);border-top:1px solid rgba(255,255,255,.08)}
+.cr-send input{flex:1;border-radius:22px;padding:11px 16px}
+.cr-send button{width:44px;height:44px;border-radius:50%;background:var(--gold);color:#111;font-size:18px;flex:none}
+
 @media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 </style>
 </head>
@@ -281,6 +309,14 @@ button:focus-visible,.test-btn:focus-visible{outline:2px solid var(--gold2);outl
       <div id="rankingList"></div>
     </div>
 
+    <div class="card" data-sec="chat">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <h2 style="margin:0">💬 Chat</h2>
+        <button class="btn btn-outline" style="width:auto;margin:0;padding:8px 14px" onclick="chatNew()">＋ Yangi</button>
+      </div>
+      <div id="chatList"></div>
+    </div>
+
     <footer data-sec="kabinet" style="max-width:420px;margin:32px auto 16px;padding:16px 20px;background:transparent;border:1px solid rgba(255,255,255,.35);border-radius:14px;font-family:system-ui,sans-serif;text-align:center;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.7)">
       <div style="font-size:12px;letter-spacing:1px;text-transform:uppercase;opacity:.85">Sayt yaratuvchisi</div>
       <strong style="display:block;margin-top:4px;font-size:18px">Xumoyun Qo'ychiyev</strong>
@@ -361,8 +397,23 @@ button:focus-visible,.test-btn:focus-visible{outline:2px solid var(--gold2);outl
   <button class="nav-item active" data-tab="home" onclick="showTab('home')"><span class="ico">🏠</span>Bosh sahifa</button>
   <button class="nav-item" data-tab="testlar" onclick="showTab('testlar')"><span class="ico">📝</span>Testlar</button>
   <button class="nav-item" data-tab="reyting" onclick="showTab('reyting')"><span class="ico">🏆</span>Reyting</button>
+  <button class="nav-item" data-tab="chat" onclick="showTab('chat')"><span class="ico">💬</span>Chat<span class="bdg hide" id="chatBadge"></span></button>
   <button class="nav-item" data-tab="kabinet" onclick="showTab('kabinet')"><span class="ico">👤</span>Kabinet</button>
 </nav>
+
+<!-- CHAT: to'liq ekranli suhbat oynasi -->
+<div id="chatRoom" class="hide">
+  <div class="cr-head">
+    <button class="back" onclick="chatClose()" aria-label="Orqaga">‹</button>
+    <div class="cl-av" id="crAv" style="width:38px;height:38px;font-size:13px">?</div>
+    <div><b id="crName">-</b><small id="crSub">-</small></div>
+  </div>
+  <div id="chatBox"></div>
+  <div class="cr-send">
+    <input id="chatInput" maxlength="300" placeholder="Xabar yozing..." autocomplete="off" onkeydown="if(event.key==='Enter')chatSend()">
+    <button id="chatBtn" onclick="chatSend()" aria-label="Yuborish">➤</button>
+  </div>
+</div>
 </div>
 
 <script>
@@ -384,7 +435,7 @@ function busy(on){busyN=Math.max(0,busyN+(on?1:-1));$('busy').classList.toggle('
 window.addEventListener('unhandledrejection',e=>{console.error(e.reason);busyN=0;$('busy').classList.add('hide')});
 
 /* ===== SERVER SO'ROVLARI: timeout + qayta urinish + takroriy so'rovlarni birlashtirish ===== */
-const SAFE=new Set(['getUserByEmail','getSettings','getRanking','getTests','getCertificates','googleLogin']);
+const SAFE=new Set(['getUserByEmail','getSettings','getRanking','getTests','getCertificates','googleLogin','getMessages','getChats','chatUser']);
 const inflight=new Map();
 function api(p){
   const url=GAS_URL+'?'+new URLSearchParams(p).toString(),safe=SAFE.has(p.action);
@@ -405,13 +456,13 @@ function api(p){
 /* ===== EKRANLAR ===== */
 const SCREENS=['authScreen','regSuccess','dashboard','testSetScreen','paymentScreen','testScreen','resultScreen','loadScreen','errScreen'];
 const NAVS=['dashboard','testSetScreen','paymentScreen','resultScreen'];
-const TAB_INFO={home:['🏠','Bosh sahifa'],testlar:['📝','Testlar'],reyting:['🏆','Reyting'],kabinet:['👤','Kabinet']};
+const TAB_INFO={home:['🏠','Bosh sahifa'],testlar:['📝','Testlar'],reyting:['🏆','Reyting'],chat:['💬','Chat'],kabinet:['👤','Kabinet']};
 const SUB_TAB={testSetScreen:{tab:'testlar',sub:'Test tanlash'},paymentScreen:{tab:'kabinet',sub:"Balansni to'ldirish"},resultScreen:{tab:'testlar',sub:'Natija'}};
 let S={},currentUser=null,settingsCache={},pendingGoogleEmail=null,currentTab='home';
 const show=id=>{const e=$(id);if(e)e.classList.remove('hide');
   if(NAVS.includes(id)){$('bottomNav').classList.remove('hide');$('sectionBar').classList.remove('hide');if(SUB_TAB[id])setActiveTab(SUB_TAB[id].tab,SUB_TAB[id].sub)}};
 const hide=id=>{const e=$(id);if(e)e.classList.add('hide')};
-const hideAllScreens=()=>{SCREENS.forEach(hide);hide('bottomNav');hide('sectionBar')};
+const hideAllScreens=()=>{SCREENS.forEach(hide);hide('bottomNav');hide('sectionBar');chatStop()};
 const inFlow=()=>['testScreen','testSetScreen','paymentScreen','resultScreen'].some(id=>!$(id).classList.contains('hide'));
 function setActiveTab(t,sub){
   currentTab=t;
@@ -421,6 +472,7 @@ function setActiveTab(t,sub){
 function showTab(t){
   if($('dashboard').classList.contains('hide')){hideAllScreens();show('dashboard')}
   setActiveTab(t);
+  if(t==='chat')chatStart();else chatStop();
   document.querySelectorAll('#dashboard [data-sec]').forEach(el=>el.classList.toggle('tab-off',el.dataset.sec!==t));
   window.scrollTo(0,0);
 }
@@ -554,6 +606,7 @@ async function completeGoogleRegister(){
 function logout(){
   LS.del('abitur_email');LS.del('abitur_cache');
   S={};currentUser=null;currentTab='home';
+  chatReset();
   try{google.accounts.id.disableAutoSelect()}catch(e){}
   hideAllScreens();show('authScreen');
   $('newUserCard').classList.add('hide');
@@ -601,6 +654,7 @@ async function loadDashboard(nav=true){
     toast(res.error||'Xatolik yuz berdi');return;
   }
   S.res=res;persist();paint();
+  chatLoadList();
   if(nav&&!inFlow()&&!resumeRun())enterDash();
   pS.then(r=>{if(r&&r.settings){S.set=r;persist();paint()}});
   pR.then(r=>{if(r&&r.list){S.rank=r;persist();paint()}});
@@ -908,6 +962,96 @@ function getGrade(score,subject,listening){
   if(score<46)return null;if(score<50)return 'C';if(score<55)return 'C+';
   if(score<60)return 'B';if(score<65)return 'B+';if(score<70)return 'A';return 'A+';
 }
+
+/* ===== CHAT (SMS uslubi) ===== */
+let chatKey=null,chatName='',chatLast=0,chatMsgs=[],roomTimer=null,listTimer=null,chatItems=[];
+const seenMap=()=>LS.get('abitur_seen')||{};
+function markSeen(k,t){const m=seenMap();if(t>(m[k]||0)){m[k]=t;LS.set('abitur_seen',m)}}
+const hm=t=>{const d=new Date(t);return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')};
+function dayLabel(t){
+  const s=x=>new Date(x.getFullYear(),x.getMonth(),x.getDate()).getTime();
+  const diff=Math.round((s(new Date())-s(new Date(t)))/864e5);
+  return diff===0?'Bugun':diff===1?'Kecha':new Date(t).toLocaleDateString('uz-UZ');
+}
+const shortTime=t=>t?(dayLabel(t)==='Bugun'?hm(t):dayLabel(t)):'';
+const initials=n=>String(n||'?').trim().split(/\s+/).map(w=>w[0]).slice(0,2).join('').toUpperCase();
+
+function chatStart(){chatStop();chatLoadList();listTimer=setInterval(chatLoadList,6000)}
+function chatStop(){
+  clearInterval(listTimer);listTimer=null;
+  clearInterval(roomTimer);roomTimer=null;
+  const r=$('chatRoom');if(r)r.classList.add('hide');
+  document.body.style.overflow='';chatKey=null;
+}
+function chatReset(){chatStop();chatItems=[];chatMsgs=[];chatLast=0;chatRenderList()}
+
+async function chatLoadList(){
+  if(document.hidden||!currentUser)return;
+  const r=await api({action:'getChats',id:currentUser.id,seen:JSON.stringify(seenMap())});
+  if(!r||!r.ok||!Array.isArray(r.list))return;
+  chatItems=r.list;chatRenderList();
+}
+function chatRenderList(){
+  const total=chatItems.reduce((s,c)=>s+(c.unread||0),0),bg=$('chatBadge');
+  bg.textContent=total>99?'99+':total;bg.classList.toggle('hide',!total);
+  $('chatList').innerHTML=chatItems.map((c,i)=>
+    `<div class="cl-row" onclick="chatOpenRoom(${i})"><div class="cl-av${c.key==='all'?' all':''}">${c.key==='all'?'👥':esc(initials(c.name))}</div>
+    <div class="cl-m"><div class="cl-n"><b>${esc(c.name)}</b><span>${shortTime(c.t)}</span></div>
+    <div class="cl-l"><span>${esc(c.last||'Hali xabar yo‘q')}</span>${c.unread?'<em>'+c.unread+'</em>':''}</div></div></div>`
+  ).join('')||'<p class="quality-desc">Suhbatlar yo‘q.</p>';
+}
+function chatOpenRoom(i){const c=chatItems[i];if(c)chatEnter(c.key,c.name)}
+async function chatNew(){
+  const v=(prompt('Suhbatdosh ID raqamini kiriting:')||'').trim();
+  if(!v)return;
+  if(v===String(currentUser.id)){toast('O‘zingiz bilan chat qilib bo‘lmaydi');return}
+  const r=await api({action:'chatUser',to:v});
+  if(!r||!r.ok){toast((r&&r.error)||'Bunday ID topilmadi');return}
+  chatEnter(v,r.name);
+}
+function chatEnter(key,name){
+  chatKey=key;chatName=name;chatMsgs=[];chatLast=0;
+  $('crName').textContent=name;
+  $('crSub').textContent=key==='all'?'Barcha foydalanuvchilar':'ID '+key;
+  $('crAv').textContent=key==='all'?'👥':initials(name);
+  $('chatRoom').classList.remove('hide');document.body.style.overflow='hidden';
+  chatRender();chatPoll();
+  clearInterval(roomTimer);roomTimer=setInterval(chatPoll,2500);
+}
+function chatClose(){
+  clearInterval(roomTimer);roomTimer=null;
+  $('chatRoom').classList.add('hide');document.body.style.overflow='';
+  chatKey=null;chatLoadList();
+}
+async function chatPoll(){
+  if(document.hidden||!currentUser||!chatKey)return;
+  const k=chatKey,r=await api({action:'getMessages',id:currentUser.id,to:k,after:chatLast});
+  if(k!==chatKey||!r||!r.ok||!r.list||!r.list.length)return;
+  chatMsgs=chatMsgs.concat(r.list).slice(-200);
+  chatLast=r.list[r.list.length-1].t;markSeen(k,chatLast);chatRender();
+}
+function chatRender(){
+  const b=$('chatBox'),near=b.scrollHeight-b.scrollTop-b.clientHeight<100||!b.children.length;
+  let prev='',html='';
+  chatMsgs.forEach(m=>{
+    const me=String(m.from)===String(currentUser.id),dl=dayLabel(m.t);
+    if(dl!==prev){html+=`<div class="cdate">${esc(dl)}</div>`;prev=dl}
+    html+=`<div class="cm${me?' me':''}">${(!me&&chatKey==='all')?'<small>'+esc(m.name)+'</small>':''}${esc(m.text)}<i>${hm(m.t)}</i></div>`;
+  });
+  b.innerHTML=html||'<p class="quality-desc" style="margin:auto">Hali xabar yo‘q. Birinchi bo‘lib yozing!</p>';
+  if(near)b.scrollTop=b.scrollHeight;
+}
+async function chatSend(){
+  const inp=$('chatInput'),text=inp.value.trim(),btn=$('chatBtn');
+  if(!text||!chatKey)return;
+  btn.disabled=true;
+  const r=await api({action:'sendMessage',id:currentUser.id,email:localStorage.getItem('abitur_email'),to:chatKey,text:text});
+  btn.disabled=false;
+  if(!r.ok){toast(r.error||'Yuborilmadi');return}
+  inp.value='';inp.focus();chatPoll();
+}
+/* o'qilmagan xabarlar belgisi chat bo'limida bo'lmasa ham yangilanib turadi */
+setInterval(()=>{if(currentUser&&!document.hidden&&currentTab!=='chat'&&!inFlow())chatLoadList()},30000);
 
 /* ===== ISHGA TUSHIRISH (sahifa to'liq yuklanishini kutmaydi) ===== */
 function boot(){
