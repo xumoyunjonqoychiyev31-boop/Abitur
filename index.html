@@ -19,6 +19,8 @@
 <meta name="twitter:description" content="DTM ga tayyorgarlik uchun onlayn Sinov, Blok va Sertifikat testlari.">
 <meta name="twitter:image" content="https://abiturdtm.online/assets/logo.png">
 <link rel="icon" type="image/png" href="assets/logo.png">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="assets/logo.png">
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"WebSite","name":"ABITUR DTM","url":"https://abiturdtm.online/","description":"DTM ga tayyorgarlik uchun onlayn testlar platformasi. Matematika, fizika, kimyo, biologiya, tarix, ona tili va ingliz tili fanlaridan Sinov, Blok va Sertifikat testlari."}
 </script>
@@ -288,6 +290,7 @@ button:focus-visible,.test-btn:focus-visible{outline:2px solid var(--gold2);outl
       <div class="stat-row"><span>Umumiy ball</span><b id="dScore2">-</b></div>
       <div class="stat-row"><span>Balans</span><b id="dBalans">-</b></div>
       <button class="btn btn-outline" onclick="showPayment()">💳 Balansni to'ldirish</button>
+      <button class="btn btn-outline" id="pushBtn" onclick="pushEnable()">🔔 Bildirishnomani yoqish</button>
       <button class="btn btn-outline" onclick="logout()">Chiqish</button>
     </div>
 
@@ -443,7 +446,7 @@ button:focus-visible,.test-btn:focus-visible{outline:2px solid var(--gold2);outl
 <script>
 /* ===== SOZLAMALAR ===== */
 const GOOGLE_CLIENT_ID="323960187871-77jganuhhpo1hba8t7ooh252kqeh9sc2.apps.googleusercontent.com";
-const GAS_URL="https://script.google.com/macros/s/AKfycbwKXjiR7YE-iDknWgcBWIDENzuAZ17cBjgvRtQH7-exYb7fGapoT9S3O3ZR2YQBFdRvQw/exec";
+const GAS_URL="https://script.google.com/macros/s/AKfycbyIW5WIgsi5FhV6kCMxmoH4xA1S-KjcH6Un6GmglYu8RsQp20B6ynzwjL-vPdtI6BAFrQ/exec";
 
 /* ===== YORDAMCHI ===== */
 const $=id=>document.getElementById(id);
@@ -629,6 +632,8 @@ async function completeGoogleRegister(){
 }
 function logout(){
   LS.del('abitur_email');LS.del('abitur_cache');
+  try{const pt=LS.get('abitur_push');if(pt&&currentUser)api({action:'delPushToken',token:pt})}catch(e){}
+  LS.del('abitur_push');pushRefresh.done=false;
   S={};currentUser=null;currentTab='home';
   chatReset();
   try{google.accounts.id.disableAutoSelect()}catch(e){}
@@ -678,7 +683,7 @@ async function loadDashboard(nav=true){
     toast(res.error||'Xatolik yuz berdi');return;
   }
   S.res=res;persist();paint();
-  chatLoadList();
+  chatLoadList();pushRefresh();
   if(nav&&!inFlow()&&!resumeRun())enterDash();
   pS.then(r=>{if(r&&r.settings){S.set=r;persist();paint()}});
   pR.then(r=>{if(r&&r.list){S.rank=r;persist();paint()}});
@@ -1264,6 +1269,50 @@ vAudio.onended=()=>{vAudio.currentTime=0;vmRestore()};
 
 /* o'qilmagan xabarlar belgisi chat bo'limida bo'lmasa ham yangilanib turadi */
 setInterval(()=>{if(currentUser&&!document.hidden&&currentTab!=='chat'&&!inFlow())chatLoadList()},30000);
+
+/* ===== BILDIRISHNOMA (Firebase Cloud Messaging) ===== */
+const FB_CFG={apiKey:"",authDomain:"",projectId:"",messagingSenderId:"",appId:""};   // Firebase'dan olinadi
+const FB_VAPID="";                                                                    // Web Push kaliti
+const loadScript=src=>new Promise((res,rej)=>{const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=rej;document.head.appendChild(s)});
+function pushUi(){
+  const b=$('pushBtn');if(!b)return;
+  const on='Notification' in window&&Notification.permission==='granted'&&LS.get('abitur_push');
+  b.textContent=on?'🔔 Bildirishnoma yoqilgan ✓':'🔔 Bildirishnomani yoqish';
+}
+async function pushEnable(silent){
+  if(!FB_VAPID||!FB_CFG.apiKey){if(!silent)toast('Bildirishnoma hali sozlanmagan');return}
+  if(!('Notification' in window)||!('serviceWorker' in navigator)){
+    if(!silent)toast('Brauzer qo‘llamaydi. iPhone’da saytni “Bosh ekranga qo‘shing” va shu yerdan oching.');return;
+  }
+  if(Notification.permission!=='granted'){
+    if(silent)return;
+    const perm=await Notification.requestPermission();
+    if(perm!=='granted'){toast('Bildirishnomaga ruxsat berilmadi');return}
+  }
+  try{
+    if(!window.firebase){
+      await loadScript('https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js');
+      await loadScript('https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js');
+    }
+    if(!firebase.apps.length)firebase.initializeApp(FB_CFG);
+    const reg=await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+    await navigator.serviceWorker.ready;
+    const token=await firebase.messaging().getToken({vapidKey:FB_VAPID,serviceWorkerRegistration:reg});
+    if(!token)throw new Error('token yo‘q');
+    if(LS.get('abitur_push')!==token||!silent){
+      const r=await api({action:'savePushToken',id:currentUser.id,email:localStorage.getItem('abitur_email'),token:token});
+      if(!r.ok)throw new Error(r.error||'saqlanmadi');
+      LS.set('abitur_push',token);
+    }
+    if(!silent)toast('Bildirishnoma yoqildi ✓');
+  }catch(e){console.error(e);if(!silent)toast('Bildirishnomani yoqib bo‘lmadi')}
+  pushUi();
+}
+function pushRefresh(){   // ruxsat berilgan bo'lsa, token o'zgargan bo'lsa jimgina yangilanadi
+  if(pushRefresh.done||!currentUser)return;
+  pushRefresh.done=true;pushUi();
+  if('Notification' in window&&Notification.permission==='granted')pushEnable(true);
+}
 
 /* ===== ISHGA TUSHIRISH (sahifa to'liq yuklanishini kutmaydi) ===== */
 function boot(){
