@@ -165,6 +165,22 @@ button:focus-visible,.test-btn:focus-visible{outline:2px solid var(--gold2);outl
 .cm small{display:block;font-size:11px;color:var(--gold2);margin-bottom:2px}
 .cm.me{align-self:flex-end;background:rgba(232,184,75,.2);border-bottom-left-radius:14px;border-bottom-right-radius:4px}
 .cm i{display:block;font-size:10px;color:var(--muted);font-style:normal;text-align:right;margin-top:2px}
+.cm.pend{opacity:.6}
+.cm.media{padding:4px}
+.cm.media i{padding:0 6px 2px}
+.cph{min-width:150px;min-height:90px;background:#0f1013;border-radius:10px;overflow:hidden}
+.cimg{display:block;max-width:100%;max-height:260px;border-radius:10px;cursor:pointer}
+.vm{display:flex;align-items:center;gap:8px;min-width:200px;padding:4px 6px}
+.vm button{width:34px;height:34px;border-radius:50%;background:var(--gold);color:#111;font-size:14px;flex:none}
+.vbar{flex:1;height:4px;background:rgba(255,255,255,.2);border-radius:4px;overflow:hidden}
+.vbar span{display:block;height:100%;width:0;background:var(--gold)}
+.vm em{font-style:normal;font-size:12px;color:var(--muted);flex:none}
+.cr-send .cr-tool{width:44px;height:44px;border-radius:50%;background:#0f1013;border:1px solid rgba(255,255,255,.12);color:var(--gold2);font-size:18px;flex:none}
+.cr-rec{flex:1;display:flex;align-items:center;gap:8px;color:#ff6b6b;font-weight:600}
+.cr-rec span{animation:recb 1s ease-in-out infinite}
+@keyframes recb{50%{opacity:.2}}
+#imgView{position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.92);display:flex;align-items:center;justify-content:center}
+#imgView img{max-width:100%;max-height:100%}
 .cdate{align-self:center;font-size:11px;color:var(--muted);background:var(--panel);padding:2px 10px;border-radius:10px;margin:6px 0}
 .cr-send{display:flex;gap:8px;padding:10px 10px calc(10px + env(safe-area-inset-bottom));background:var(--panel);border-top:1px solid rgba(255,255,255,.08)}
 .cr-send input{flex:1;border-radius:22px;padding:11px 16px}
@@ -409,17 +425,25 @@ button:focus-visible,.test-btn:focus-visible{outline:2px solid var(--gold2);outl
     <div><b id="crName">-</b><small id="crSub">-</small></div>
   </div>
   <div id="chatBox"></div>
-  <div class="cr-send">
-    <input id="chatInput" maxlength="300" placeholder="Xabar yozing..." autocomplete="off" onkeydown="if(event.key==='Enter')chatSend()">
-    <button id="chatBtn" onclick="chatSend()" aria-label="Yuborish">➤</button>
+  <div class="cr-send" id="crSend">
+    <button class="cr-tool" onclick="$('chatFile').click()" aria-label="Rasm">📷</button>
+    <input id="chatInput" maxlength="300" placeholder="Xabar yozing..." autocomplete="off" oninput="chatToggleBtn()" onkeydown="if(event.key==='Enter')chatSend()">
+    <button id="chatBtn" onclick="chatMainBtn()" aria-label="Yuborish / ovoz">🎤</button>
   </div>
+  <div class="cr-send hide" id="recBar">
+    <button class="cr-tool" onclick="recCancel()" aria-label="Bekor qilish">✕</button>
+    <div class="cr-rec"><span>●</span><b id="recTime">0:00</b><span style="animation:none;font-weight:400">Yozilmoqda...</span></div>
+    <button onclick="recStop(true)" aria-label="Yuborish">➤</button>
+  </div>
+  <input type="file" id="chatFile" accept="image/*" class="hide" onchange="chatPickImage(this)">
+  <div id="imgView" class="hide" onclick="this.classList.add('hide')"><img id="imgViewImg" alt=""></div>
 </div>
 </div>
 
 <script>
 /* ===== SOZLAMALAR ===== */
 const GOOGLE_CLIENT_ID="323960187871-77jganuhhpo1hba8t7ooh252kqeh9sc2.apps.googleusercontent.com";
-const GAS_URL="https://script.google.com/macros/s/AKfycbzqaZ2YgxriymJ0CnAnMFFPuPpDJpCRMiZZo6TbGx9xqQzZIIW6WQR5QLmsC1wbXuOF1Q/exec";
+const GAS_URL="https://script.google.com/macros/s/AKfycbwKXjiR7YE-iDknWgcBWIDENzuAZ17cBjgvRtQH7-exYb7fGapoT9S3O3ZR2YQBFdRvQw/exec";
 
 /* ===== YORDAMCHI ===== */
 const $=id=>document.getElementById(id);
@@ -435,7 +459,7 @@ function busy(on){busyN=Math.max(0,busyN+(on?1:-1));$('busy').classList.toggle('
 window.addEventListener('unhandledrejection',e=>{console.error(e.reason);busyN=0;$('busy').classList.add('hide')});
 
 /* ===== SERVER SO'ROVLARI: timeout + qayta urinish + takroriy so'rovlarni birlashtirish ===== */
-const SAFE=new Set(['getUserByEmail','getSettings','getRanking','getTests','getCertificates','googleLogin','getMessages','getChats','chatUser']);
+const SAFE=new Set(['getUserByEmail','getSettings','getRanking','getTests','getCertificates','googleLogin','getMessages','getChats','chatUser','getMedia']);
 const inflight=new Map();
 function api(p){
   const url=GAS_URL+'?'+new URLSearchParams(p).toString(),safe=SAFE.has(p.action);
@@ -979,7 +1003,8 @@ const initials=n=>String(n||'?').trim().split(/\s+/).map(w=>w[0]).slice(0,2).joi
 function chatStart(){chatStop();chatLoadList();listTimer=setInterval(chatLoadList,6000)}
 function chatStop(){
   clearInterval(listTimer);listTimer=null;
-  clearInterval(roomTimer);roomTimer=null;
+  clearTimeout(roomTimer);roomTimer=null;
+  try{recStop(false);vAudio.pause()}catch(e){}
   const r=$('chatRoom');if(r)r.classList.add('hide');
   document.body.style.overflow='';chatKey=null;
 }
@@ -1009,47 +1034,234 @@ async function chatNew(){
   if(!r||!r.ok){toast((r&&r.error)||'Bunday ID topilmadi');return}
   chatEnter(v,r.name);
 }
+let chatBusy=false,chatIdle=0,chatStick=true;
+const chatCacheKey=k=>'abitur_cm_'+(currentUser&&currentUser.id)+'_'+k;
+function chatLoop(){
+  clearTimeout(roomTimer);
+  roomTimer=setTimeout(async()=>{
+    if(!chatKey)return;
+    await chatPoll();
+    if(chatKey)chatLoop();
+  },1500+chatIdle*500);
+}
 function chatEnter(key,name){
-  chatKey=key;chatName=name;chatMsgs=[];chatLast=0;
+  clearInterval(listTimer);listTimer=null;           // ro'yxat so'rovlari to'xtaydi
+  chatKey=key;chatName=name;chatBusy=false;chatIdle=0;
+  chatMsgs=LS.get(chatCacheKey(key))||[];             // darrov ko'rinadi
+  chatLast=chatMsgs.length?Math.max.apply(null,chatMsgs.map(m=>m.t)):0;
   $('crName').textContent=name;
   $('crSub').textContent=key==='all'?'Barcha foydalanuvchilar':'ID '+key;
   $('crAv').textContent=key==='all'?'👥':initials(name);
   $('chatRoom').classList.remove('hide');document.body.style.overflow='hidden';
-  chatRender();chatPoll();
-  clearInterval(roomTimer);roomTimer=setInterval(chatPoll,2500);
+  chatToggleBtn();chatRender();
+  chatPoll().then(()=>{if(chatKey===key)chatLoop()});
 }
 function chatClose(){
-  clearInterval(roomTimer);roomTimer=null;
+  clearTimeout(roomTimer);roomTimer=null;
+  recStop(false);vAudio.pause();vMid=null;
   $('chatRoom').classList.add('hide');document.body.style.overflow='';
-  chatKey=null;chatLoadList();
+  chatKey=null;
+  chatLoadList();
+  if(currentTab==='chat'&&!listTimer)listTimer=setInterval(chatLoadList,6000);
 }
 async function chatPoll(){
-  if(document.hidden||!currentUser||!chatKey)return;
-  const k=chatKey,r=await api({action:'getMessages',id:currentUser.id,to:k,after:chatLast});
-  if(k!==chatKey||!r||!r.ok||!r.list||!r.list.length)return;
-  chatMsgs=chatMsgs.concat(r.list).slice(-200);
-  chatLast=r.list[r.list.length-1].t;markSeen(k,chatLast);chatRender();
+  if(chatBusy||document.hidden||!currentUser||!chatKey)return;
+  chatBusy=true;
+  const k=chatKey;
+  try{
+    const r=await api({action:'getMessages',id:currentUser.id,to:k,after:chatLast});
+    if(k!==chatKey||!r||!r.ok||!r.list||!r.list.length){chatIdle=Math.min(chatIdle+1,6);return}
+    chatIdle=0;
+    let changed=false;
+    r.list.forEach(m=>{
+      if(m.t>chatLast)chatLast=m.t;
+      if(m.cid){
+        const i=chatMsgs.findIndex(x=>x.cid===m.cid);
+        if(i>=0){chatMsgs[i]=m;changed=true;return}
+      }
+      if(chatMsgs.some(x=>x.t===m.t&&String(x.from)===String(m.from)))return;
+      chatMsgs.push(m);changed=true;
+    });
+    chatMsgs=chatMsgs.slice(-200);
+    markSeen(k,chatLast);
+    LS.set(chatCacheKey(k),chatMsgs.filter(m=>!m.pending).slice(-50));
+    if(changed)chatRender();
+  }finally{chatBusy=false}
 }
 function chatRender(){
-  const b=$('chatBox'),near=b.scrollHeight-b.scrollTop-b.clientHeight<100||!b.children.length;
+  const b=$('chatBox');
+  chatStick=b.scrollHeight-b.scrollTop-b.clientHeight<100||!b.children.length;
   let prev='',html='';
   chatMsgs.forEach(m=>{
     const me=String(m.from)===String(currentUser.id),dl=dayLabel(m.t);
     if(dl!==prev){html+=`<div class="cdate">${esc(dl)}</div>`;prev=dl}
-    html+=`<div class="cm${me?' me':''}">${(!me&&chatKey==='all')?'<small>'+esc(m.name)+'</small>':''}${esc(m.text)}<i>${hm(m.t)}</i></div>`;
+    const k=m.mid||m.cid||'';let body;
+    if(m.type==='img'){
+      const u=mediaUrl[k];
+      body=`<div class="cph"><img class="cimg" ${u?'src="'+u+'"':'data-mid="'+esc(k)+'"'} onload="chatImgLoad()" onclick="imgOpen(this.src)" alt=""></div>`;
+    }else if(m.type==='voice'){
+      body=`<div class="vm" data-mid="${esc(k)}"><button onclick="vmToggle(this)">▶</button><div class="vbar"><span></span></div><em>${fmtDur(m.dur||0)}</em></div>`;
+    }else body=esc(m.text);
+    html+=`<div class="cm${me?' me':''}${m.pending?' pend':''}${m.type?' media':''}">${(!me&&chatKey==='all')?'<small>'+esc(m.name)+'</small>':''}${body}<i>${m.pending?'…':hm(m.t)}</i></div>`;
   });
   b.innerHTML=html||'<p class="quality-desc" style="margin:auto">Hali xabar yo‘q. Birinchi bo‘lib yozing!</p>';
-  if(near)b.scrollTop=b.scrollHeight;
+  if(chatStick)b.scrollTop=b.scrollHeight;
+  chatHydrate();vmRestore();
 }
+const chatImgLoad=()=>{if(chatStick){const b=$('chatBox');b.scrollTop=b.scrollHeight}};
+function chatToggleBtn(){$('chatBtn').textContent=$('chatInput').value.trim()?'➤':'🎤'}
+function chatMainBtn(){if($('chatInput').value.trim())chatSend();else recStart()}
 async function chatSend(){
-  const inp=$('chatInput'),text=inp.value.trim(),btn=$('chatBtn');
+  const inp=$('chatInput'),text=inp.value.trim();
   if(!text||!chatKey)return;
-  btn.disabled=true;
-  const r=await api({action:'sendMessage',id:currentUser.id,email:localStorage.getItem('abitur_email'),to:chatKey,text:text});
-  btn.disabled=false;
-  if(!r.ok){toast(r.error||'Yuborilmadi');return}
-  inp.value='';inp.focus();chatPoll();
+  inp.value='';inp.focus();chatToggleBtn();            // darrov tozalanadi: ikki marta yuborilmaydi
+  const k=chatKey,cid=Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+  chatMsgs.push({t:Date.now(),from:String(currentUser.id),name:'',text:text,cid:cid,pending:1});
+  chatIdle=0;chatRender();
+  let r;
+  for(let a=0;a<3;a++){                                // bir xil cid: server ikki marta yozmaydi
+    r=await api({action:'sendMessage',id:currentUser.id,email:localStorage.getItem('abitur_email'),to:k,text:text,cid:cid});
+    if(!r.network)break;
+  }
+  if(!r.ok){
+    chatMsgs=chatMsgs.filter(m=>m.cid!==cid);
+    if(k===chatKey){chatRender();if(!inp.value){inp.value=text;chatToggleBtn()}}
+    toast(r.error||'Yuborilmadi');return;
+  }
+  chatPoll();
 }
+
+/* ===== MEDIA: rasm va ovozli xabar ===== */
+const mediaUrl={},mediaWait={};
+const fmtDur=s=>Math.floor(s/60)+':'+String(Math.round(s%60)).padStart(2,'0');
+async function apiPost(p){   // katta fayllar POST bilan yuboriladi
+  for(let a=0;a<2;a++){
+    const ctl=new AbortController(),t=setTimeout(()=>ctl.abort(),60000);
+    try{
+      const r=await fetch(GAS_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(p),signal:ctl.signal});
+      const j=await r.json();clearTimeout(t);return j;
+    }catch(e){clearTimeout(t);console.error('POST:',e);if(a<1)await sleep(1000)}
+  }
+  return {ok:false,network:true,error:'Yuborilmadi. Internetni tekshiring.'};
+}
+const blobB64=b=>new Promise((res,rej)=>{const f=new FileReader();f.onload=()=>res(String(f.result).split(',')[1]);f.onerror=rej;f.readAsDataURL(b)});
+function resizeImage(file,max){
+  return new Promise((res,rej)=>{
+    const img=new Image(),u=URL.createObjectURL(file);
+    img.onload=()=>{
+      const k=Math.min(1,max/Math.max(img.width,img.height)),w=Math.round(img.width*k),h=Math.round(img.height*k);
+      const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);
+      URL.revokeObjectURL(u);
+      c.toBlob(b=>b?res(b):rej(new Error('blob')),'image/jpeg',.75);
+    };
+    img.onerror=()=>{URL.revokeObjectURL(u);rej(new Error('img'))};
+    img.src=u;
+  });
+}
+async function chatSendMedia(type,blob,mime,dur){
+  if(!chatKey)return;
+  const k=chatKey,cid=Date.now().toString(36)+Math.random().toString(36).slice(2,7),local=URL.createObjectURL(blob);
+  mediaUrl[cid]=local;
+  chatMsgs.push({t:Date.now(),from:String(currentUser.id),name:'',text:'',type:type,dur:dur||0,cid:cid,pending:1});
+  chatIdle=0;chatRender();
+  let r;
+  try{
+    const data=await blobB64(blob);
+    r=await apiPost({action:'sendMedia',id:currentUser.id,email:localStorage.getItem('abitur_email'),to:k,cid:cid,type:type,mime:mime,dur:dur||0,data:data});
+  }catch(e){r={ok:false,error:'Fayl o‘qilmadi'}}
+  if(!r.ok){
+    chatMsgs=chatMsgs.filter(m=>m.cid!==cid);
+    if(k===chatKey)chatRender();
+    toast(r.error||'Yuborilmadi');return;
+  }
+  if(r.mid)mediaUrl[r.mid]=local;
+  chatPoll();
+}
+async function chatPickImage(inp){
+  const f=inp.files&&inp.files[0];inp.value='';
+  if(!f||!chatKey)return;
+  if(!/^image\//.test(f.type)){toast('Faqat rasm yuboriladi');return}
+  try{const b=await resizeImage(f,1280);chatSendMedia('img',b,'image/jpeg',0)}
+  catch(e){toast('Rasmni o‘qib bo‘lmadi')}
+}
+async function mediaGet(mid){
+  if(mediaUrl[mid])return mediaUrl[mid];
+  if(mediaWait[mid])return mediaWait[mid];
+  mediaWait[mid]=(async()=>{
+    const r=await api({action:'getMedia',id:currentUser.id,email:localStorage.getItem('abitur_email'),mid:mid});
+    delete mediaWait[mid];
+    if(!r||!r.ok)return null;
+    const bin=atob(r.data),u8=new Uint8Array(bin.length);
+    for(let i=0;i<bin.length;i++)u8[i]=bin.charCodeAt(i);
+    return mediaUrl[mid]=URL.createObjectURL(new Blob([u8],{type:r.mime}));
+  })();
+  return mediaWait[mid];
+}
+function chatHydrate(){
+  document.querySelectorAll('#chatBox img[data-mid]').forEach(async el=>{
+    const u=await mediaGet(el.dataset.mid);
+    if(el.isConnected){if(u)el.src=u;else el.alt='Yuklanmadi'}
+  });
+}
+function imgOpen(src){if(!src)return;$('imgViewImg').src=src;$('imgView').classList.remove('hide')}
+
+/* ovozli xabar: yozish */
+let rec=null;
+function recMime(){
+  const L=['audio/webm;codecs=opus','audio/mp4','audio/webm','audio/ogg;codecs=opus'];
+  return L.find(m=>window.MediaRecorder&&MediaRecorder.isTypeSupported&&MediaRecorder.isTypeSupported(m))||'';
+}
+async function recStart(){
+  if(rec||!chatKey)return;
+  if(!navigator.mediaDevices||!window.MediaRecorder){toast('Brauzeringiz ovoz yozishni qo‘llamaydi');return}
+  let stream;
+  try{stream=await navigator.mediaDevices.getUserMedia({audio:true})}
+  catch(e){toast('Mikrofonga ruxsat bering');return}
+  const mt=recMime(),mr=mt?new MediaRecorder(stream,{mimeType:mt}):new MediaRecorder(stream);
+  const r=rec={mr:mr,stream:stream,chunks:[],t0:Date.now(),send:false,timer:null,mt:(mr.mimeType||mt||'audio/webm').split(';')[0]};
+  mr.ondataavailable=e=>{if(e.data&&e.data.size)r.chunks.push(e.data)};
+  mr.onstop=()=>{
+    clearInterval(r.timer);r.stream.getTracks().forEach(t=>t.stop());
+    if(rec===r)rec=null;
+    $('recBar').classList.add('hide');$('crSend').classList.remove('hide');
+    const dur=Math.round((Date.now()-r.t0)/1000);
+    if(!r.send)return;
+    if(dur<1||!r.chunks.length){toast('Juda qisqa');return}
+    chatSendMedia('voice',new Blob(r.chunks,{type:r.mt}),r.mt,dur);
+  };
+  mr.start();
+  $('crSend').classList.add('hide');$('recBar').classList.remove('hide');$('recTime').textContent='0:00';
+  r.timer=setInterval(()=>{
+    const s=Math.round((Date.now()-r.t0)/1000);
+    $('recTime').textContent=Math.floor(s/60)+':'+String(s%60).padStart(2,'0');
+    if(s>=120)recStop(true);
+  },500);
+}
+function recStop(send){if(!rec)return;rec.send=!!send;try{rec.mr.stop()}catch(e){}}
+const recCancel=()=>recStop(false);
+
+/* ovozli xabar: ijro etish */
+const vAudio=new Audio();let vMid=null;
+async function vmToggle(btn){
+  const mid=btn.closest('.vm').dataset.mid;
+  if(vMid===mid&&vAudio.src){if(vAudio.paused)vAudio.play().catch(()=>{});else vAudio.pause();return}
+  btn.textContent='…';
+  const u=await mediaGet(mid);
+  if(!u){btn.textContent='▶';toast('Ovoz yuklanmadi');return}
+  vAudio.pause();vMid=mid;vAudio.src=u;
+  try{await vAudio.play()}catch(e){toast('Ijro etib bo‘lmadi')}
+  vmRestore();
+}
+function vmRestore(){
+  document.querySelectorAll('#chatBox .vm').forEach(b=>{
+    const on=b.dataset.mid===vMid;
+    b.querySelector('button').textContent=on&&!vAudio.paused?'⏸':'▶';
+    b.querySelector('.vbar span').style.width=on&&vAudio.duration?(vAudio.currentTime/vAudio.duration*100)+'%':'0';
+  });
+}
+vAudio.onplay=vAudio.onpause=vAudio.ontimeupdate=vmRestore;
+vAudio.onended=()=>{vAudio.currentTime=0;vmRestore()};
+
 /* o'qilmagan xabarlar belgisi chat bo'limida bo'lmasa ham yangilanib turadi */
 setInterval(()=>{if(currentUser&&!document.hidden&&currentTab!=='chat'&&!inFlow())chatLoadList()},30000);
 
