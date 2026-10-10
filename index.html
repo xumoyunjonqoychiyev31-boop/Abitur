@@ -446,7 +446,7 @@ button:focus-visible,.test-btn:focus-visible{outline:2px solid var(--gold2);outl
 <script>
 /* ===== SOZLAMALAR ===== */
 const GOOGLE_CLIENT_ID="323960187871-77jganuhhpo1hba8t7ooh252kqeh9sc2.apps.googleusercontent.com";
-const GAS_URL="https://script.google.com/macros/s/AKfycbyIW5WIgsi5FhV6kCMxmoH4xA1S-KjcH6Un6GmglYu8RsQp20B6ynzwjL-vPdtI6BAFrQ/exec";
+const GAS_URL="https://script.google.com/macros/s/AKfycbwOfm0LeX4PfDn3jFoNNpiNtVn85Bzq0B08zCENmV2c4GL63JyirgZ-lvFr_eXiwKBnfA/exec";
 
 /* ===== YORDAMCHI ===== */
 const $=id=>document.getElementById(id);
@@ -1271,8 +1271,8 @@ vAudio.onended=()=>{vAudio.currentTime=0;vmRestore()};
 setInterval(()=>{if(currentUser&&!document.hidden&&currentTab!=='chat'&&!inFlow())chatLoadList()},30000);
 
 /* ===== BILDIRISHNOMA (Firebase Cloud Messaging) ===== */
-const FB_CFG={apiKey:"",authDomain:"",projectId:"",messagingSenderId:"",appId:""};   // Firebase'dan olinadi
-const FB_VAPID="";                                                                    // Web Push kaliti
+const FB_CFG={apiKey:"AIzaSyCGuSuwXwFhhrDldrAWUPQRMGjl64OnrkM",authDomain:"abiturdtm-171ae.firebaseapp.com",projectId:"abiturdtm-171ae",messagingSenderId:"614140602156",appId:"1:614140602156:web:f3e800653476e687d46e89"};   // Firebase'dan olinadi
+const FB_VAPID="BAxbE3Z5GqsscgJttozBU20EOSbabEPeRVgndTrf36oq3R_6hcFUSlpBOSAxY269CbUx4Yk6urlQoyo_rpnXPb8";                                                                    // Web Push kaliti
 const loadScript=src=>new Promise((res,rej)=>{const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=rej;document.head.appendChild(s)});
 function pushUi(){
   const b=$('pushBtn');if(!b)return;
