@@ -206,7 +206,7 @@ button:focus-visible,.test-btn:focus-visible{outline:2px solid var(--gold2);outl
 <div class="container">
 
   <div class="top-logo"><img src="assets/logo.png" alt="ABITUR DTM logotipi" width="44" height="44"><span>ABITUR DTM</span></div>
-  <p style="text-align:center;color:var(--muted);font-size:12px;max-width:400px;margin:0 auto 16px;line-height:1.5">Onlayn <b style="color:var(--gold2)">DTM test</b>, <b style="color:var(--gold2)">blok test</b> va <b style="color:var(--gold2)">milliy sertifikat</b> testlari — barcha fanlardan.</p>
+  <p style="text-align:center;color:var(--muted);font-size:12px;max-width:400px;margin:0 auto 16px;line-height:1.5">Onlayn <b style="color:var(--gold2)">sinov test</b>, <b style="color:var(--gold2)">blok test</b> va <b style="color:var(--gold2)">sertifikat</b> testlari — barcha fanlardan.</p>
 
   <div id="sectionBar" class="section-bar hide"></div>
 
@@ -446,7 +446,7 @@ button:focus-visible,.test-btn:focus-visible{outline:2px solid var(--gold2);outl
 <script>
 /* ===== SOZLAMALAR ===== */
 const GOOGLE_CLIENT_ID="323960187871-77jganuhhpo1hba8t7ooh252kqeh9sc2.apps.googleusercontent.com";
-const GAS_URL="https://script.google.com/macros/s/AKfycbwOfm0LeX4PfDn3jFoNNpiNtVn85Bzq0B08zCENmV2c4GL63JyirgZ-lvFr_eXiwKBnfA/exec";
+const GAS_URL="https://script.google.com/macros/s/AKfycbz2Lk_DUDWdBqruoTugW2Dfyo0fmlzTJBk-L__WRhclSYJe5r_Vo8cGKkYPPXyxb_pwfg/exec";
 
 /* ===== YORDAMCHI ===== */
 const $=id=>document.getElementById(id);
@@ -1299,6 +1299,7 @@ async function pushEnable(silent){
     await navigator.serviceWorker.ready;
     const token=await firebase.messaging().getToken({vapidKey:FB_VAPID,serviceWorkerRegistration:reg});
     if(!token)throw new Error('token yo‘q');
+    if(!pushEnable.om){pushEnable.om=1;firebase.messaging().onMessage(p=>{const n=p.notification||{};toast((n.title||'Yangi xabar')+(n.body?': '+n.body:''));chatLoadList()})}   // sayt ochiq bo'lganda ham ko'rinadi
     if(LS.get('abitur_push')!==token||!silent){
       const r=await api({action:'savePushToken',id:currentUser.id,email:localStorage.getItem('abitur_email'),token:token});
       if(!r.ok)throw new Error(r.error||'saqlanmadi');
