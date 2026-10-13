@@ -206,7 +206,7 @@ button:focus-visible,.test-btn:focus-visible{outline:2px solid var(--gold2);outl
 <div class="container">
 
   <div class="top-logo"><img src="assets/logo.png" alt="ABITUR DTM logotipi" width="44" height="44"><span>ABITUR DTM</span></div>
-  <p style="text-align:center;color:var(--muted);font-size:12px;max-width:400px;margin:0 auto 16px;line-height:1.5">Onlayn <b style="color:var(--gold2)">DTM test</b>, <b style="color:var(--gold2)">blok test</b> va <b style="color:var(--gold2)">milliy sertifikat</b> testlari — barcha fanlardan.</p>
+  <p style="text-align:center;color:var(--muted);font-size:12px;max-width:400px;margin:0 auto 16px;line-height:1.5">Onlayn <b style="color:var(--gold2)">sinov test</b>, <b style="color:var(--gold2)">blok test</b> va <b style="color:var(--gold2)">milliy sertifikat</b> testlari — barcha fanlardan.</p>
 
   <div id="sectionBar" class="section-bar hide"></div>
 
@@ -429,9 +429,9 @@ button:focus-visible,.test-btn:focus-visible{outline:2px solid var(--gold2);outl
   </div>
   <div id="chatBox"></div>
   <div class="cr-send" id="crSend">
-    <button class="cr-tool" onclick="$('chatFile').click()" aria-label="Rasm">📷</button>
+    <button class="cr-tool" onclick="$('chatFile').click()" aria-label="Rasm"><i data-lucide="images"></i></button>
+    <button id="chatBtn" onclick="chatMainBtn()" aria-label="Yuborish / ovoz"><i data-lucide="mic"></i></button>
     <input id="chatInput" maxlength="300" placeholder="Xabar yozing..." autocomplete="off" oninput="chatToggleBtn()" onkeydown="if(event.key==='Enter')chatSend()">
-    <button id="chatBtn" onclick="chatMainBtn()" aria-label="Yuborish / ovoz">🎤</button>
   </div>
   <div class="cr-send hide" id="recBar">
     <button class="cr-tool" onclick="recCancel()" aria-label="Bekor qilish">✕</button>
