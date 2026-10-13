@@ -420,29 +420,33 @@ button:focus-visible,.test-btn:focus-visible{outline:2px solid var(--gold2);outl
   <button class="nav-item" data-tab="kabinet" onclick="showTab('kabinet')"><span class="ico">👤</span>Kabinet</button>
 </nav>
 
-<!-- CHAT: to'liq ekranli suhbat oynasi -->
-<div id="chatRoom" class="hide">
-  <div class="cr-head">
-    <button class="back" onclick="chatClose()" aria-label="Orqaga">‹</button>
-    <div class="cl-av" id="crAv" style="width:38px;height:38px;font-size:13px">?</div>
-    <div><b id="crName">-</b><small id="crSub">-</small></div>
-  </div>
-  <div id="chatBox"></div>
-  <div class="cr-send" id="crSend">
-    <button class="cr-tool" onclick="$('chatFile').click()" aria-label="Rasm"><i data-lucide="images"></i></button>
-    <button id="chatBtn" onclick="chatMainBtn()" aria-label="Yuborish / ovoz"><i data-lucide="mic"></i></button>
-    <input id="chatInput" maxlength="300" placeholder="Xabar yozing..." autocomplete="off" oninput="chatToggleBtn()" onkeydown="if(event.key==='Enter')chatSend()">
-  </div>
-  <div class="cr-send hide" id="recBar">
-    <button class="cr-tool" onclick="recCancel()" aria-label="Bekor qilish">✕</button>
-    <div class="cr-rec"><span>●</span><b id="recTime">0:00</b><span style="animation:none;font-weight:400">Yozilmoqda...</span></div>
-    <button onclick="recStop(true)" aria-label="Yuborish">➤</button>
-  </div>
-  <input type="file" id="chatFile" accept="image/*" class="hide" onchange="chatPickImage(this)">
-  <div id="imgView" class="hide" onclick="this.classList.add('hide')"><img id="imgViewImg" alt=""></div>
-</div>
-</div>
+<!-- Xabar yozish paneli -->
+<div class="cr-send" id="crSend">
+  <button class="cr-tool" onclick="$('chatFile').click()" aria-label="Rasm">
+    <i data-lucide="images"></i>
+  </button>
 
+  <button class="cr-tool" onclick="chatEmojiOpen()" aria-label="Emoji">
+    <i data-lucide="smile"></i>
+  </button>
+
+  <button class="cr-tool" onclick="chatStickerOpen()" aria-label="Stiker">
+    <i data-lucide="sticker"></i>
+  </button>
+
+  <input
+    id="chatInput"
+    maxlength="300"
+    placeholder="Xabar yozing..."
+    autocomplete="off"
+    oninput="chatToggleBtn()"
+    onkeydown="if(event.key==='Enter')chatSend()"
+  >
+
+  <button id="chatBtn" onclick="chatMainBtn()" aria-label="Yuborish / ovoz">
+    <i data-lucide="mic"></i>
+  </button>
+</div>
 <script>
 /* ===== SOZLAMALAR ===== */
 const GOOGLE_CLIENT_ID="323960187871-77jganuhhpo1hba8t7ooh252kqeh9sc2.apps.googleusercontent.com";
