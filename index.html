@@ -206,7 +206,7 @@ button:focus-visible,.test-btn:focus-visible{outline:2px solid var(--gold2);outl
 <div class="container">
 
   <div class="top-logo"><img src="assets/logo.png" alt="ABITUR DTM logotipi" width="44" height="44"><span>ABITUR DTM</span></div>
-  <p style="text-align:center;color:var(--muted);font-size:12px;max-width:400px;margin:0 auto 16px;line-height:1.5">Onlayn <b style="color:var(--gold2)">sinov test</b>, <b style="color:var(--gold2)">blok test</b> va <b style="color:var(--gold2)">milliy sertifikat</b> testlari — barcha fanlardan.</p>
+  <p style="text-align:center;color:var(--muted);font-size:12px;max-width:400px;margin:0 auto 16px;line-height:1.5">Onlayn <b style="color:var(--gold2)">DTM test</b>, <b style="color:var(--gold2)">blok test</b> va <b style="color:var(--gold2)">milliy sertifikat</b> testlari — barcha fanlardan.</p>
 
   <div id="sectionBar" class="section-bar hide"></div>
 
@@ -231,7 +231,7 @@ button:focus-visible,.test-btn:focus-visible{outline:2px solid var(--gold2);outl
       <p style="font-size:13px;color:var(--muted);margin-bottom:6px">Google hisobingizdan olingan ma'lumot:</p>
       <label>Ism</label><input id="gIsm">
       <label>Familiya</label><input id="gFamiliya">
-      <label>Taklif kodi (ixtiyoriy)</label><input id="gReferral" placeholder="Do'stingiz ID raqami">
+      <label>Taklif kodi (ixtiyoriy) — ikkalangizga bonus</label><input id="gReferral" placeholder="Do'stingiz ID raqami">
       <button class="btn" id="gCompleteBtn" onclick="completeGoogleRegister()">Ro'yxatdan o'tishni yakunlash</button>
       <div class="error hide" id="gCompleteErr"></div>
     </div>
@@ -277,7 +277,7 @@ button:focus-visible,.test-btn:focus-visible{outline:2px solid var(--gold2);outl
 
     <div class="card" data-sec="home">
       <h2>🎁 Do'stni taklif qiling</h2>
-      <p class="quality-desc" style="margin:0 auto 10px">Do'stingiz ro'yxatdan o'tishda ID raqamingizni kiritsa, hisobingizga 2000 so'm tushadi.</p>
+      <p class="quality-desc" style="margin:0 auto 10px">Do'stingiz ro'yxatdan o'tishda ID raqamingizni kiritsa, ikkalangizga ham <b class="rbn">2000</b> so'm tushadi.</p>
       <div id="hMyId" style="text-align:center;font-size:28px;font-weight:800;color:var(--gold2);letter-spacing:3px">-</div>
       <button class="btn btn-outline" id="copyIdBtn" onclick="copyMyId()">ID ni nusxalash</button>
     </div>
@@ -302,7 +302,7 @@ button:focus-visible,.test-btn:focus-visible{outline:2px solid var(--gold2);outl
 
     <div class="card" data-sec="kabinet">
       <h2>🎁 Do'stlarni taklif qiling</h2>
-      <h2 style="font-size:15px">Do'stingiz ro'yxatdan o'tishda sizning ID raqamingizni "Taklif kodi" maydoniga kiritsa, hisobingizga 2000 so'm tushadi!</h2>
+      <h2 style="font-size:15px">Do'stingiz ro'yxatdan o'tishda sizning ID raqamingizni "Taklif kodi" maydoniga kiritsa, ikkalangizga ham <b class="rbn">2000</b> so'm tushadi!</h2>
     </div>
 
     <div class="card" data-sec="testlar">
@@ -429,9 +429,9 @@ button:focus-visible,.test-btn:focus-visible{outline:2px solid var(--gold2);outl
   </div>
   <div id="chatBox"></div>
   <div class="cr-send" id="crSend">
-    <button class="cr-tool" onclick="$('chatFile').click()" aria-label="Rasm">💾</button>
+    <button class="cr-tool" onclick="$('chatFile').click()" aria-label="Rasm">📷</button>
     <input id="chatInput" maxlength="300" placeholder="Xabar yozing..." autocomplete="off" oninput="chatToggleBtn()" onkeydown="if(event.key==='Enter')chatSend()">
-    <button id="chatBtn" onclick="chatMainBtn()" aria-label="Yuborish / ovoz">🎤</button>  
+    <button id="chatBtn" onclick="chatMainBtn()" aria-label="Yuborish / ovoz">🎤</button>
   </div>
   <div class="cr-send hide" id="recBar">
     <button class="cr-tool" onclick="recCancel()" aria-label="Bekor qilish">✕</button>
@@ -442,7 +442,7 @@ button:focus-visible,.test-btn:focus-visible{outline:2px solid var(--gold2);outl
   <div id="imgView" class="hide" onclick="this.classList.add('hide')"><img id="imgViewImg" alt=""></div>
 </div>
 </div>
-  
+
 <script>
 /* ===== SOZLAMALAR ===== */
 const GOOGLE_CLIENT_ID="323960187871-77jganuhhpo1hba8t7ooh252kqeh9sc2.apps.googleusercontent.com";
@@ -626,7 +626,8 @@ async function completeGoogleRegister(){
   hideAllScreens();
   $('registeredId').textContent=res.id||'—';
   const b=$('regBonusMsg');
-  if(res.bonus&&res.bonus>0){b.textContent="Taklif kodi qabul qilindi — taklif qilgan do‘stingizga bonus tushdi!";b.classList.remove('hide')}
+  const fm=n=>String(n).replace(/\B(?=(\d{3})+(?!\d))/g,' '),sb=res.signupBonus||0,rb=res.refBonus||0;
+  if(sb>0||rb>0){b.textContent='Bonus: ro‘yxatdan o‘tish '+fm(sb)+' so‘m'+(rb>0?' + taklif '+fm(rb)+' so‘m (do‘stingizga ham tushdi)':'');b.classList.remove('hide')}
   else b.classList.add('hide');
   show('regSuccess');
 }
@@ -664,6 +665,7 @@ function paint(){
   $('cardOwner').textContent=settingsCache.card_owner||'-';
   $('rankingList').innerHTML=((S.rank&&S.rank.list)||[]).slice(0,20).map((u,i)=>
     `<div class="rank-item${String(u.id)===String(res.id)?' me':''}"><span>#${i+1} ${esc(u.ism)} ${esc(u.familiya)}</span><b>${esc(u.totalScore||0)} ball</b></div>`).join('');
+  document.querySelectorAll('.rbn').forEach(e=>{e.textContent=String(settingsCache.referral_bonus||2000).replace(/\B(?=(\d{3})+(?!\d))/g,' ')});
   renderHome(res);
   renderCerts(S.certs);
 }
