@@ -248,6 +248,12 @@ button:focus-visible,.test-btn:focus-visible{outline:2px solid var(--gold2);outl
 
   <!-- DASHBOARD -->
   <div id="dashboard" class="hide">
+    <div class="card" data-sec="home" id="dailyCard">
+      <h2>📅 Kunlik test</h2>
+      <p class="quality-desc" id="dailyTxt" style="margin:0 auto 10px">Yuklanmoqda...</p>
+      <button class="btn" id="dailyBtn" onclick="startDaily()">Boshlash</button>
+    </div>
+
     <div class="card" data-sec="home">
       <h2 id="dashName">—</h2>
       <div class="quality-ring-wrap">
@@ -303,6 +309,12 @@ button:focus-visible,.test-btn:focus-visible{outline:2px solid var(--gold2);outl
     <div class="card" data-sec="kabinet">
       <h2>🎁 Do'stlarni taklif qiling</h2>
       <h2 style="font-size:15px">Do'stingiz ro'yxatdan o'tishda sizning ID raqamingizni "Taklif kodi" maydoniga kiritsa, ikkalangizga ham <b class="rbn">2000</b> so'm tushadi!</h2>
+    </div>
+
+    <div class="card hide" data-sec="testlar" id="planCard">
+      <h2>⭐ Oylik tarif</h2>
+      <p class="quality-desc" id="planTxt" style="margin:0 auto 10px">...</p>
+      <button class="btn" id="planBtn" onclick="buyPlan()">Tarifni faollashtirish</button>
     </div>
 
     <div class="card" data-sec="testlar">
@@ -412,6 +424,15 @@ button:focus-visible,.test-btn:focus-visible{outline:2px solid var(--gold2);outl
 
 <div class="site-footer">© <span id="footerYear"></span> <b>ABITUR DTM</b>. Barcha huquqlar himoyalangan.</div>
 
+<div id="dailyModal" class="hide" style="position:fixed;inset:0;z-index:8000;background:rgba(0,0,0,.75);display:flex;align-items:center;justify-content:center;padding:20px">
+  <div class="card" style="max-width:340px;width:100%;text-align:center;margin:0">
+    <h2>📅 Kunlik test tayyor!</h2>
+    <p class="quality-desc">Bugungi 10 ta savolni yeching va ballingizni oshiring. Bepul.</p>
+    <button class="btn" onclick="dailyModalGo()">Boshlash</button>
+    <button class="btn btn-outline" onclick="dailyModalSkip()">Keyinroq</button>
+  </div>
+</div>
+
 <nav id="bottomNav" class="bottom-nav hide">
   <button class="nav-item active" data-tab="home" onclick="showTab('home')"><span class="ico">🏠</span>Bosh sahifa</button>
   <button class="nav-item" data-tab="testlar" onclick="showTab('testlar')"><span class="ico">📝</span>Testlar</button>
@@ -446,7 +467,7 @@ button:focus-visible,.test-btn:focus-visible{outline:2px solid var(--gold2);outl
 <script>
 /* ===== SOZLAMALAR ===== */
 const GOOGLE_CLIENT_ID="323960187871-77jganuhhpo1hba8t7ooh252kqeh9sc2.apps.googleusercontent.com";
-const GAS_URL="https://script.google.com/macros/s/AKfycbya32xCD-MuAZBwxN0AY9dUiUGlHggA8tLstJ6whPArqJTi8QN312leFHpxvi5177bF5Q/exec";
+const GAS_URL="https://script.google.com/macros/s/AKfycbyhBrRO32eKZ5ODhnfflUNrNEs57ZKKBFA76GqQjjf3TYy9Mn_3W8ykshWymvnCeUJMww/exec";
 
 /* ===== YORDAMCHI ===== */
 const $=id=>document.getElementById(id);
@@ -462,7 +483,7 @@ function busy(on){busyN=Math.max(0,busyN+(on?1:-1));$('busy').classList.toggle('
 window.addEventListener('unhandledrejection',e=>{console.error(e.reason);busyN=0;$('busy').classList.add('hide')});
 
 /* ===== SERVER SO'ROVLARI: timeout + qayta urinish + takroriy so'rovlarni birlashtirish ===== */
-const SAFE=new Set(['getUserByEmail','getSettings','getRanking','getTests','getCertificates','googleLogin','getMessages','getChats','chatUser','getMedia']);
+const SAFE=new Set(['getUserByEmail','getSettings','getRanking','getTests','getCertificates','googleLogin','getMessages','getChats','chatUser','getMedia','dailyStatus','dailyStart']);
 const inflight=new Map();
 function api(p){
   const url=GAS_URL+'?'+new URLSearchParams(p).toString(),safe=SAFE.has(p.action);
@@ -634,7 +655,7 @@ async function completeGoogleRegister(){
 function logout(){
   LS.del('abitur_email');LS.del('abitur_cache');
   try{const pt=LS.get('abitur_push');if(pt&&currentUser)api({action:'delPushToken',token:pt})}catch(e){}
-  LS.del('abitur_push');pushRefresh.done=false;
+  LS.del('abitur_push');pushRefresh.done=false;dailyLoad.at=0;dailyLoad.shown=0;
   S={};currentUser=null;currentTab='home';
   chatReset();
   try{google.accounts.id.disableAutoSelect()}catch(e){}
@@ -658,9 +679,8 @@ function paint(){
   $('dBalans').textContent=(res.balans??0)+" so'm";
   renderQualityStat((res.lastTest&&Number(res.lastTest.maxBall)>0)?Math.round(Number(res.lastTest.ball)/Number(res.lastTest.maxBall)*100):null);
   settingsCache=(S.set&&S.set.settings)?S.set.settings:{};
-  $('priceSinov').textContent=(settingsCache.price_sinov||0)+" so'm";
-  $('priceBlok').textContent=(settingsCache.price_blok||0)+" so'm";
-  $('priceSert').textContent=(settingsCache.price_sertifikat||0)+" so'm";
+  {const pl=Number(settingsCache.tarif_narx||0)>0,act=Number(res.until||0)>Date.now(),lb=k=>pl?(act?'Tarifda':'Tarif kerak'):(settingsCache['price_'+k]||0)+" so'm";
+   $('priceSinov').textContent=lb('sinov');$('priceBlok').textContent=lb('blok');$('priceSert').textContent=lb('sertifikat')}
   $('cardNum').textContent=settingsCache.card_number||'-';
   $('cardOwner').textContent=settingsCache.card_owner||'-';
   $('rankingList').innerHTML=((S.rank&&S.rank.list)||[]).slice(0,20).map((u,i)=>
@@ -668,6 +688,7 @@ function paint(){
   document.querySelectorAll('.rbn').forEach(e=>{e.textContent=String(settingsCache.referral_bonus||2000).replace(/\B(?=(\d{3})+(?!\d))/g,' ')});
   renderHome(res);
   renderCerts(S.certs);
+  paintPlan();paintDaily();
 }
 async function loadDashboard(nav=true){
   const email=localStorage.getItem('abitur_email');
@@ -685,7 +706,7 @@ async function loadDashboard(nav=true){
     toast(res.error||'Xatolik yuz berdi');return;
   }
   S.res=res;persist();paint();
-  chatLoadList();pushRefresh();
+  chatLoadList();pushRefresh();dailyLoad();
   if(nav&&!inFlow()&&!resumeRun())enterDash();
   pS.then(r=>{if(r&&r.settings){S.set=r;persist();paint()}});
   pR.then(r=>{if(r&&r.list){S.rank=r;persist();paint()}});
@@ -737,7 +758,8 @@ const getCachedTests=t=>{const c=LS.get('abitur_t_'+t);return c&&Date.now()-c.t<
 
 async function openTestType(type){
   const price=Number(settingsCache['price_'+type]||0);
-  if(!currentUser||Number(currentUser.balans)<price){toast("Balansingiz yetarli emas. Iltimos, balansni to'ldiring.");showPayment();return}
+  if(planOn()){if(!planActive()){toast("Testlar uchun oylik tarifni faollashtiring.");showTab('testlar');return}}
+  else if(!currentUser||Number(currentUser.balans)<price){toast("Balansingiz yetarli emas. Iltimos, balansni to'ldiring.");showPayment();return}
   let res=getCachedTests(type);
   if(!res){
     busy(true);
@@ -908,6 +930,7 @@ async function flushOutbox(){
 }
 async function finishTest(){
   if(testSubmitted)return;
+  if(activeTestType==='kun')return finishDaily();
   testSubmitted=true;deadline=0;stopAudio();
   clearInterval(timerInterval);
   saveTextAnswer();
@@ -1315,6 +1338,79 @@ function pushRefresh(){   // ruxsat berilgan bo'lsa, token o'zgargan bo'lsa jimg
   if(pushRefresh.done||!currentUser)return;
   pushRefresh.done=true;pushUi();
   if('Notification' in window&&Notification.permission==='granted')pushEnable(true);
+}
+
+/* ===== OYLIK TARIF ===== */
+const planOn=()=>Number(settingsCache.tarif_narx||0)>0;
+const planActive=()=>Number(currentUser&&currentUser.until||0)>Date.now();
+const fmtN=n=>String(n).replace(/\B(?=(\d{3})+(?!\d))/g,' ');
+const fmtD=ms=>{const d=new Date(ms);return String(d.getDate()).padStart(2,'0')+'.'+String(d.getMonth()+1).padStart(2,'0')+'.'+d.getFullYear()};
+function paintPlan(){
+  const c=$('planCard');if(!c)return;
+  if(!planOn()){c.classList.add('hide');return}
+  c.classList.remove('hide');
+  const days=settingsCache.tarif_kun||30,price=fmtN(settingsCache.tarif_narx);
+  if(planActive()){$('planTxt').innerHTML='Faol: <b class="gold">'+fmtD(currentUser.until)+'</b> gacha. Barcha testlar cheksiz.';$('planBtn').textContent='Uzaytirish (+'+days+' kun · '+price+' so‘m)'}
+  else{$('planTxt').innerHTML='Barcha testlar uchun <b class="gold">'+days+' kun — '+price+' so‘m</b>. Cheksiz test yeching.';$('planBtn').textContent='Tarifni faollashtirish'}
+}
+async function buyPlan(){
+  if(!currentUser)return;
+  const price=Number(settingsCache.tarif_narx||0),days=settingsCache.tarif_kun||30;
+  if(Number(currentUser.balans)<price){toast("Balansingiz yetarli emas. Iltimos, balansni to'ldiring.");showPayment();return}
+  if(!confirm('Balansingizdan '+fmtN(price)+' so‘m yechiladi va tarif '+days+' kunga faollashadi. Davom etasizmi?'))return;
+  busy(true);let r;
+  try{r=await api({action:'buyPlan',id:currentUser.id,email:localStorage.getItem('abitur_email')})}finally{busy(false)}
+  if(!r||!r.ok){toast((r&&r.error)||'Xatolik');if(r&&r.needBalance)showPayment();return}
+  S.res.balans=r.balans;S.res.until=r.until;persist();paint();toast('Tarif faollashdi ✓');
+}
+
+/* ===== KUNLIK TEST (10 ta savol, bepul, kuniga bir marta; javoblar serverda tekshiriladi) ===== */
+const today=()=>new Date().toLocaleDateString('en-CA');
+function paintDaily(){
+  const c=$('dailyCard');if(!c)return;
+  const d=S.daily&&S.daily.date===today()?S.daily:null,t=$('dailyTxt'),b=$('dailyBtn');
+  if(!d){t.textContent='Yuklanmoqda...';b.classList.add('hide');return}
+  if(d.done){t.innerHTML='Bugun yechildi: <b class="gold">'+d.score+' / '+d.max+'</b>. Ertaga yangi test!';b.classList.add('hide')}
+  else if(d.available===false){t.textContent='Bugungi test hali tayyor emas.';b.classList.add('hide')}
+  else{t.textContent='Bugungi 10 ta savol. Bepul — ballingizga qo‘shiladi.';b.classList.remove('hide')}
+}
+async function dailyLoad(){
+  if(!currentUser)return;
+  if(dailyLoad.at&&Date.now()-dailyLoad.at<600000&&S.daily&&S.daily.date===today())return;
+  dailyLoad.at=Date.now();
+  const r=await api({action:'dailyStatus',id:currentUser.id,email:localStorage.getItem('abitur_email')});
+  if(!r||!r.ok)return;
+  r.date=today();S.daily=r;persist();paintDaily();
+  if(!r.done&&r.available&&LS.get('abitur_daily_skip')!==today()&&!dailyLoad.shown&&!inFlow()){dailyLoad.shown=1;$('dailyModal').classList.remove('hide')}
+}
+function dailyModalSkip(){LS.set('abitur_daily_skip',today());$('dailyModal').classList.add('hide')}
+function dailyModalGo(){$('dailyModal').classList.add('hide');startDaily()}
+async function startDaily(){
+  if(!currentUser)return;
+  busy(true);let r;
+  try{r=await api({action:'dailyStart',id:currentUser.id,email:localStorage.getItem('abitur_email')})}finally{busy(false)}
+  if(!r||!r.ok){toast((r&&r.error)||'Xatolik');if(r&&r.done){S.daily={ok:true,done:true,score:r.score,max:r.max,date:today()};paintDaily()}return}
+  activeTestType='kun';activeQuestions=r.questions;activeQuestions._name='Kunlik test';activeAnswers={};currentQIndex=0;testSubmitted=false;
+  stopAudio();activeAudio='';deadline=Date.now()+10*60000;
+  LS.set('abitur_run_q',activeQuestions);saveRun();
+  hideAllScreens();show('testScreen');renderQuestion();
+  clearInterval(timerInterval);timerInterval=setInterval(tick,1000);tick();
+}
+async function finishDaily(){
+  if(testSubmitted)return;
+  testSubmitted=true;deadline=0;clearInterval(timerInterval);saveTextAnswer();
+  const ans={};activeQuestions.forEach((q,i)=>{if(activeAnswers[i]!==undefined)ans[q.id]=activeAnswers[i]});
+  busy(true);let r;
+  try{r=await api({action:'dailySubmit',id:currentUser.id,email:localStorage.getItem('abitur_email'),answers:JSON.stringify(ans)})}finally{busy(false)}
+  if(!r||!r.ok){
+    if(r&&r.network){testSubmitted=false;deadline=Date.now()+60000;timerInterval=setInterval(tick,1000);toast(r.error);return}
+    toast((r&&r.error)||'Xatolik');clearRun();S.daily=null;dailyLoad.at=0;enterDash();dailyLoad();return;
+  }
+  clearRun();S.daily={ok:true,done:true,score:r.score,max:r.max,date:today()};paintDaily();
+  hideAllScreens();show('resultScreen');window.scrollTo(0,0);
+  $('resultBox').innerHTML='<div class="card" style="text-align:center"><h2>Kunlik test yakunlandi!</h2><p style="font-size:15px;margin-top:10px">Natijangiz: <b style="color:var(--gold2)">'+r.score+' / '+r.max+'</b></p></div>'+
+    (r.review||[]).filter(x=>!x.ok).map(x=>'<div class="card" style="text-align:left;font-size:13px"><div style="color:var(--muted)">'+esc(x.savol)+'</div><div style="margin-top:6px">Sizning javobingiz: <b style="color:#ff6b6b">'+esc(x.javob||'—')+'</b> · To‘g‘ri: <b style="color:#8bd17c">'+esc(x.togri)+'</b></div></div>').join('');
+  loadDashboard(false);
 }
 
 /* ===== ISHGA TUSHIRISH (sahifa to'liq yuklanishini kutmaydi) ===== */
