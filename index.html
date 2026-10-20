@@ -206,7 +206,7 @@ button:focus-visible,.test-btn:focus-visible{outline:2px solid var(--gold2);outl
 <div class="container">
 
   <div class="top-logo"><img src="assets/logo.png" alt="ABITUR DTM logotipi" width="44" height="44"><span>ABITUR DTM</span></div>
-  <p style="text-align:center;color:var(--muted);font-size:12px;max-width:400px;margin:0 auto 16px;line-height:1.5">Onlayn <b style="color:var(--gold2)">DTM test</b>, <b style="color:var(--gold2)">blok test</b> va <b style="color:var(--gold2)">milliy sertifikat</b> testlari — barcha fanlardan.</p>
+  <p style="text-align:center;color:var(--muted);font-size:12px;max-width:400px;margin:0 auto 16px;line-height:1.5">Onlayn <b style="color:var(--gold2)">Sinov test</b>, <b style="color:var(--gold2)">blok test</b> va <b style="color:var(--gold2)">milliy sertifikat</b> testlari — barcha fanlardan.</p>
 
   <div id="sectionBar" class="section-bar hide"></div>
 
@@ -285,6 +285,7 @@ button:focus-visible,.test-btn:focus-visible{outline:2px solid var(--gold2);outl
       <h2>🎁 Do'stni taklif qiling</h2>
       <p class="quality-desc" style="margin:0 auto 10px">Do'stingiz ro'yxatdan o'tishda ID raqamingizni kiritsa, ikkalangizga ham <b class="rbn">2000</b> so'm tushadi.</p>
       <div id="hMyId" style="text-align:center;font-size:28px;font-weight:800;color:var(--gold2);letter-spacing:3px">-</div>
+      <button class="btn" onclick="shareRef()">🔗 Havolani ulashish</button>
       <button class="btn btn-outline" id="copyIdBtn" onclick="copyMyId()">ID ni nusxalash</button>
     </div>
 
@@ -298,6 +299,11 @@ button:focus-visible,.test-btn:focus-visible{outline:2px solid var(--gold2);outl
       <button class="btn btn-outline" onclick="showPayment()">💳 Balansni to'ldirish</button>
       <button class="btn btn-outline" id="pushBtn" onclick="pushEnable()">🔔 Bildirishnomani yoqish</button>
       <button class="btn btn-outline" onclick="logout()">Chiqish</button>
+    </div>
+
+    <div class="card" data-sec="kabinet" id="weakCard">
+      <h2>📉 Zaif mavzular</h2>
+      <div id="weakList"></div>
     </div>
 
     <div class="card" data-sec="kabinet">
@@ -314,7 +320,7 @@ button:focus-visible,.test-btn:focus-visible{outline:2px solid var(--gold2);outl
     <div class="card hide" data-sec="testlar" id="planCard">
       <h2>⭐ Oylik tarif</h2>
       <p class="quality-desc" id="planTxt" style="margin:0 auto 10px">...</p>
-      <button class="btn" id="planBtn" onclick="buyPlan()">Tarifni faollashtirish</button>
+      <div id="planOpts"></div>
     </div>
 
     <div class="card" data-sec="testlar">
@@ -467,7 +473,7 @@ button:focus-visible,.test-btn:focus-visible{outline:2px solid var(--gold2);outl
 <script>
 /* ===== SOZLAMALAR ===== */
 const GOOGLE_CLIENT_ID="323960187871-77jganuhhpo1hba8t7ooh252kqeh9sc2.apps.googleusercontent.com";
-const GAS_URL="https://script.google.com/macros/s/AKfycbyhBrRO32eKZ5ODhnfflUNrNEs57ZKKBFA76GqQjjf3TYy9Mn_3W8ykshWymvnCeUJMww/exec";
+const GAS_URL="https://script.google.com/macros/s/AKfycbz8oNdylGEUn1a5T_hR6O7XsQ6SXDEoAF_gtSik2KWRgZZlFCFp41wB5eZxpdHVK67faQ/exec";
 
 /* ===== YORDAMCHI ===== */
 const $=id=>document.getElementById(id);
@@ -475,6 +481,7 @@ const LS={get(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return 
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 $('footerYear').textContent=new Date().getFullYear();
+(function(){try{const r=new URLSearchParams(location.search).get('ref');if(r&&/^\d{3,12}$/.test(r)){localStorage.setItem('abitur_ref',JSON.stringify(r));history.replaceState(null,'',location.pathname)}}catch(e){}})();
 setTimeout(()=>{const i=$('intro');if(i)i.remove()},1000); // intro animatsiyalari to'xtaydi
 
 function toast(m){const t=$('toast');t.textContent=m;t.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove('on'),3500)}
@@ -483,7 +490,7 @@ function busy(on){busyN=Math.max(0,busyN+(on?1:-1));$('busy').classList.toggle('
 window.addEventListener('unhandledrejection',e=>{console.error(e.reason);busyN=0;$('busy').classList.add('hide')});
 
 /* ===== SERVER SO'ROVLARI: timeout + qayta urinish + takroriy so'rovlarni birlashtirish ===== */
-const SAFE=new Set(['getUserByEmail','getSettings','getRanking','getTests','getCertificates','googleLogin','getMessages','getChats','chatUser','getMedia','dailyStatus','dailyStart']);
+const SAFE=new Set(['getUserByEmail','getSettings','getRanking','getTests','getCertificates','googleLogin','getMessages','getChats','chatUser','getMedia','dailyStatus','dailyStart','weakTopics']);
 const inflight=new Map();
 function api(p){
   const url=GAS_URL+'?'+new URLSearchParams(p).toString(),safe=SAFE.has(p.action);
@@ -621,6 +628,7 @@ async function handleGoogleCredential(response){
     if(res.notFound){
       $('googleAuthCard').classList.add('hide');
       $('gIsm').value=payload.given_name||'';
+      $('gReferral').value=LS.get('abitur_ref')||'';
       $('gFamiliya').value=payload.family_name||'';
       show('newUserCard');
       return;
@@ -655,7 +663,7 @@ async function completeGoogleRegister(){
 function logout(){
   LS.del('abitur_email');LS.del('abitur_cache');
   try{const pt=LS.get('abitur_push');if(pt&&currentUser)api({action:'delPushToken',token:pt})}catch(e){}
-  LS.del('abitur_push');pushRefresh.done=false;dailyLoad.at=0;dailyLoad.shown=0;
+  LS.del('abitur_push');pushRefresh.done=false;dailyLoad.at=0;dailyLoad.shown=0;weakLoad.at=0;S.weak=null;
   S={};currentUser=null;currentTab='home';
   chatReset();
   try{google.accounts.id.disableAutoSelect()}catch(e){}
@@ -679,7 +687,7 @@ function paint(){
   $('dBalans').textContent=(res.balans??0)+" so'm";
   renderQualityStat((res.lastTest&&Number(res.lastTest.maxBall)>0)?Math.round(Number(res.lastTest.ball)/Number(res.lastTest.maxBall)*100):null);
   settingsCache=(S.set&&S.set.settings)?S.set.settings:{};
-  {const pl=Number(settingsCache.tarif_narx||0)>0,act=Number(res.until||0)>Date.now(),lb=k=>pl?(act?'Tarifda':'Tarif kerak'):(settingsCache['price_'+k]||0)+" so'm";
+  {const pl=planOn(),act=Number(res.until||0)>Date.now(),lb=k=>pl?(act?'Tarifda':'Tarif kerak'):(settingsCache['price_'+k]||0)+" so'm";
    $('priceSinov').textContent=lb('sinov');$('priceBlok').textContent=lb('blok');$('priceSert').textContent=lb('sertifikat')}
   $('cardNum').textContent=settingsCache.card_number||'-';
   $('cardOwner').textContent=settingsCache.card_owner||'-';
@@ -688,7 +696,7 @@ function paint(){
   document.querySelectorAll('.rbn').forEach(e=>{e.textContent=String(settingsCache.referral_bonus||2000).replace(/\B(?=(\d{3})+(?!\d))/g,' ')});
   renderHome(res);
   renderCerts(S.certs);
-  paintPlan();paintDaily();
+  paintPlan();paintDaily();paintWeak();
 }
 async function loadDashboard(nav=true){
   const email=localStorage.getItem('abitur_email');
@@ -706,7 +714,7 @@ async function loadDashboard(nav=true){
     toast(res.error||'Xatolik yuz berdi');return;
   }
   S.res=res;persist();paint();
-  chatLoadList();pushRefresh();dailyLoad();
+  chatLoadList();pushRefresh();dailyLoad();weakLoad();
   if(nav&&!inFlow()&&!resumeRun())enterDash();
   pS.then(r=>{if(r&&r.settings){S.set=r;persist();paint()}});
   pR.then(r=>{if(r&&r.list){S.rank=r;persist();paint()}});
@@ -749,7 +757,7 @@ async function submitPayment(){
 }
 
 /* ===== TESTLAR ===== */
-let activeTestType=null,activeQuestions=[],activeAnswers={},currentQIndex=0,timerInterval=null,timeLeft=0,testSubmitted=false,deadline=0;
+let activeSid='',activeTestType=null,activeQuestions=[],activeAnswers={},currentQIndex=0,timerInterval=null,timeLeft=0,testSubmitted=false,deadline=0;
 const shuffleArray=arr=>{const a=arr.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
 const TEST_TIME_MIN={sinov:60,blok:180,sertifikat:150};
 const TEST_LABEL={sinov:'Sinov test',blok:'Blok test',sertifikat:'Sertifikat test'};
@@ -773,6 +781,7 @@ async function openTestType(type){
   const groups={};
   res.list.forEach(q=>{
     const m=String(q.testNomi||'').match(/\s*@\s*(\S+)\s*$/);
+    q.raw=q.testNomi;
     if(m){q.audio=q.audio||m[1];q.testNomi=String(q.testNomi).replace(m[0],'')}
     const base=baseName(q.testNomi);
     if(!groups[base])groups[base]={};
@@ -792,9 +801,8 @@ async function openTestType(type){
     div.onclick=()=>{
       if(div.dataset.busy)return;   // ikki marta bosilib, ikki marta pul yechilmasin
       div.dataset.busy='1';div.style.opacity='0.6';if(lis)unlockAudio();
-      let qs=variants[Math.floor(Math.random()*variants.length)];
-      if(type==='sinov'&&qs.length>30)qs=shuffleArray(qs).slice(0,30);
-      startTest(type,base,qs,div);
+      const qs=variants[Math.floor(Math.random()*variants.length)];
+      startTest(type,base,qs[0].raw||qs[0].testNomi,div);
     };
     frag.appendChild(div);
   });
@@ -836,27 +844,30 @@ function stopAudio(){
 }
 
 /* test holati saqlanadi: sahifa yangilansa yoki brauzer yopilib qolsa ham test davom etadi */
-const saveRun=()=>LS.set('abitur_run_s',{uid:currentUser.id,type:activeTestType,name:activeQuestions._name,ans:activeAnswers,idx:currentQIndex,deadline:deadline,audio:activeAudio,at:activeAudio?$('lAudio').currentTime:0});
+const saveRun=()=>LS.set('abitur_run_s',{uid:currentUser.id,type:activeTestType,sid:activeSid,name:activeQuestions._name,ans:activeAnswers,idx:currentQIndex,deadline:deadline,audio:activeAudio,at:activeAudio?$('lAudio').currentTime:0});
 const clearRun=()=>{LS.del('abitur_run_q');LS.del('abitur_run_s')};
 function resumeRun(){
   const q=LS.get('abitur_run_q'),s=LS.get('abitur_run_s');
   if(!q||!q.length||!s||!currentUser||String(s.uid)!==String(currentUser.id)){if(q||s)clearRun();return false}
-  activeTestType=s.type;activeQuestions=q;activeQuestions._name=s.name;activeAnswers=s.ans||{};
+  activeSid=s.sid||'';activeTestType=s.type;activeQuestions=q;activeQuestions._name=s.name;activeAnswers=s.ans||{};
   currentQIndex=Math.min(s.idx||0,q.length-1);deadline=s.deadline;testSubmitted=false;activeAudio=s.audio||'';setupAudio(activeAudio,s.at||0);
   hideAllScreens();show('testScreen');renderQuestion();
   clearInterval(timerInterval);timerInterval=setInterval(tick,1000);tick();
   return true;
 }
 
-async function startTest(type,name,questions,btnEl){
+async function startTest(type,name,raw,btnEl){
   busy(true);
-  let pay;
-  try{pay=await api({action:'payForTest',id:currentUser.id,testTuri:type})}finally{busy(false)}
+  let r;
+  try{r=await api({action:'startExam',id:currentUser.id,email:localStorage.getItem('abitur_email'),testTuri:type,testNomi:raw})}finally{busy(false)}
   if(btnEl){btnEl.style.opacity='';delete btnEl.dataset.busy}
-  if(pay.network){toast("Server javob bermadi. Testni qayta boshlashdan oldin balansingizni tekshiring.");return}
-  if(!pay.ok){toast(pay.error||"To'lovda xatolik");return}
-  currentUser.balans=pay.balans;persist();
-  activeTestType=type;activeQuestions=questions;activeAnswers={};currentQIndex=0;
+  if(!r)return;
+  if(r.network){toast("Server javob bermadi. Testni qayta boshlashdan oldin balansingizni tekshiring.");return}
+  if(!r.ok){toast(r.error||"Xatolik");if(r.needPlan)showTab('testlar');else if(r.kerak!==undefined)showPayment();return}
+  const questions=r.questions;
+  questions.forEach(q=>{const m=String(q.testNomi||'').match(/\s*@\s*(\S+)\s*$/);if(m){q.audio=m[1];q.testNomi=String(q.testNomi).replace(m[0],'')}});
+  currentUser.balans=r.balans;persist();
+  activeSid=r.sid;activeTestType=type;activeQuestions=questions;activeAnswers={};currentQIndex=0;
   activeQuestions._name=name;testSubmitted=false;
   const au=questions[0]&&questions[0].audio?audioUrl(questions[0].audio):'';activeAudio=au;deadline=Date.now()+(au?LISTEN_MIN:TEST_TIME_MIN[type])*60000;setupAudio(au,0);
   LS.set('abitur_run_q',questions);saveRun();
@@ -914,19 +925,38 @@ function nextQ(){
   else finishTest();
 }
 
-/* natija avval qurilmada saqlanadi, keyin yuboriladi: internet uzilsa ham yo'qolmaydi */
-async function flushOutbox(){
-  if(flushOutbox.busy)return false;
+/* natija serverda hisoblanadi; javoblar avval qurilmaga saqlanadi: internet uzilsa ham yo'qolmaydi */
+const examRes={};
+async function flushOutbox(quiet){
+  if(flushOutbox.busy||!currentUser)return false;
   flushOutbox.busy=true;let sent=false;
   try{
-    const ob=LS.get('abitur_outbox')||[];
+    const ob=LS.get('abitur_exam_out')||[];
     while(ob.length){
-      const r=await api(Object.assign({action:'submitResult'},ob[0]));
+      const j=ob[0],r=await apiPost({action:'submitExam',id:currentUser.id,email:localStorage.getItem('abitur_email'),sid:j.sid,answers:JSON.stringify(j.ans)});
       if(r.network)break;           // internet yo'q — keyinroq qayta uriniladi
-      ob.shift();sent=true;LS.set('abitur_outbox',ob);
+      ob.shift();LS.set('abitur_exam_out',ob);
+      examRes[j.sid]=r;
+      if(r.ok){sent=true;if(!quiet)toast('Test natijasi yuborildi: '+r.score+' / '+r.max)}
+      else if(!quiet)toast(r.error||'Natija yuborilmadi');
     }
   }finally{flushOutbox.busy=false}
   return sent;
+}
+function reviewHtml(list){
+  if(!list||!list.length)return '';
+  return '<h2 style="margin:18px 0 10px;font-size:16px">Xatolar tahlili</h2>'+list.map(x=>'<div class="card" style="text-align:left;font-size:13px;padding:14px"><div style="color:var(--muted)">'+esc(x.savol)+'</div><div style="margin-top:6px">Sizning javobingiz: <b style="color:#ff6b6b">'+esc(x.javob||'—')+'</b> · To‘g‘ri: <b style="color:#8bd17c">'+esc(x.togri)+'</b></div>'+
+    (x.izoh?'<div style="margin-top:8px;padding:8px 10px;border-left:3px solid var(--gold);background:rgba(232,184,75,.08);border-radius:6px">💡 '+esc(x.izoh)+'</div>':'')+'</div>').join('');
+}
+function renderExamResult(job,r){
+  const box=$('resultBox'),score=r.score,maxScore=r.max,percent=maxScore>0?Math.round(score/maxScore*100):0,fullName=esc(currentUser.ism)+' '+esc(currentUser.familiya);
+  let html;
+  if(job.type==='sertifikat'){
+    const grade=getGrade(score,job.name,job.lis),pc=Math.min(100,Math.round(score/(job.lis?maxScore:75)*100));
+    if(!grade)html=`<div class="cert-fail"><h2>Sertifikat berilmadi</h2><p style="margin-top:10px">${fullName}</p><p style="margin-top:6px;color:#666">To'plangan ball: <b>${score} / 100</b></p><p style="margin-top:10px;font-size:13px;color:#999">Sertifikat olish uchun kamida 46 ball to'plash kerak.</p></div>`;
+    else{const c={subject:job.name,score:score,pc:pc,grade:grade,date:new Date().toLocaleDateString('uz-UZ'),name:(currentUser.ism||'')+' '+(currentUser.familiya||'')};saveCert(c);html=certHtml(c)}
+  }else html=`<div class="card" style="text-align:center"><h2>Test yakunlandi!</h2><p style="font-size:15px;margin-top:10px">Natijangiz: <b style="color:var(--gold2)">${score} / ${maxScore}</b> ball (${percent}%)</p></div>`;
+  box.innerHTML=html+reviewHtml(r.review);
 }
 async function finishTest(){
   if(testSubmitted)return;
@@ -934,46 +964,18 @@ async function finishTest(){
   testSubmitted=true;deadline=0;stopAudio();
   clearInterval(timerInterval);
   saveTextAnswer();
-
-  let score=0,maxScore=0;
-  activeQuestions.forEach((q,i)=>{
-    maxScore+=Number(q.ball)||0;
-    const ans=activeAnswers[i];
-    if(ans===undefined)return;
-    const isText=!q.a||String(q.a).trim()==='';
-    const ok=isText
-      ?String(ans).trim().toLowerCase()===String(q.togri).trim().toLowerCase()
-      :String(ans).toUpperCase()===String(q.togri).toUpperCase();
-    if(ok)score+=Number(q.ball)||0;
-  });
-  score=Math.round(score*100)/100;
-  maxScore=Math.round(maxScore);
-  const percent=maxScore>0?Math.round(score/maxScore*100):0;
-
-  const ob=LS.get('abitur_outbox')||[];
-  ob.push({rid:Date.now().toString(36)+Math.random().toString(36).slice(2,7),id:currentUser.id,testTuri:activeTestType,testNomi:activeQuestions._name,ball:score,maxBall:maxScore});
-  LS.set('abitur_outbox',ob);
+  const ans={};activeQuestions.forEach((q,i)=>{if(activeAnswers[i]!==undefined)ans[q.id]=activeAnswers[i]});
+  const job={sid:activeSid,type:activeTestType,name:activeQuestions._name,lis:!!(activeQuestions[0]&&activeQuestions[0].audio),ans:ans};
+  const ob=LS.get('abitur_exam_out')||[];ob.push(job);LS.set('abitur_exam_out',ob);
   clearRun();
-  flushOutbox().then(ok=>{if(ok)loadDashboard(false)});
-
-  hideAllScreens();show('resultScreen');
-  window.scrollTo(0,0);
-  const box=$('resultBox');
-  const fullName=esc(currentUser.ism)+' '+esc(currentUser.familiya);
-
-  if(activeTestType==='sertifikat'){
-    const lis=!!(activeQuestions[0]&&activeQuestions[0].audio),grade=getGrade(score,activeQuestions._name,lis);
-    const pc=Math.min(100,Math.round(score/(lis?maxScore:75)*100));
-    if(!grade){
-      box.innerHTML=`<div class="cert-fail"><h2>Sertifikat berilmadi</h2><p style="margin-top:10px">${fullName}</p><p style="margin-top:6px;color:#666">To'plangan ball: <b>${score} / 100</b></p><p style="margin-top:10px;font-size:13px;color:#999">Sertifikat olish uchun kamida 46 ball to'plash kerak.</p></div>`;
-    }else{
-      const c={subject:activeQuestions._name,score:score,pc:pc,grade:grade,date:new Date().toLocaleDateString('uz-UZ'),name:(currentUser.ism||'')+' '+(currentUser.familiya||'')};
-      saveCert(c);
-      box.innerHTML=certHtml(c);
-    }
-  }else{
-    box.innerHTML=`<div class="card" style="text-align:center"><h2>Test yakunlandi!</h2><p style="font-size:15px;margin-top:10px">Natijangiz: <b style="color:var(--gold2)">${score} / ${maxScore}</b> ball (${percent}%)</p></div>`;
-  }
+  hideAllScreens();show('resultScreen');window.scrollTo(0,0);
+  $('resultBox').innerHTML='<div class="card" style="text-align:center"><div class="spin"></div><p class="quality-desc" style="margin:0 auto">Natija hisoblanmoqda...</p></div>';
+  for(let i=0;i<40&&flushOutbox.busy;i++)await sleep(250);
+  await flushOutbox(true);
+  const r=examRes[job.sid];
+  if(!r){$('resultBox').innerHTML='<div class="card" style="text-align:center"><h2>Natija saqlandi</h2><p class="quality-desc" style="margin:0 auto">Internet yo‘q. Ulanish tiklanganda natija avtomatik yuboriladi.</p></div>';return}
+  if(!r.ok){$('resultBox').innerHTML='<div class="card" style="text-align:center"><h2>Xatolik</h2><p class="quality-desc" style="margin:0 auto">'+esc(r.error||'Natijani hisoblab bo‘lmadi')+'</p></div>';return}
+  renderExamResult(job,r);weakLoad.at=0;weakLoad();loadDashboard(false);
 }
 
 /* ===== SERTIFIKATLAR ===== */
@@ -1340,8 +1342,10 @@ function pushRefresh(){   // ruxsat berilgan bo'lsa, token o'zgargan bo'lsa jimg
   if('Notification' in window&&Notification.permission==='granted')pushEnable(true);
 }
 
-/* ===== OYLIK TARIF ===== */
-const planOn=()=>Number(settingsCache.tarif_narx||0)>0;
+/* ===== OYLIK TARIF (7 / 30 / 90 kun) ===== */
+const PLANS=[['p7','tarif7_narx','tarif7_kun',7],['p30','tarif_narx','tarif_kun',30],['p90','tarif90_narx','tarif90_kun',90]];
+const planList=()=>PLANS.map(p=>({id:p[0],price:Number(settingsCache[p[1]]||0),days:Number(settingsCache[p[2]]||p[3])||p[3]})).filter(p=>p.price>0);
+const planOn=()=>planList().length>0;
 const planActive=()=>Number(currentUser&&currentUser.until||0)>Date.now();
 const fmtN=n=>String(n).replace(/\B(?=(\d{3})+(?!\d))/g,' ');
 const fmtD=ms=>{const d=new Date(ms);return String(d.getDate()).padStart(2,'0')+'.'+String(d.getMonth()+1).padStart(2,'0')+'.'+d.getFullYear()};
@@ -1349,17 +1353,22 @@ function paintPlan(){
   const c=$('planCard');if(!c)return;
   if(!planOn()){c.classList.add('hide');return}
   c.classList.remove('hide');
-  const days=settingsCache.tarif_kun||30,price=fmtN(settingsCache.tarif_narx);
-  if(planActive()){$('planTxt').innerHTML='Faol: <b class="gold">'+fmtD(currentUser.until)+'</b> gacha. Barcha testlar cheksiz.';$('planBtn').textContent='Uzaytirish (+'+days+' kun · '+price+' so‘m)'}
-  else{$('planTxt').innerHTML='Barcha testlar uchun <b class="gold">'+days+' kun — '+price+' so‘m</b>. Cheksiz test yeching.';$('planBtn').textContent='Tarifni faollashtirish'}
+  const L=planList(),base=L.find(p=>p.id==='p30');
+  $('planTxt').innerHTML=planActive()?'Faol: <b class="gold">'+fmtD(currentUser.until)+'</b> gacha. Barcha testlar cheksiz. Uzaytirish mumkin:':'Barcha testlar cheksiz. Muddatni tanlang:';
+  $('planOpts').innerHTML=L.map(p=>{
+    let tag='';
+    if(p.id==='p7')tag=' · sinov';
+    if(p.id==='p90'&&base){const s=Math.round((1-p.price/(base.price*3))*100);if(s>0)tag=' · −'+s+'%'}
+    return '<button class="btn'+(p.id==='p30'?'':' btn-outline')+'" style="margin-top:10px" onclick="buyPlan(\''+p.id+'\')">'+p.days+' kun — '+fmtN(p.price)+' so‘m'+tag+'</button>';
+  }).join('');
 }
-async function buyPlan(){
+async function buyPlan(id){
   if(!currentUser)return;
-  const price=Number(settingsCache.tarif_narx||0),days=settingsCache.tarif_kun||30;
-  if(Number(currentUser.balans)<price){toast("Balansingiz yetarli emas. Iltimos, balansni to'ldiring.");showPayment();return}
-  if(!confirm('Balansingizdan '+fmtN(price)+' so‘m yechiladi va tarif '+days+' kunga faollashadi. Davom etasizmi?'))return;
+  const pl=planList().find(p=>p.id===id);if(!pl)return;
+  if(Number(currentUser.balans)<pl.price){toast("Balansingiz yetarli emas. Iltimos, balansni to'ldiring.");showPayment();return}
+  if(!confirm('Balansingizdan '+fmtN(pl.price)+' so‘m yechiladi va tarif '+pl.days+' kunga faollashadi. Davom etasizmi?'))return;
   busy(true);let r;
-  try{r=await api({action:'buyPlan',id:currentUser.id,email:localStorage.getItem('abitur_email')})}finally{busy(false)}
+  try{r=await api({action:'buyPlan',id:currentUser.id,email:localStorage.getItem('abitur_email'),plan:id})}finally{busy(false)}
   if(!r||!r.ok){toast((r&&r.error)||'Xatolik');if(r&&r.needBalance)showPayment();return}
   S.res.balans=r.balans;S.res.until=r.until;persist();paint();toast('Tarif faollashdi ✓');
 }
@@ -1370,9 +1379,10 @@ function paintDaily(){
   const c=$('dailyCard');if(!c)return;
   const d=S.daily&&S.daily.date===today()?S.daily:null,t=$('dailyTxt'),b=$('dailyBtn');
   if(!d){t.textContent='Yuklanmoqda...';b.classList.add('hide');return}
-  if(d.done){t.innerHTML='Bugun yechildi: <b class="gold">'+d.score+' / '+d.max+'</b>. Ertaga yangi test!';b.classList.add('hide')}
+  const st=d.streak>0?'🔥 Seriya: <b class="gold">'+d.streak+'</b> kun ketma-ket<br>':'';
+  if(d.done){t.innerHTML=st+'Bugun yechildi: <b class="gold">'+d.score+' / '+d.max+'</b>. Ertaga yangi test!';b.classList.add('hide')}
   else if(d.available===false){t.textContent='Bugungi test hali tayyor emas.';b.classList.add('hide')}
-  else{t.textContent='Bugungi 10 ta savol. Bepul — ballingizga qo‘shiladi.';b.classList.remove('hide')}
+  else{t.innerHTML=(d.streak>0?'🔥 Seriya: <b class="gold">'+d.streak+'</b> kun. Bugun davom ettiring!<br>':'')+'Bugungi 10 ta savol. Bepul — ballingizga qo‘shiladi.';b.classList.remove('hide')}
 }
 async function dailyLoad(){
   if(!currentUser)return;
@@ -1406,11 +1416,42 @@ async function finishDaily(){
     if(r&&r.network){testSubmitted=false;deadline=Date.now()+60000;timerInterval=setInterval(tick,1000);toast(r.error);return}
     toast((r&&r.error)||'Xatolik');clearRun();S.daily=null;dailyLoad.at=0;enterDash();dailyLoad();return;
   }
-  clearRun();S.daily={ok:true,done:true,score:r.score,max:r.max,date:today()};paintDaily();
+  clearRun();S.daily={ok:true,done:true,score:r.score,max:r.max,date:today(),streak:r.streak||0};paintDaily();
   hideAllScreens();show('resultScreen');window.scrollTo(0,0);
-  $('resultBox').innerHTML='<div class="card" style="text-align:center"><h2>Kunlik test yakunlandi!</h2><p style="font-size:15px;margin-top:10px">Natijangiz: <b style="color:var(--gold2)">'+r.score+' / '+r.max+'</b></p></div>'+
-    (r.review||[]).filter(x=>!x.ok).map(x=>'<div class="card" style="text-align:left;font-size:13px"><div style="color:var(--muted)">'+esc(x.savol)+'</div><div style="margin-top:6px">Sizning javobingiz: <b style="color:#ff6b6b">'+esc(x.javob||'—')+'</b> · To‘g‘ri: <b style="color:#8bd17c">'+esc(x.togri)+'</b></div></div>').join('');
-  loadDashboard(false);
+  $('resultBox').innerHTML='<div class="card" style="text-align:center"><h2>Kunlik test yakunlandi!</h2><p style="font-size:15px;margin-top:10px">Natijangiz: <b style="color:var(--gold2)">'+r.score+' / '+r.max+'</b></p>'+
+    (r.streak>0?'<p style="margin-top:10px;font-size:15px">🔥 Seriya: <b style="color:var(--gold2)">'+r.streak+'</b> kun ketma-ket</p>':'')+'</div>'+reviewHtml(r.review);
+  weakLoad.at=0;weakLoad();loadDashboard(false);
+}
+
+/* ===== ZAIF MAVZULAR ===== */
+async function weakLoad(){
+  if(!currentUser)return;
+  if(weakLoad.at&&Date.now()-weakLoad.at<600000)return;
+  weakLoad.at=Date.now();
+  const r=await api({action:'weakTopics',id:currentUser.id,email:localStorage.getItem('abitur_email')});
+  if(r&&r.ok){S.weak=r;persist();paintWeak()}
+}
+function paintWeak(){
+  const el=$('weakList');if(!el)return;
+  if(planOn()&&!planActive()){el.innerHTML='<p class="quality-desc" style="margin:0 auto">Zaif mavzularingizni ko‘rish uchun oylik tarifni faollashtiring.</p><button class="btn" onclick="showTab(\'testlar\')">Tarifni ko‘rish</button>';return}
+  const w=S.weak;
+  if(!w||!w.list||!w.list.length){el.innerHTML='<p class="quality-desc" style="margin:0 auto">Hali yetarli ma‘lumot yo‘q. Bir nechta test yeching, zaif mavzularingiz shu yerda ko‘rinadi.</p>';return}
+  el.innerHTML=w.list.map(x=>{const c=x.pct<50?'#ff6b6b':x.pct<70?'#e8b84b':'#7bc96f';
+    return '<div style="margin-bottom:12px"><div style="display:flex;justify-content:space-between;font-size:14px"><span>'+esc(x.t)+'</span><b style="color:'+c+'">'+x.pct+'%</b></div><div class="abar" style="margin:6px 0 2px"><i style="width:'+x.pct+'%;background:'+c+'"></i></div><div style="font-size:11px;color:var(--muted)">'+x.ok+' / '+x.total+' to‘g‘ri</div></div>'}).join('')+
+    '<p class="quality-desc" style="margin:10px auto 0">Eng zaif mavzulardan boshlab takrorlang.</p>';
+}
+
+/* ===== TAKLIF HAVOLASI ===== */
+function copyText(t,msg){
+  const done=()=>toast(msg||'Nusxalandi ✓');
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(done).catch(()=>{})}
+  else{const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy');done()}catch(e){}a.remove()}
+}
+function shareRef(){
+  const id=currentUser&&currentUser.id;if(!id)return;
+  const url='https://abiturdtm.online/?ref='+id,text='DTM ga tayyorlanish uchun ABITUR DTM saytida ro‘yxatdan o‘ting — ikkalamizga bonus tushadi!';
+  if(navigator.share)navigator.share({title:'ABITUR DTM',text:text,url:url}).catch(()=>{});
+  else copyText(text+' '+url,'Havola nusxalandi ✓');
 }
 
 /* ===== ISHGA TUSHIRISH (sahifa to'liq yuklanishini kutmaydi) ===== */
