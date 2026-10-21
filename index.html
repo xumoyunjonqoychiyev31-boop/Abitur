@@ -206,7 +206,7 @@ button:focus-visible,.test-btn:focus-visible{outline:2px solid var(--gold2);outl
 <div class="container">
 
   <div class="top-logo"><img src="assets/logo.png" alt="ABITUR DTM logotipi" width="44" height="44"><span>ABITUR DTM</span></div>
-  <p style="text-align:center;color:var(--muted);font-size:12px;max-width:400px;margin:0 auto 16px;line-height:1.5">Onlayn <b style="color:var(--gold2)">Sinov test</b>, <b style="color:var(--gold2)">blok test</b> va <b style="color:var(--gold2)">milliy sertifikat</b> testlari — barcha fanlardan.</p>
+  <p style="text-align:center;color:var(--muted);font-size:12px;max-width:400px;margin:0 auto 16px;line-height:1.5">Onlayn <b style="color:var(--gold2)">DTM test</b>, <b style="color:var(--gold2)">blok test</b> va <b style="color:var(--gold2)">milliy sertifikat</b> testlari — barcha fanlardan.</p>
 
   <div id="sectionBar" class="section-bar hide"></div>
 
@@ -225,6 +225,7 @@ button:focus-visible,.test-btn:focus-visible{outline:2px solid var(--gold2);outl
       <p style="font-size:13px;color:var(--muted);text-align:center;margin-bottom:16px">Google hisobingiz orqali bir bosishda kiring.</p>
       <div id="gSignInBtn" style="display:flex;justify-content:center;min-height:44px"></div>
       <div class="error hide" id="googleErr" style="margin-top:12px"></div>
+      <p style="font-size:11px;color:var(--muted);text-align:center;margin-top:14px;line-height:1.5">Kirish orqali <a href="oferta.html" style="color:var(--gold2)">ommaviy oferta</a> va <a href="maxfiylik.html" style="color:var(--gold2)">maxfiylik siyosati</a> shartlariga rozilik bildirasiz.</p>
     </div>
     <div class="card hide" id="newUserCard">
       <h2>Deyarli tayyor!</h2>
@@ -428,7 +429,7 @@ button:focus-visible,.test-btn:focus-visible{outline:2px solid var(--gold2);outl
 
 </div>
 
-<div class="site-footer">© <span id="footerYear"></span> <b>ABITUR DTM</b>. Barcha huquqlar himoyalangan.</div>
+<div class="site-footer">© <span id="footerYear"></span> <b>ABITUR DTM</b>. Barcha huquqlar himoyalangan.<br><a href="oferta.html" style="color:var(--gold2)">Ommaviy oferta</a> · <a href="maxfiylik.html" style="color:var(--gold2)">Maxfiylik siyosati</a></div>
 
 <div id="dailyModal" class="hide" style="position:fixed;inset:0;z-index:8000;background:rgba(0,0,0,.75);display:flex;align-items:center;justify-content:center;padding:20px">
   <div class="card" style="max-width:340px;width:100%;text-align:center;margin:0">
@@ -473,7 +474,7 @@ button:focus-visible,.test-btn:focus-visible{outline:2px solid var(--gold2);outl
 <script>
 /* ===== SOZLAMALAR ===== */
 const GOOGLE_CLIENT_ID="323960187871-77jganuhhpo1hba8t7ooh252kqeh9sc2.apps.googleusercontent.com";
-const GAS_URL="https://script.google.com/macros/s/AKfycbz8oNdylGEUn1a5T_hR6O7XsQ6SXDEoAF_gtSik2KWRgZZlFCFp41wB5eZxpdHVK67faQ/exec";
+const GAS_URL="https://script.google.com/macros/s/AKfycbzJyCMuHF7xaZ7-MJDeU0bqyUVIU_cqcr2vNauW7Lv6eJ-qB3cupjAZyR8A7pUIKmuy8w/exec";
 
 /* ===== YORDAMCHI ===== */
 const $=id=>document.getElementById(id);
@@ -1435,10 +1436,11 @@ function paintWeak(){
   const el=$('weakList');if(!el)return;
   if(planOn()&&!planActive()){el.innerHTML='<p class="quality-desc" style="margin:0 auto">Zaif mavzularingizni ko‘rish uchun oylik tarifni faollashtiring.</p><button class="btn" onclick="showTab(\'testlar\')">Tarifni ko‘rish</button>';return}
   const w=S.weak;
-  if(!w||!w.list||!w.list.length){el.innerHTML='<p class="quality-desc" style="margin:0 auto">Hali yetarli ma‘lumot yo‘q. Bir nechta test yeching, zaif mavzularingiz shu yerda ko‘rinadi.</p>';return}
-  el.innerHTML=w.list.map(x=>{const c=x.pct<50?'#ff6b6b':x.pct<70?'#e8b84b':'#7bc96f';
-    return '<div style="margin-bottom:12px"><div style="display:flex;justify-content:space-between;font-size:14px"><span>'+esc(x.t)+'</span><b style="color:'+c+'">'+x.pct+'%</b></div><div class="abar" style="margin:6px 0 2px"><i style="width:'+x.pct+'%;background:'+c+'"></i></div><div style="font-size:11px;color:var(--muted)">'+x.ok+' / '+x.total+' to‘g‘ri</div></div>'}).join('')+
-    '<p class="quality-desc" style="margin:10px auto 0">Eng zaif mavzulardan boshlab takrorlang.</p>';
+  if(!w||!w.list||!w.list.length){el.innerHTML='<p class="quality-desc" style="margin:0 auto">Hali yetarli ma‘lumot yo‘q. Bir nechta test yeching, eng ko‘p xato qilgan mavzularingiz shu yerda ko‘rinadi.</p>';return}
+  el.innerHTML='<p class="quality-desc" style="margin:0 auto 14px;font-size:12px">Eng ko‘p xato qilingan mavzular:</p>'+w.list.map((x,i)=>{
+    const c=x.pct<50?'#ff6b6b':x.pct<70?'#e8b84b':'#7bc96f';
+    return '<div style="margin-bottom:14px"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px"><div>'+(x.fan?'<div style="font-size:11px;color:var(--gold2);letter-spacing:.5px">'+esc(String(x.fan).toUpperCase())+'</div>':'')+'<div style="font-size:15px;font-weight:700">'+(i+1)+'. '+esc(x.topic||x.t)+'</div></div><div style="text-align:right;flex:none"><b style="color:#ff6b6b;font-size:15px">'+x.wrong+' ta xato</b><div style="font-size:11px;color:var(--muted)">'+x.ok+' / '+x.total+' to‘g‘ri · '+x.pct+'%</div></div></div><div class="abar" style="margin:8px 0 0"><i style="width:'+x.pct+'%;background:'+c+'"></i></div></div>'}).join('')+
+    '<p class="quality-desc" style="margin:6px auto 0">Eng yuqoridagi mavzudan boshlab takrorlang.</p>';
 }
 
 /* ===== TAKLIF HAVOLASI ===== */
