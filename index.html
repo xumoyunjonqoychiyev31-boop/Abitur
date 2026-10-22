@@ -188,6 +188,18 @@ button:focus-visible,.test-btn:focus-visible{outline:2px solid var(--gold2);outl
 .cr-send input{flex:1;border-radius:22px;padding:11px 16px}
 .cr-send button{width:44px;height:44px;border-radius:50%;background:var(--gold);color:#111;font-size:18px;flex:none}
 
+/* o'yinlar, ma'lumotnoma */
+.hb-d{background:#0f1013;border-radius:12px;margin-bottom:8px;padding:12px 14px}.hb-d summary{cursor:pointer;font-weight:700;color:var(--gold2)}
+.hb-d pre{white-space:pre-wrap;word-break:break-word;font-family:inherit;font-size:14px;line-height:1.75;margin:10px 0 0;color:#e3e1d8}
+.gm-top{display:flex;justify-content:space-between;font-size:14px;color:var(--muted);margin-bottom:14px}
+.gm-q{font-size:34px;font-weight:800;text-align:center;margin:18px 0 20px;color:var(--text)}
+.gm-opts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.gm-opt{padding:16px;border-radius:12px;background:#0f1013;border:1px solid rgba(232,184,75,.35);color:var(--gold2);font-size:20px;font-weight:700}
+.gm-opt:active{background:rgba(232,184,75,.18)}
+.mem{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.mem-c{aspect-ratio:1/1.1;border-radius:10px;background:#15171c;border:1px solid rgba(232,184,75,.3);color:var(--text);font-size:11px;padding:3px;display:flex;align-items:center;justify-content:center;line-height:1.2;word-break:break-word}
+.mem-c .mem-b{display:none}.mem-c.on .mem-f{display:none}.mem-c.on .mem-b{display:block;color:var(--gold2);font-weight:700}
+.mem-c.done{opacity:.55;border-color:#7bc96f}
 @media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 </style>
 </head>
@@ -206,7 +218,7 @@ button:focus-visible,.test-btn:focus-visible{outline:2px solid var(--gold2);outl
 <div class="container">
 
   <div class="top-logo"><img src="assets/logo.png" alt="ABITUR DTM logotipi" width="44" height="44"><span>ABITUR DTM</span></div>
-  <p style="text-align:center;color:var(--muted);font-size:12px;max-width:400px;margin:0 auto 16px;line-height:1.5">Onlayn <b style="color:var(--gold2)">sinov test</b>, <b style="color:var(--gold2)">blok test</b> va <b style="color:var(--gold2)">milliy sertifikat</b> testlari — barcha fanlardan.</p>
+  <p style="text-align:center;color:var(--muted);font-size:12px;max-width:400px;margin:0 auto 16px;line-height:1.5">Onlayn <b style="color:var(--gold2)">DTM test</b>, <b style="color:var(--gold2)">blok test</b> va <b style="color:var(--gold2)">milliy sertifikat</b> testlari — barcha fanlardan.</p>
 
   <div id="sectionBar" class="section-bar hide"></div>
 
@@ -268,7 +280,7 @@ button:focus-visible,.test-btn:focus-visible{outline:2px solid var(--gold2);outl
         </div>
       </div>
       <p class="quality-desc" id="qualityDescText">Bilim sifatingizni ko'rish uchun kamida bitta test yeching.</p>
-      <div class="stat-row"><span>Umumiy ball</span><b id="dScore">-</b></div>
+      <div class="stat-row"><span>Coin</span><b id="dScore">-</b></div>
     </div>
 
     <div class="card" data-sec="home">
@@ -295,9 +307,11 @@ button:focus-visible,.test-btn:focus-visible{outline:2px solid var(--gold2);outl
       <div class="stat-row"><span>ID</span><b id="dId">-</b></div>
       <div class="stat-row"><span>Reyting o'rni</span><b id="dRank">-</b></div>
       <div class="stat-row"><span>Yechilgan testlar soni</span><b id="dCount">-</b></div>
-      <div class="stat-row"><span>Umumiy ball</span><b id="dScore2">-</b></div>
+      <div class="stat-row"><span>Coin</span><b id="dScore2">-</b></div>
       <div class="stat-row"><span>Balans</span><b id="dBalans">-</b></div>
       <button class="btn btn-outline" onclick="showPayment()">💳 Balansni to'ldirish</button>
+      <button class="btn btn-outline" id="installBtn" onclick="installApp()">📲 Ilovani o'rnatish</button>
+      <button class="btn btn-outline" onclick="openIdea()">💡 Sayt uchun g'oya yuborish</button>
       <button class="btn btn-outline" id="pushBtn" onclick="pushEnable()">🔔 Bildirishnomani yoqish</button>
       <button class="btn btn-outline" onclick="logout()">Chiqish</button>
     </div>
@@ -319,9 +333,14 @@ button:focus-visible,.test-btn:focus-visible{outline:2px solid var(--gold2);outl
     </div>
 
     <div class="card hide" data-sec="testlar" id="planCard">
-      <h2>⭐ Tariflar</h2>
+      <h2>⭐ Oylik tarif</h2>
       <p class="quality-desc" id="planTxt" style="margin:0 auto 10px">...</p>
       <div id="planOpts"></div>
+    </div>
+
+    <div class="card" data-sec="testlar">
+      <div class="test-btn" onclick="openHandbook()"><div><div class="name">📚 Ma'lumotnoma</div><div class="sub">Fanlar bo'yicha formulalar va qoidalar</div></div><span class="badge" id="hbBadge">Tarifda</span></div>
+      <div class="test-btn" onclick="openGames()"><div><div class="name">🎮 O'yinlar</div><div class="sub">Tezkor hisob, mantiq, xotira</div></div><span class="badge">Bepul</span></div>
     </div>
 
     <div class="card" data-sec="testlar">
@@ -343,8 +362,10 @@ button:focus-visible,.test-btn:focus-visible{outline:2px solid var(--gold2);outl
 
     <div class="card" data-sec="reyting">
       <h2>🏆 Reyting (TOP 20)</h2>
-      <h2 style="font-size:15px">📅 Har oy boshida Ballar 0 dan boshlanadi.</h2>
+      <h2 style="font-size:15px">📅 Har oy boshida coinlar 0 dan boshlanadi.</h2>
+      <div id="prizeInfo" class="quality-desc" style="margin:0 auto 14px"></div>
       <div id="rankingList"></div>
+      <div id="winBox" class="hide" style="margin-top:18px"><h2 style="font-size:16px">🏅 O'tgan oy g'oliblari</h2><div id="winList"></div></div>
     </div>
 
     <div class="card" data-sec="chat">
@@ -385,6 +406,12 @@ button:focus-visible,.test-btn:focus-visible{outline:2px solid var(--gold2);outl
   <div id="paymentScreen" class="hide">
     <div class="card">
       <h2>Balansni to'ldirish</h2>
+      <div id="clickBox" class="hide" style="margin-bottom:18px;padding-bottom:18px;border-bottom:1px solid rgba(255,255,255,.08)">
+        <label>Click orqali (darhol, avtomatik)</label>
+        <input id="clickSumma" type="number" inputmode="numeric" placeholder="Masalan: 50000">
+        <button class="btn" id="clickBtn" onclick="payClick()">💳 Click bilan to'lash</button>
+        <p style="font-size:12px;color:var(--muted);margin-top:10px;text-align:center">To'lov tugagach balans avtomatik to'ldiriladi.</p>
+      </div>
       <p style="font-size:14px;color:var(--muted)">Quyidagi kartaga to'lov qiling:</p>
       <div style="background:#0f1013;padding:14px;border-radius:10px;margin:12px 0;text-align:center">
         <div style="font-size:20px;letter-spacing:2px;font-weight:700;color:var(--gold2)" id="cardNum">-</div>
@@ -395,13 +422,28 @@ button:focus-visible,.test-btn:focus-visible{outline:2px solid var(--gold2);outl
       <label>Pul tashlangan vaqt (format 09 34)</label>
       <input id="payIzoh" placeholder="Masalan: 12 37">
       <p style="font-size:12px;color:var(--muted);margin-top:10px">Yuqoridagi kartaga to‘lov qilib " To‘lov qildim " tugmasini bosing to'lovingiz "Kutilmoqda" holatida saqlanadi. Admin tasdiqlagach balansingizga qo'shiladi. </p>
-       <a href="https://t.me/Xumoyun_1509" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;color:#fff;text-decoration:none">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
-          ADMINGA HABAR
-        </a>
+       <p style="font-size:12px;color:var(--muted);margin-top:10px">ADMIN : <b>+998 (77)308 15-00</b></p>
+      <button class="btn btn-outline" onclick="payTg()">✈️ Admin bilan Telegramda bog'lanish</button>
       <button class="btn" id="payBtn" onclick="submitPayment()">To‘lov qildim</button>
       <div class="msg hide" id="payMsg"></div>
       <button class="btn btn-outline" onclick="backToDashboard()">Orqaga</button>
+    </div>
+  </div>
+
+  <div id="handbookScreen" class="hide">
+    <div class="card">
+      <h2>📚 Ma'lumotnoma</h2>
+      <div id="hbFans" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px"></div>
+      <div id="hbList"></div>
+      <button class="btn btn-outline" onclick="backToDashboard()">Orqaga</button>
+    </div>
+  </div>
+
+  <div id="gamesScreen" class="hide">
+    <div class="card">
+      <h2 id="gmTitle">🎮 O'yinlar</h2>
+      <div id="gmBody" data-mode="menu"></div>
+      <button class="btn btn-outline" onclick="gamesBack()">Orqaga</button>
     </div>
   </div>
 
@@ -443,6 +485,9 @@ button:focus-visible,.test-btn:focus-visible{outline:2px solid var(--gold2);outl
   </div>
 </div>
 
+<div id="inboxModal" class="hide" style="position:fixed;inset:0;z-index:8000;background:rgba(0,0,0,.75);display:flex;align-items:center;justify-content:center;padding:20px"><div class="card" style="max-width:360px;width:100%;margin:0;max-height:80vh;overflow:auto"><h2>🔔 Xabarlar</h2><div id="inboxBody"></div><button class="btn" onclick="document.getElementById('inboxModal').classList.add('hide')">Yopish</button></div></div>
+<div id="ideaModal" class="hide" style="position:fixed;inset:0;z-index:8000;background:rgba(0,0,0,.75);display:flex;align-items:center;justify-content:center;padding:20px"><div class="card" style="max-width:360px;width:100%;margin:0"><h2>💡 Sayt uchun g'oya</h2><p class="quality-desc" style="margin-bottom:10px">Nimani qo'shish yoki yaxshilash kerak? Fikringizni yozing.</p><textarea id="ideaText" maxlength="600" rows="5" style="width:100%;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:#0f1013;color:var(--text);font-size:15px;font-family:inherit"></textarea><button class="btn" id="ideaBtn" onclick="sendIdea()">Yuborish</button><button class="btn btn-outline" onclick="closeIdea()">Bekor qilish</button></div></div>
+
 <nav id="bottomNav" class="bottom-nav hide">
   <button class="nav-item active" data-tab="home" onclick="showTab('home')"><span class="ico">🏠</span>Bosh sahifa</button>
   <button class="nav-item" data-tab="testlar" onclick="showTab('testlar')"><span class="ico">📝</span>Testlar</button>
@@ -477,7 +522,7 @@ button:focus-visible,.test-btn:focus-visible{outline:2px solid var(--gold2);outl
 <script>
 /* ===== SOZLAMALAR ===== */
 const GOOGLE_CLIENT_ID="323960187871-77jganuhhpo1hba8t7ooh252kqeh9sc2.apps.googleusercontent.com";
-const GAS_URL="https://script.google.com/macros/s/AKfycbzJyCMuHF7xaZ7-MJDeU0bqyUVIU_cqcr2vNauW7Lv6eJ-qB3cupjAZyR8A7pUIKmuy8w/exec";
+const GAS_URL="https://script.google.com/macros/s/AKfycbyXj58b-E6r8pUjq216npYb-6YdO6X-RrA3RTACzQ1lnsFPL9cqboy_qK_kXWU5UIVLAQ/exec";
 
 /* ===== YORDAMCHI ===== */
 const $=id=>document.getElementById(id);
@@ -485,7 +530,8 @@ const LS={get(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return 
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 $('footerYear').textContent=new Date().getFullYear();
-(function(){try{const r=new URLSearchParams(location.search).get('ref');if(r&&/^\d{3,12}$/.test(r)){localStorage.setItem('abitur_ref',JSON.stringify(r));history.replaceState(null,'',location.pathname)}}catch(e){}})();
+(function(){try{const r=new URLSearchParams(location.search).get('ref');if(r&&/^\d{3,12}$/.test(r)){localStorage.setItem('abitur_ref',JSON.stringify(r));history.replaceState(null,'',location.pathname)}
+  const pd=new URLSearchParams(location.search).get('paid');if(pd&&/^O\d+$/.test(pd)){localStorage.setItem('abitur_order',JSON.stringify({id:pd,t:Date.now(),auto:1}));history.replaceState(null,'',location.pathname)}}catch(e){}})();
 setTimeout(()=>{const i=$('intro');if(i)i.remove()},1000); // intro animatsiyalari to'xtaydi
 
 function toast(m){const t=$('toast');t.textContent=m;t.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove('on'),3500)}
@@ -494,7 +540,7 @@ function busy(on){busyN=Math.max(0,busyN+(on?1:-1));$('busy').classList.toggle('
 window.addEventListener('unhandledrejection',e=>{console.error(e.reason);busyN=0;$('busy').classList.add('hide')});
 
 /* ===== SERVER SO'ROVLARI: timeout + qayta urinish + takroriy so'rovlarni birlashtirish ===== */
-const SAFE=new Set(['getUserByEmail','getSettings','getRanking','getTests','getCertificates','googleLogin','getMessages','getChats','chatUser','getMedia','dailyStatus','dailyStart','weakTopics']);
+const SAFE=new Set(['getUserByEmail','getSettings','getRanking','getTests','getCertificates','googleLogin','getMessages','getChats','chatUser','getMedia','dailyStatus','dailyStart','weakTopics','orderStatus','winners','handbook']);
 const inflight=new Map();
 function api(p){
   const url=GAS_URL+'?'+new URLSearchParams(p).toString(),safe=SAFE.has(p.action);
@@ -513,16 +559,16 @@ function api(p){
 }
 
 /* ===== EKRANLAR ===== */
-const SCREENS=['authScreen','regSuccess','dashboard','testSetScreen','paymentScreen','testScreen','resultScreen','loadScreen','errScreen'];
-const NAVS=['dashboard','testSetScreen','paymentScreen','resultScreen'];
+const SCREENS=['authScreen','regSuccess','dashboard','testSetScreen','paymentScreen','handbookScreen','gamesScreen','testScreen','resultScreen','loadScreen','errScreen'];
+const NAVS=['dashboard','testSetScreen','paymentScreen','handbookScreen','gamesScreen','resultScreen'];
 const TAB_INFO={home:['🏠','Bosh sahifa'],testlar:['📝','Testlar'],reyting:['🏆','Reyting'],chat:['💬','Chat'],kabinet:['👤','Kabinet']};
-const SUB_TAB={testSetScreen:{tab:'testlar',sub:'Test tanlash'},paymentScreen:{tab:'kabinet',sub:"Balansni to'ldirish"},resultScreen:{tab:'testlar',sub:'Natija'}};
+const SUB_TAB={testSetScreen:{tab:'testlar',sub:'Test tanlash'},paymentScreen:{tab:'kabinet',sub:"Balansni to'ldirish"},resultScreen:{tab:'testlar',sub:'Natija'},handbookScreen:{tab:'testlar',sub:"Ma'lumotnoma"},gamesScreen:{tab:'testlar',sub:"O'yinlar"}};
 let S={},currentUser=null,settingsCache={},pendingGoogleEmail=null,currentTab='home';
 const show=id=>{const e=$(id);if(e)e.classList.remove('hide');
   if(NAVS.includes(id)){$('bottomNav').classList.remove('hide');$('sectionBar').classList.remove('hide');if(SUB_TAB[id])setActiveTab(SUB_TAB[id].tab,SUB_TAB[id].sub)}};
 const hide=id=>{const e=$(id);if(e)e.classList.add('hide')};
-const hideAllScreens=()=>{SCREENS.forEach(hide);hide('bottomNav');hide('sectionBar');chatStop()};
-const inFlow=()=>['testScreen','testSetScreen','paymentScreen','resultScreen'].some(id=>!$(id).classList.contains('hide'));
+const hideAllScreens=()=>{SCREENS.forEach(hide);hide('bottomNav');hide('sectionBar');chatStop();try{gamesStop()}catch(e){}};
+const inFlow=()=>['testScreen','testSetScreen','paymentScreen','handbookScreen','gamesScreen','resultScreen'].some(id=>!$(id).classList.contains('hide'));
 function setActiveTab(t,sub){
   currentTab=t;
   document.querySelectorAll('.nav-item').forEach(b=>b.classList.toggle('active',b.dataset.tab===t));
@@ -686,8 +732,8 @@ function paint(){
   $('dId').textContent=res.id||'-';
   $('dRank').textContent=res.rank?'#'+res.rank:'-';
   $('dCount').textContent=res.testsCount??0;
-  $('dScore').textContent=res.totalScore??0;
-  $('dScore2').textContent=res.totalScore??0;
+  $('dScore').innerHTML=COIN(18)+' '+fmtN(res.totalScore??0);
+  $('dScore2').innerHTML=COIN(18)+' '+fmtN(res.totalScore??0);
   $('dBalans').textContent=(res.balans??0)+" so'm";
   renderQualityStat((res.lastTest&&Number(res.lastTest.maxBall)>0)?Math.round(Number(res.lastTest.ball)/Number(res.lastTest.maxBall)*100):null);
   settingsCache=(S.set&&S.set.settings)?S.set.settings:{};
@@ -696,11 +742,12 @@ function paint(){
   $('cardNum').textContent=settingsCache.card_number||'-';
   $('cardOwner').textContent=settingsCache.card_owner||'-';
   $('rankingList').innerHTML=((S.rank&&S.rank.list)||[]).slice(0,20).map((u,i)=>
-    `<div class="rank-item${String(u.id)===String(res.id)?' me':''}"><span>#${i+1} ${esc(u.ism)} ${esc(u.familiya)}</span><b>${esc(u.totalScore||0)} ball</b></div>`).join('');
+    `<div class="rank-item${String(u.id)===String(res.id)?' me':''}"><span>#${i+1} ${esc(u.ism)} ${esc(u.familiya)}</span><b>${COIN(14)} ${fmtN(u.totalScore||0)}</b></div>`).join('');
   document.querySelectorAll('.rbn').forEach(e=>{e.textContent=String(settingsCache.referral_bonus||2000).replace(/\B(?=(\d{3})+(?!\d))/g,' ')});
   renderHome(res);
   renderCerts(S.certs);
-  paintPlan();paintDaily();paintWeak();
+  paintPlan();paintDaily();paintWeak();paintPrize();paintInstall();
+  {const hb=$('hbBadge');if(hb)hb.textContent=planOn()?'Tarifda':'Bepul'}
 }
 async function loadDashboard(nav=true){
   const email=localStorage.getItem('abitur_email');
@@ -718,7 +765,8 @@ async function loadDashboard(nav=true){
     toast(res.error||'Xatolik yuz berdi');return;
   }
   S.res=res;persist();paint();
-  chatLoadList();pushRefresh();dailyLoad();weakLoad();
+  chatLoadList();pushRefresh();dailyLoad();weakLoad();inboxLoad();winLoad();
+  {const od=LS.get('abitur_order');if(od)orderCheck(!!od.auto)}
   if(nav&&!inFlow()&&!resumeRun())enterDash();
   pS.then(r=>{if(r&&r.settings){S.set=r;persist();paint()}});
   pR.then(r=>{if(r&&r.list){S.rank=r;persist();paint()}});
@@ -748,7 +796,7 @@ function copyMyId(){
 }
 
 /* ===== TO'LOV ===== */
-function showPayment(){hideAllScreens();show('paymentScreen')}
+function showPayment(prefill){hideAllScreens();show('paymentScreen');const cb=$('clickBox');if(cb){cb.classList.toggle('hide',Number(settingsCache.click_on)!==1);if(prefill>0)$('clickSumma').value=Math.ceil(prefill/1000)*1000}}
 async function submitPayment(){
   const summa=$('paySumma').value,izoh=$('payIzoh').value,msg=$('payMsg'),btn=$('payBtn');
   if(!summa||Number(summa)<=0){msg.textContent="To‘lov summasini kiriting.";msg.classList.remove('hide');return}
@@ -960,7 +1008,8 @@ function renderExamResult(job,r){
     if(!grade)html=`<div class="cert-fail"><h2>Sertifikat berilmadi</h2><p style="margin-top:10px">${fullName}</p><p style="margin-top:6px;color:#666">To'plangan ball: <b>${score} / 100</b></p><p style="margin-top:10px;font-size:13px;color:#999">Sertifikat olish uchun kamida 46 ball to'plash kerak.</p></div>`;
     else{const c={subject:job.name,score:score,pc:pc,grade:grade,date:new Date().toLocaleDateString('uz-UZ'),name:(currentUser.ism||'')+' '+(currentUser.familiya||'')};saveCert(c);html=certHtml(c)}
   }else html=`<div class="card" style="text-align:center"><h2>Test yakunlandi!</h2><p style="font-size:15px;margin-top:10px">Natijangiz: <b style="color:var(--gold2)">${score} / ${maxScore}</b> ball (${percent}%)</p></div>`;
-  box.innerHTML=html+reviewHtml(r.review);
+  const extra='<div class="card" style="text-align:center;padding:14px">'+COIN(22)+' <b style="color:var(--gold2)">+'+score+' coin</b> qo‘lga kiritildi'+(r.bonus?'<div style="margin-top:8px">🎉 90% dan yuqori natija! Bonus: <b style="color:var(--gold2)">+'+fmtN(r.bonus)+' so‘m</b></div>':'')+'</div>';
+  box.innerHTML=html+extra+reviewHtml(r.review);
 }
 async function finishTest(){
   if(testSubmitted)return;
@@ -1369,7 +1418,7 @@ function paintPlan(){
 async function buyPlan(id){
   if(!currentUser)return;
   const pl=planList().find(p=>p.id===id);if(!pl)return;
-  if(Number(currentUser.balans)<pl.price){toast("Balansingiz yetarli emas. Iltimos, balansni to'ldiring.");showPayment();return}
+  if(Number(currentUser.balans)<pl.price){toast("Balansingiz yetarli emas. Iltimos, balansni to'ldiring.");showPayment(pl.price-Number(currentUser.balans));return}
   if(!confirm('Balansingizdan '+fmtN(pl.price)+' so‘m yechiladi va tarif '+pl.days+' kunga faollashadi. Davom etasizmi?'))return;
   busy(true);let r;
   try{r=await api({action:'buyPlan',id:currentUser.id,email:localStorage.getItem('abitur_email'),plan:id})}finally{busy(false)}
@@ -1423,7 +1472,7 @@ async function finishDaily(){
   clearRun();S.daily={ok:true,done:true,score:r.score,max:r.max,date:today(),streak:r.streak||0};paintDaily();
   hideAllScreens();show('resultScreen');window.scrollTo(0,0);
   $('resultBox').innerHTML='<div class="card" style="text-align:center"><h2>Kunlik test yakunlandi!</h2><p style="font-size:15px;margin-top:10px">Natijangiz: <b style="color:var(--gold2)">'+r.score+' / '+r.max+'</b></p>'+
-    (r.streak>0?'<p style="margin-top:10px;font-size:15px">🔥 Seriya: <b style="color:var(--gold2)">'+r.streak+'</b> kun ketma-ket</p>':'')+'</div>'+reviewHtml(r.review);
+    (r.streak>0?'<p style="margin-top:10px;font-size:15px">🔥 Seriya: <b style="color:var(--gold2)">'+r.streak+'</b> kun ketma-ket</p>':'')+'<p style="margin-top:10px">'+COIN(20)+' <b style="color:var(--gold2)">+'+r.score+' coin</b></p></div>'+reviewHtml(r.review);
   weakLoad.at=0;weakLoad();loadDashboard(false);
 }
 
@@ -1459,26 +1508,46 @@ function shareRef(){
   else copyText(text+' '+url,'Havola nusxalandi ✓');
 }
 
-/* ===== ISHGA TUSHIRISH (sahifa to'liq yuklanishini kutmaydi) ===== */
-function boot(){
-  hideAllScreens();
-  if(!localStorage.getItem('abitur_email')){show('authScreen');initGoogle();return}
-  const c=LS.get('abitur_cache');
-  if(c&&c.res){
-    S=c;paint();
-    if(!resumeRun())enterDash();
-    loadDashboard(false);
-  }else{
-    show('loadScreen');
-    loadDashboard(true);
-  }
-  flushOutbox().then(ok=>{if(ok&&S.res)loadDashboard(false)});
+/* ===== COIN (ball = tanga) ===== */
+let coinN=0;
+const COIN=(s=18)=>{const i='cg'+(++coinN);return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 24 24" style="vertical-align:-'+Math.round(s*.18)+'px;flex:none"><defs><radialGradient id="'+i+'" cx=".35" cy=".3" r=".9"><stop offset="0" stop-color="#fff4b8"/><stop offset=".55" stop-color="#f5c542"/><stop offset="1" stop-color="#b8860b"/></radialGradient></defs><circle cx="12" cy="12" r="11" fill="url(#'+i+')" stroke="#8a5a00" stroke-width="1"/><circle cx="12" cy="12" r="8.7" fill="none" stroke="#b8860b" stroke-width=".9"/><path d="M7.7 17 L12 6.7 L16.3 17 M9.5 13.5 H14.5" fill="none" stroke="#7a4b00" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>'};
+
+/* ===== XABARLAR (to'lov rad etildi, sovg'a va h.k.) ===== */
+async function inboxLoad(){
+  if(!currentUser)return;
+  if(inboxLoad.at&&Date.now()-inboxLoad.at<120000)return;
+  inboxLoad.at=Date.now();
+  const r=await api({action:'inbox',id:currentUser.id,email:localStorage.getItem('abitur_email')});
+  if(!r||!r.ok||!r.list||!r.list.length)return;
+  $('inboxBody').innerHTML=r.list.map(x=>'<div class="card" style="text-align:left;padding:14px;margin-bottom:10px"><b style="color:var(--gold2)">'+esc(x.title)+'</b><div style="font-size:13px;color:var(--muted);margin-top:6px;line-height:1.5">'+esc(x.body).replace(/@([A-Za-z0-9_]{4,})/g,'<a href="https://t.me/$1" target="_blank" rel="noopener" style="color:var(--gold2)">@$1</a>')+'</div></div>').join('');
+  $('inboxModal').classList.remove('hide');loadDashboard(false);
 }
-window.addEventListener('online',()=>{
-  flushOutbox().then(ok=>{if(ok&&S.res)loadDashboard(false)});
-  if(!$('authScreen').classList.contains('hide'))initGoogle();
-});
-boot();
-</script>
-</body>
-</html>
+
+/* ===== OYLIK SOVG'ALAR VA G'OLIBLAR ===== */
+function prizeText(){
+  const d=[[50000,30],[20000,7],[10000,0]];
+  return [1,2,3].map(i=>{const s=settingsCache['prize'+i+'_sum'],k=settingsCache['prize'+i+'_days'];
+    const sum=(s!==undefined&&s!=='')?Number(s):d[i-1][0],days=(k!==undefined&&k!=='')?Number(k):d[i-1][1];
+    return (i===1?'🥇 ':i===2?'🥈 ':'🥉 ')+(sum>0?fmtN(sum)+' so‘m':'')+(sum>0&&days>0?' + ':'')+(days>0?days+' kun tarif':'')}).join('<br>');
+}
+function paintPrize(){
+  const el=$('prizeInfo');if(!el)return;
+  const n=new Date(),left=new Date(n.getFullYear(),n.getMonth()+1,0).getDate()-n.getDate();
+  el.innerHTML='Oy g‘oliblariga sovg‘alar:<br>'+prizeText()+'<br><b style="color:var(--gold2)">Oy tugashiga '+left+' kun qoldi</b>';
+}
+async function winLoad(){
+  if(winLoad.at&&Date.now()-winLoad.at<600000)return;
+  winLoad.at=Date.now();
+  const r=await api({action:'winners'});
+  if(!r||!r.ok||!r.list||!r.list.length)return;
+  const med=['🥇','🥈','🥉'];let m='',h='';
+  r.list.forEach(x=>{if(x.month!==m){m=x.month;h+='<div style="margin:12px 0 6px;color:var(--gold2);font-weight:700">'+esc(m)+'</div>'}
+    h+='<div class="rank-item"><span>'+med[x.place-1]+' '+esc(x.name)+'</span><b>'+COIN(14)+' '+fmtN(x.coin)+'</b></div>'});
+  $('winList').innerHTML=h;$('winBox').classList.remove('hide');
+}
+
+/* ===== MA'LUMOTNOMA (tarifda) ===== */
+let hbData=null,hbFan=0;
+async function openHandbook(){
+  busy(true);let r;
+  try{
