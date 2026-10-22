@@ -218,7 +218,7 @@ button:focus-visible,.test-btn:focus-visible{outline:2px solid var(--gold2);outl
 <div class="container">
 
   <div class="top-logo"><img src="assets/logo.png" alt="ABITUR DTM logotipi" width="44" height="44"><span>ABITUR DTM</span></div>
-  <p style="text-align:center;color:var(--muted);font-size:12px;max-width:400px;margin:0 auto 16px;line-height:1.5">Onlayn <b style="color:var(--gold2)">DTM test</b>, <b style="color:var(--gold2)">blok test</b> va <b style="color:var(--gold2)">milliy sertifikat</b> testlari — barcha fanlardan.</p>
+  <p style="text-align:center;color:var(--muted);font-size:12px;max-width:400px;margin:0 auto 16px;line-height:1.5">Onlayn <b style="color:var(--gold2)">Sinov test</b>, <b style="color:var(--gold2)">blok test</b> va <b style="color:var(--gold2)">milliy sertifikat</b> testlari — barcha fanlardan.</p>
 
   <div id="sectionBar" class="section-bar hide"></div>
 
@@ -333,7 +333,7 @@ button:focus-visible,.test-btn:focus-visible{outline:2px solid var(--gold2);outl
     </div>
 
     <div class="card hide" data-sec="testlar" id="planCard">
-      <h2>⭐ Oylik tarif</h2>
+      <h2>⭐ TARIFLAR</h2>
       <p class="quality-desc" id="planTxt" style="margin:0 auto 10px">...</p>
       <div id="planOpts"></div>
     </div>
@@ -522,7 +522,7 @@ button:focus-visible,.test-btn:focus-visible{outline:2px solid var(--gold2);outl
 <script>
 /* ===== SOZLAMALAR ===== */
 const GOOGLE_CLIENT_ID="323960187871-77jganuhhpo1hba8t7ooh252kqeh9sc2.apps.googleusercontent.com";
-const GAS_URL="https://script.google.com/macros/s/AKfycbyhICBHoWh7pmQ5UastBnmtLpT8i1bDti3ToHQOU5iBARcqPsUyDtJ-70sC_MDOMIjryw/exec";
+const GAS_URL="https://script.google.com/macros/s/AKfycbyXj58b-E6r8pUjq216npYb-6YdO6X-RrA3RTACzQ1lnsFPL9cqboy_qK_kXWU5UIVLAQ/exec";
 
 /* ===== YORDAMCHI ===== */
 const $=id=>document.getElementById(id);
@@ -1550,7 +1550,7 @@ async function winLoad(){
 let hbData=null,hbFan=0;
 async function openHandbook(){
   busy(true);let r;
-    try{r=await api({action:'handbook',id:currentUser.id,email:localStorage.getItem('abitur_email')})}finally{busy(false)}
+  try{r=await api({action:'handbook',id:currentUser.id,email:localStorage.getItem('abitur_email')})}finally{busy(false)}
   if(!r||!r.ok){toast((r&&r.error)||'Xatolik');return}
   hbData=r;hbFan=0;hideAllScreens();show('handbookScreen');renderHandbook();
 }
