@@ -189,8 +189,6 @@ button:focus-visible,.test-btn:focus-visible{outline:2px solid var(--gold2);outl
 .cr-send button{width:44px;height:44px;border-radius:50%;background:var(--gold);color:#111;font-size:18px;flex:none}
 
 /* o'yinlar, ma'lumotnoma */
-.fchip{padding:9px 14px;border-radius:20px;background:#0f1013;border:1px solid rgba(255,255,255,.15);color:var(--text);font-size:14px;margin:0 6px 8px 0}
-.fchip.sel{background:rgba(232,184,75,.2);border-color:var(--gold);color:var(--gold2);font-weight:700}
 .hb-d{background:#0f1013;border-radius:12px;margin-bottom:8px;padding:12px 14px}.hb-d summary{cursor:pointer;font-weight:700;color:var(--gold2)}
 .hb-d pre{white-space:pre-wrap;word-break:break-word;font-family:inherit;font-size:14px;line-height:1.75;margin:10px 0 0;color:#e3e1d8}
 .gm-top{display:flex;justify-content:space-between;font-size:14px;color:var(--muted);margin-bottom:14px}
@@ -247,7 +245,6 @@ button:focus-visible,.test-btn:focus-visible{outline:2px solid var(--gold2);outl
       <label>Ism</label><input id="gIsm">
       <label>Familiya</label><input id="gFamiliya">
       <label>Taklif kodi (ixtiyoriy) — ikkalangizga bonus</label><input id="gReferral" placeholder="Do'stingiz ID raqami">
-      <label>Qaysi fanlar kerak? (bir nechtasini tanlang)</label><div id="fanChipsR" style="margin-top:4px"></div>
       <button class="btn" id="gCompleteBtn" onclick="completeGoogleRegister()">Ro'yxatdan o'tishni yakunlash</button>
       <div class="error hide" id="gCompleteErr"></div>
     </div>
@@ -319,13 +316,6 @@ button:focus-visible,.test-btn:focus-visible{outline:2px solid var(--gold2);outl
       <button class="btn btn-outline" onclick="logout()">Chiqish</button>
     </div>
 
-    <div class="card" data-sec="kabinet" id="fanCard">
-      <h2>📚 Mening fanlarim</h2>
-      <p class="quality-desc" style="margin:0 auto 12px">Testlar va ma'lumotnoma shu fanlar bo'yicha tartiblanadi.</p>
-      <div id="fanChipsK"></div>
-      <button class="btn" onclick="saveFanlar('fanChipsK')">Saqlash</button>
-    </div>
-
     <div class="card" data-sec="kabinet" id="weakCard">
       <h2>📉 Zaif mavzular</h2>
       <div id="weakList"></div>
@@ -343,14 +333,9 @@ button:focus-visible,.test-btn:focus-visible{outline:2px solid var(--gold2);outl
     </div>
 
     <div class="card hide" data-sec="testlar" id="planCard">
-      <h2>⭐ Oylik tarif</h2>
+      <h2>⭐ Tariflar</h2>
       <p class="quality-desc" id="planTxt" style="margin:0 auto 10px">...</p>
       <div id="planOpts"></div>
-    </div>
-
-    <div class="card" data-sec="testlar">
-      <div class="test-btn" onclick="openHandbook()"><div><div class="name">📚 Ma'lumotnoma</div><div class="sub">Fanlar bo'yicha formulalar va qoidalar</div></div><span class="badge" id="hbBadge">Tarifda</span></div>
-      <div class="test-btn" onclick="openGames()"><div><div class="name">🎮 O'yinlar</div><div class="sub">Tezkor hisob, mantiq, xotira</div></div><span class="badge">Bepul</span></div>
     </div>
 
     <div class="card" data-sec="testlar">
@@ -370,6 +355,11 @@ button:focus-visible,.test-btn:focus-visible{outline:2px solid var(--gold2);outl
       <p style="font-size:12px;color:var(--muted);margin-top:12px;text-align:center;line-height:1.5">Barcha fanlardan testlarini shu yerda toping.</p>
     </div>
 
+     <div class="card" data-sec="testlar">
+      <div class="test-btn" onclick="openHandbook()"><div><div class="name">📚 Ma'lumotnoma</div><div class="sub">Fanlar bo'yicha formulalar va qoidalar</div></div><span class="badge" id="hbBadge">Tarifda</span></div>
+      <div class="test-btn" onclick="openGames()"><div><div class="name">🎮 O'yinlar</div><div class="sub">Tezkor hisob, mantiq, xotira</div></div><span class="badge">Bepul</span></div>
+    </div>
+    
     <div class="card" data-sec="reyting">
       <h2>🏆 Reyting (TOP 20)</h2>
       <h2 style="font-size:15px">📅 Har oy boshida coinlar 0 dan boshlanadi.</h2>
@@ -394,7 +384,7 @@ button:focus-visible,.test-btn:focus-visible{outline:2px solid var(--gold2);outl
           <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
           Telegram
         </a>
-        <a href="https://instagram.com/_uzb_.___" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;color:#fff;text-decoration:none">
+        <a href="https://instagram.com/abiturdtm" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;color:#fff;text-decoration:none">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.16c3.2 0 3.58.01 4.85.07 3.25.15 4.77 1.69 4.92 4.92.06 1.27.07 1.65.07 4.85s-.01 3.58-.07 4.85c-.15 3.23-1.66 4.77-4.92 4.92-1.27.06-1.64.07-4.85.07s-3.58-.01-4.85-.07c-3.26-.15-4.77-1.7-4.92-4.92C2.17 15.58 2.16 15.2 2.16 12s.01-3.58.07-4.85C2.38 3.92 3.9 2.38 7.15 2.23 8.42 2.17 8.8 2.16 12 2.16zM12 0C8.74 0 8.33.01 7.05.07 2.7.27.27 2.69.07 7.05.01 8.33 0 8.74 0 12s.01 3.67.07 4.95c.2 4.36 2.62 6.78 6.98 6.98C8.33 23.99 8.74 24 12 24s3.67-.01 4.95-.07c4.35-.2 6.78-2.62 6.98-6.98.06-1.28.07-1.69.07-4.95s-.01-3.67-.07-4.95c-.2-4.35-2.62-6.78-6.98-6.98C15.67.01 15.26 0 12 0zm0 5.84a6.16 6.16 0 1 0 0 12.32 6.16 6.16 0 0 0 0-12.32zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.4-11.85a1.44 1.44 0 1 0 0 2.88 1.44 1.44 0 0 0 0-2.88z"/></svg>
           Instagram
         </a>
@@ -496,7 +486,6 @@ button:focus-visible,.test-btn:focus-visible{outline:2px solid var(--gold2);outl
 </div>
 
 <div id="inboxModal" class="hide" style="position:fixed;inset:0;z-index:8000;background:rgba(0,0,0,.75);display:flex;align-items:center;justify-content:center;padding:20px"><div class="card" style="max-width:360px;width:100%;margin:0;max-height:80vh;overflow:auto"><h2>🔔 Xabarlar</h2><div id="inboxBody"></div><button class="btn" onclick="document.getElementById('inboxModal').classList.add('hide')">Yopish</button></div></div>
-<div id="fanModal" class="hide" style="position:fixed;inset:0;z-index:8000;background:rgba(0,0,0,.75);display:flex;align-items:center;justify-content:center;padding:20px"><div class="card" style="max-width:380px;width:100%;margin:0;max-height:88vh;overflow:auto"><h2>📚 Qaysi fanlar kerak?</h2><p class="quality-desc" style="margin-bottom:12px">Tanlaganingizga qarab sizga mos testlar birinchi ko'rsatiladi.</p><div id="fanChipsM"></div><button class="btn" onclick="saveFanlar('fanChipsM',true)">Saqlash</button><button class="btn btn-outline" onclick="fanModalLater()">Keyinroq</button></div></div>
 <div id="ideaModal" class="hide" style="position:fixed;inset:0;z-index:8000;background:rgba(0,0,0,.75);display:flex;align-items:center;justify-content:center;padding:20px"><div class="card" style="max-width:360px;width:100%;margin:0"><h2>💡 Sayt uchun g'oya</h2><p class="quality-desc" style="margin-bottom:10px">Nimani qo'shish yoki yaxshilash kerak? Fikringizni yozing.</p><textarea id="ideaText" maxlength="600" rows="5" style="width:100%;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:#0f1013;color:var(--text);font-size:15px;font-family:inherit"></textarea><button class="btn" id="ideaBtn" onclick="sendIdea()">Yuborish</button><button class="btn btn-outline" onclick="closeIdea()">Bekor qilish</button></div></div>
 
 <nav id="bottomNav" class="bottom-nav hide">
@@ -689,7 +678,7 @@ async function handleGoogleCredential(response){
     if(res.notFound){
       $('googleAuthCard').classList.add('hide');
       $('gIsm').value=payload.given_name||'';
-      $('gReferral').value=LS.get('abitur_ref')||'';renderFanChips('fanChipsR',[]);
+      $('gReferral').value=LS.get('abitur_ref')||'';
       $('gFamiliya').value=payload.family_name||'';
       show('newUserCard');
       return;
@@ -709,9 +698,7 @@ async function completeGoogleRegister(){
   if(!ism||!familiya){errEl.textContent='Ism va familiyani kiriting';errEl.classList.remove('hide');return}
   const btn=$('gCompleteBtn');
   setLoading(btn,true,'Yuborilmoqda...');
-  const fanlar=pickedFans('fanChipsR');
-  if(!fanlar){errEl.textContent='Kamida bitta fanni tanlang';errEl.classList.remove('hide');return}
-  const res=await api({action:'googleRegister',email:pendingGoogleEmail,ism:ism,familiya:familiya,referralId:referralId,fanlar:fanlar});
+  const res=await api({action:'googleRegister',email:pendingGoogleEmail,ism:ism,familiya:familiya,referralId:referralId});
   setLoading(btn,false);
   if(!res.ok){errEl.textContent=res.error||'Ro‘yxatdan o‘tishda xatolik';errEl.classList.remove('hide');return}
   localStorage.setItem('abitur_email',pendingGoogleEmail);
@@ -759,7 +746,7 @@ function paint(){
   document.querySelectorAll('.rbn').forEach(e=>{e.textContent=String(settingsCache.referral_bonus||2000).replace(/\B(?=(\d{3})+(?!\d))/g,' ')});
   renderHome(res);
   renderCerts(S.certs);
-  paintPlan();paintDaily();paintWeak();paintPrize();paintInstall();paintFans();
+  paintPlan();paintDaily();paintWeak();paintPrize();paintInstall();
   {const hb=$('hbBadge');if(hb)hb.textContent=planOn()?'Tarifda':'Bepul'}
 }
 async function loadDashboard(nav=true){
@@ -778,7 +765,7 @@ async function loadDashboard(nav=true){
     toast(res.error||'Xatolik yuz berdi');return;
   }
   S.res=res;persist();paint();
-  chatLoadList();pushRefresh();dailyLoad();weakLoad();inboxLoad();winLoad();fanPromptCheck();
+  chatLoadList();pushRefresh();dailyLoad();weakLoad();inboxLoad();winLoad();
   {const od=LS.get('abitur_order');if(od)orderCheck(!!od.auto)}
   if(nav&&!inFlow()&&!resumeRun())enterDash();
   pS.then(r=>{if(r&&r.settings){S.set=r;persist();paint()}});
@@ -855,7 +842,7 @@ async function openTestType(type){
   });
   activeTestType=type;
   $('testSetTitle').textContent=TEST_LABEL[type];
-  const listEl=$('testSetList'),frag=document.createDocumentFragment(),items=[];
+  const listEl=$('testSetList'),frag=document.createDocumentFragment();
   Object.keys(groups).forEach(base=>{
     const variants=Object.values(groups[base]);
     const div=document.createElement('div');
@@ -869,14 +856,8 @@ async function openTestType(type){
       const qs=variants[Math.floor(Math.random()*variants.length)];
       startTest(type,base,qs[0].raw||qs[0].testNomi,div);
     };
-    items.push({base,div});
+    frag.appendChild(div);
   });
-  const mine=items.filter(x=>fanMatch(x.base)),rest=items.filter(x=>!fanMatch(x.base));
-  if(myFans().length&&mine.length){
-    const hd=document.createElement('div');hd.className='quality-desc';hd.style.cssText='margin:0 0 10px;text-align:left;color:var(--gold2);font-weight:700';hd.textContent='⭐ Siz tanlagan fanlar';frag.appendChild(hd);
-    mine.forEach(x=>frag.appendChild(x.div));
-    if(rest.length){const d=document.createElement('details');d.className='hb-d';d.innerHTML='<summary>Boshqa fanlar ('+rest.length+')</summary>';const box=document.createElement('div');box.style.marginTop='10px';rest.forEach(x=>box.appendChild(x.div));d.appendChild(box);frag.appendChild(d)}
-  }else items.forEach(x=>frag.appendChild(x.div));
   listEl.innerHTML='';listEl.appendChild(frag);
   hideAllScreens();show('testSetScreen');
 }
@@ -1571,7 +1552,6 @@ async function openHandbook(){
   busy(true);let r;
   try{r=await api({action:'handbook',id:currentUser.id,email:localStorage.getItem('abitur_email')})}finally{busy(false)}
   if(!r||!r.ok){toast((r&&r.error)||'Xatolik');return}
-  const mf=myFans();if(mf.length)r.list.sort((a,b)=>(mf.includes(a.fan)?0:1)-(mf.includes(b.fan)?0:1));
   hbData=r;hbFan=0;hideAllScreens();show('handbookScreen');renderHandbook();
 }
 function hbPick(i){hbFan=i;renderHandbook()}
@@ -1710,37 +1690,6 @@ function gMem(){
   };
 }
 
-/* ===== FANLAR (shaxsiylashtirish) ===== */
-const FANLAR=['Matematika','Fizika','Kimyo','Biologiya','Tarix','Ona tili','Ingliz tili','Geografiya','Rus tili'];
-const FAN_KEYS={'Matematika':['matematika'],'Fizika':['fizika'],'Kimyo':['kimyo'],'Biologiya':['biologiya'],'Tarix':['tarix'],'Ona tili':['ona tili','ona-tili','adabiyot'],'Ingliz tili':['ingliz','english'],'Geografiya':['geografiya'],'Rus tili':['rus tili']};
-const fanNorm=s=>String(s||'').toLowerCase().replace(/[‘’`ʻʼ´]/g,"'");
-const myFans=()=>String(currentUser&&currentUser.fanlar||'').split(',').map(x=>x.trim()).filter(x=>FANLAR.includes(x));
-function fanMatch(name,fans){const n=fanNorm(name);return (fans||myFans()).some(f=>FAN_KEYS[f].some(k=>n.includes(k)))}
-const fanSel={};   // konteyner -> tanlanganlar
-function renderFanChips(id,preset){
-  fanSel[id]=new Set(preset||[]);
-  $(id).innerHTML=FANLAR.map(f=>'<button type="button" class="fchip'+(fanSel[id].has(f)?' sel':'')+'" data-f="'+f+'" onclick="toggleFan(\''+id+'\',this)">'+f+'</button>').join('');
-}
-function toggleFan(id,el){const f=el.dataset.f,s=fanSel[id];if(s.has(f)){s.delete(f);el.classList.remove('sel')}else{s.add(f);el.classList.add('sel')}}
-const pickedFans=id=>[...(fanSel[id]||[])].join(',');
-async function saveFanlar(id,closeModal){
-  const v=pickedFans(id);
-  if(!v){toast('Kamida bitta fanni tanlang');return}
-  const r=await api({action:'setFanlar',id:currentUser.id,email:localStorage.getItem('abitur_email'),fanlar:v});
-  if(!r||!r.ok){toast((r&&r.error)||'Saqlanmadi');return}
-  S.res.fanlar=r.fanlar;persist();paint();
-  if(closeModal)$('fanModal').classList.add('hide');
-  LS.del('abitur_t_sinov');LS.del('abitur_t_blok');LS.del('abitur_t_sertifikat');
-  toast('Fanlaringiz saqlandi ✓');
-}
-function fanModalLater(){LS.set('abitur_fan_skip',today());$('fanModal').classList.add('hide')}
-function fanPromptCheck(){
-  if(!currentUser||myFans().length||fanPromptCheck.shown||LS.get('abitur_fan_skip')===today())return;
-  if(inFlow())return;
-  fanPromptCheck.shown=1;renderFanChips('fanChipsM',[]);$('fanModal').classList.remove('hide');
-}
-function paintFans(){const el=$('fanChipsK');if(!el)return;renderFanChips('fanChipsK',myFans())}
-
 /* ===== ISHGA TUSHIRISH (sahifa to'liq yuklanishini kutmaydi) ===== */
 function boot(){
   hideAllScreens();
@@ -1763,4 +1712,4 @@ window.addEventListener('online',()=>{
 boot();
 </script>
 </body>
-</html>
+  </html>
