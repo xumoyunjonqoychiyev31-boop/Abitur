@@ -533,7 +533,7 @@ button:focus-visible,.test-btn:focus-visible{outline:2px solid var(--gold2);outl
 <script>
 /* ===== SOZLAMALAR ===== */
 const GOOGLE_CLIENT_ID="323960187871-77jganuhhpo1hba8t7ooh252kqeh9sc2.apps.googleusercontent.com";
-const GAS_URL="https://script.google.com/macros/s/AKfycbxfaBfw_SjZ5ryhT8cuZ8soTVdLiwPrvCi05JknGyIVw5nlJmQR5ilS_oT2tQlir3Xo/exec";
+const GAS_URL="https://script.google.com/macros/s/AKfycbzGXrNkRxYu6U1XX592RmDzXAjzlbWTirvaMU9V0tWGFGB8GwmxcXL7v2wCo7ezqTAeyg/exec";
 
 /* ===== YORDAMCHI ===== */
 const $=id=>document.getElementById(id);
@@ -1712,7 +1712,7 @@ function gMem(){
 
 /* ===== FANLAR (shaxsiylashtirish) ===== */
 const FANLAR=['Matematika','Fizika','Kimyo','Biologiya','Tarix','Ona tili','Ingliz tili','Geografiya','Rus tili','Huquq'];
-const FAN_KEYS={'Matematika':['matematika'],'Fizika':['fizika'],'Kimyo':['kimyo'],'Biologiya':['biologiya'],'Tarix':['tarix'],'Ona tili':['ona tili','ona-tili','adabiyot'],'Ingliz tili':['ingliz','english'],'Geografiya':['geografiya'],'Rus tili':['rus tili'],'Huquq':['huquq']};
+const FAN_KEYS={'Matematika':['matematika'],'Fizika':['fizika'],'Kimyo':['kimyo'],'Biologiya':['biologiya'],'Tarix':['tarix'],'Ona tili':['ona tili','ona-tili','adabiyot'],'Ingliz tili':['ingliz','english'],'Geografiya':['geografiya'],'Rus tili':['rus tili'],'Huquq':['Huquq']};
 const fanNorm=s=>String(s||'').toLowerCase().replace(/[‘’`ʻʼ´]/g,"'");
 const myFans=()=>String(currentUser&&currentUser.fanlar||'').split(',').map(x=>x.trim()).filter(x=>FANLAR.includes(x));
 function fanMatch(name,fans){const n=fanNorm(name);return (fans||myFans()).some(f=>FAN_KEYS[f].some(k=>n.includes(k)))}
