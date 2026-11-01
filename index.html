@@ -1711,8 +1711,8 @@ function gMem(){
 }
 
 /* ===== FANLAR (shaxsiylashtirish) ===== */
-const FANLAR=['Matematika','Fizika','Kimyo','Biologiya','Tarix','Ona tili','Ingliz tili','Geografiya','Rus tili'];
-const FAN_KEYS={'Matematika':['matematika'],'Fizika':['fizika'],'Kimyo':['kimyo'],'Biologiya':['biologiya'],'Tarix':['tarix'],'Ona tili':['ona tili','ona-tili','adabiyot'],'Ingliz tili':['ingliz','english'],'Geografiya':['geografiya'],'Rus tili':['rus tili']};
+const FANLAR=['Matematika','Fizika','Kimyo','Biologiya','Tarix','Ona tili','Ingliz tili','Geografiya','Rus tili','Huquq'];
+const FAN_KEYS={'Matematika':['matematika'],'Fizika':['fizika'],'Kimyo':['kimyo'],'Biologiya':['biologiya'],'Tarix':['tarix'],'Ona tili':['ona tili','ona-tili','adabiyot'],'Ingliz tili':['ingliz','english'],'Geografiya':['geografiya'],'Rus tili':['rus tili'],'Huquq':['huquq']};
 const fanNorm=s=>String(s||'').toLowerCase().replace(/[‘’`ʻʼ´]/g,"'");
 const myFans=()=>String(currentUser&&currentUser.fanlar||'').split(',').map(x=>x.trim()).filter(x=>FANLAR.includes(x));
 function fanMatch(name,fans){const n=fanNorm(name);return (fans||myFans()).some(f=>FAN_KEYS[f].some(k=>n.includes(k)))}
