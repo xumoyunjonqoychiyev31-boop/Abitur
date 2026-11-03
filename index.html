@@ -1558,7 +1558,9 @@ function shareRef(){
 
 /* ===== COIN (ball = tanga) ===== */
 let coinN=0;
-const COIN=(s=18)=>{const i='cg'+(++coinN);return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 24 24" style="vertical-align:-'+Math.round(s*.18)+'px;flex:none"><defs><radialGradient id="'+i+'" cx=".35" cy=".3" r=".9"><stop offset="0" stop-color="#fff4b8"/><stop offset=".55" stop-color="#f5c542"/><stop offset="1" stop-color="#b8860b"/></radialGradient></defs><circle cx="12" cy="12" r="11" fill="url(#'+i+')" stroke="#8a5a00" stroke-width="1"/><circle cx="12" cy="12" r="8.7" fill="none" stroke="#b8860b" stroke-width=".9"/><path d="M7.7 17 L12 6.7 L16.3 17 M9.5 13.5 H14.5" fill="none" stroke="#7a4b00" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>'};
+const COIN_SVG=(s=18)=>{const i='cg'+(++coinN);return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 24 24" style="vertical-align:-'+Math.round(s*.18)+'px;flex:none"><defs><radialGradient id="'+i+'" cx=".35" cy=".3" r=".9"><stop offset="0" stop-color="#fff4b8"/><stop offset=".55" stop-color="#f5c542"/><stop offset="1" stop-color="#b8860b"/></radialGradient></defs><circle cx="12" cy="12" r="11" fill="url(#'+i+')" stroke="#8a5a00" stroke-width="1"/><circle cx="12" cy="12" r="8.7" fill="none" stroke="#b8860b" stroke-width=".9"/><path d="M7.7 17 L12 6.7 L16.3 17 M9.5 13.5 H14.5" fill="none" stroke="#7a4b00" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>'};
+
+const COIN=(s=18)=>'<img src="assets/logo.png" alt="coin" width="'+s+'" height="'+s+'" style="width:'+s+'px;height:'+s+'px;object-fit:contain;vertical-align:-'+Math.round(s*.18)+'px;flex:none" onerror="this.outerHTML=COIN_SVG('+s+')">';
 
 /* ===== XABARLAR (to'lov rad etildi, sovg'a va h.k.) ===== */
 async function inboxLoad(){
@@ -1902,18 +1904,20 @@ function paintProg(){
 /* natijani rasm kartochka sifatida ulashish */
 let lastShare=null;
 function rr(x,a,b,w,h,r){x.beginPath();x.moveTo(a+r,b);x.arcTo(a+w,b,a+w,b+h,r);x.arcTo(a+w,b+h,a,b+h,r);x.arcTo(a,b+h,a,b,r);x.arcTo(a,b,a+w,b,r);x.closePath()}
-function cardBlob(d){
+let logoImg=null;
+function loadLogo(){return new Promise(r=>{if(logoImg)return r(logoImg);const i=new Image();i.onload=()=>{logoImg=i;r(i)};i.onerror=()=>r(null);i.src='assets/logo.png'})}
+async function cardBlob(d){
+  const logo=await loadLogo();
   return new Promise(res=>{
     const c=document.createElement('canvas');c.width=1080;c.height=1350;const x=c.getContext('2d'),F='"Segoe UI","Carlito","Helvetica Neue",Arial,sans-serif';
     const bg=x.createLinearGradient(0,0,0,1350);bg.addColorStop(0,'#16120a');bg.addColorStop(1,'#0b0c0f');x.fillStyle=bg;x.fillRect(0,0,1080,1350);
     const gl=x.createRadialGradient(540,470,40,540,470,620);gl.addColorStop(0,'rgba(232,184,75,.30)');gl.addColorStop(1,'rgba(232,184,75,0)');x.fillStyle=gl;x.fillRect(0,0,1080,1350);
     x.strokeStyle='rgba(232,184,75,.6)';x.lineWidth=4;rr(x,36,36,1008,1278,40);x.stroke();
     x.textAlign='center';
-    // tanga + logo
-    const cg=x.createRadialGradient(500,150,10,540,180,90);cg.addColorStop(0,'#fff4b8');cg.addColorStop(.55,'#f5c542');cg.addColorStop(1,'#b8860b');
-    x.fillStyle=cg;x.beginPath();x.arc(540,170,78,0,7);x.fill();x.strokeStyle='#8a5a00';x.lineWidth=5;x.stroke();
-    x.strokeStyle='#b8860b';x.lineWidth=3;x.beginPath();x.arc(540,170,62,0,7);x.stroke();
-    x.strokeStyle='#7a4b00';x.lineWidth=11;x.lineCap='round';x.lineJoin='round';x.beginPath();x.moveTo(508,208);x.lineTo(540,128);x.lineTo(572,208);x.moveTo(520,182);x.lineTo(560,182);x.stroke();
+    // asl logo (assets/logo.png), topilmasa chizilgan tanga
+    if(logo){const k=Math.min(190/logo.naturalWidth,190/logo.naturalHeight),w=logo.naturalWidth*k,h=logo.naturalHeight*k;x.drawImage(logo,540-w/2,170-h/2,w,h)}
+    else{const cg=x.createRadialGradient(500,150,10,540,180,90);cg.addColorStop(0,'#fff4b8');cg.addColorStop(.55,'#f5c542');cg.addColorStop(1,'#b8860b');
+    x.fillStyle=cg;x.beginPath();x.arc(540,170,78,0,7);x.fill();x.strokeStyle='#8a5a00';x.lineWidth=5;x.stroke()}
     x.fillStyle='#f5d98a';x.font='700 44px '+F;x.fillText('A B I T U R   D T M',540,310);
     x.fillStyle='#c9c6bb';x.font='600 40px '+F;x.fillText(d.title||'',540,400);
     const tg=x.createLinearGradient(0,480,0,700);tg.addColorStop(0,'#fff2c4');tg.addColorStop(.6,'#e8b84b');tg.addColorStop(1,'#b9871f');
