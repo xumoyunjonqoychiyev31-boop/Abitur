@@ -208,7 +208,7 @@ button:focus-visible,.test-btn:focus-visible{outline:2px solid var(--gold2);outl
 .gbar i{display:block;height:100%;background:var(--gold);border-radius:6px}
 .gbar s{position:absolute;top:-5px;width:2px;height:20px;background:#6db3ff;text-decoration:none}
 .gbar s.gg{background:#7bc96f}
-#uniQ{width:100%;padding:12px;border-radius:10px;background:#0f1116;border:1px solid rgba(232,184,75,.3);color:var(--text);font-size:15px}
+#uniQ,#duelCodeIn{width:100%;padding:12px;border-radius:10px;background:#0f1116;border:1px solid rgba(232,184,75,.3);color:var(--text);font-size:15px}
 .coin{position:relative;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;flex:none;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fffbd0 0,#ffd84d 45%,#d9960b 100%);border:1px solid #8a5a00;box-sizing:border-box;animation:coinSpin 2.4s ease-in-out infinite,coinGlow 1.6s ease-in-out infinite}
 .coin img{width:72%;height:72%;object-fit:contain;display:block;position:relative;z-index:1}
 .coin::after{content:"";position:absolute;top:-25%;left:-70%;width:45%;height:150%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.95),transparent);transform:skewX(-20deg);animation:coinShine 2.4s ease-in-out infinite;z-index:2}
@@ -233,7 +233,7 @@ button:focus-visible,.test-btn:focus-visible{outline:2px solid var(--gold2);outl
 <div class="container">
 
   <div class="top-logo"><img src="assets/logo.png" alt="ABITUR DTM logotipi" width="44" height="44"><span>ABITUR DTM</span></div>
-  <p style="text-align:center;color:var(--muted);font-size:12px;max-width:400px;margin:0 auto 16px;line-height:1.5">Onlayn <b style="color:var(--gold2)">sinov test</b>, <b style="color:var(--gold2)">blok test</b> va <b style="color:var(--gold2)">milliy sertifikat</b> testlari — barcha fanlardan.</p>
+  <p style="text-align:center;color:var(--muted);font-size:12px;max-width:400px;margin:0 auto 16px;line-height:1.5">Onlayn <b style="color:var(--gold2)">Sinov test</b>, <b style="color:var(--gold2)">blok test</b> va <b style="color:var(--gold2)">milliy sertifikat</b> testlari — barcha fanlardan.</p>
 
   <div id="sectionBar" class="section-bar hide"></div>
 
@@ -300,6 +300,12 @@ button:focus-visible,.test-btn:focus-visible{outline:2px solid var(--gold2);outl
     </div>
 
     <div class="card" data-sec="home">
+      <h2>⚔️ Do‘st bilan duel</h2>
+      <p class="quality-desc" style="margin:0 auto 4px">Bir xil 10 ta savol — kim ko‘p topadi? Do‘stingizni chaqiring.</p>
+      <button class="btn" onclick="openDuel()">⚔️ Duel boshlash</button>
+    </div>
+
+    <div class="card" data-sec="home">
       <h2>🕘 Oxirgi test</h2>
       <div id="hLast" class="quality-desc" style="margin:0 auto">Hali test yechilmagan.</div>
     </div>
@@ -336,6 +342,7 @@ button:focus-visible,.test-btn:focus-visible{outline:2px solid var(--gold2);outl
       <div class="stat-row"><span>Coin</span><b id="dScore2">-</b></div>
       <div class="stat-row"><span>Balans</span><b id="dBalans">-</b></div>
       <button class="btn btn-outline" onclick="showPayment()">💳 Balansni to'ldirish</button>
+      <button class="btn btn-outline" onclick="parentShare()">👪 Ota-onaga hisobot</button>
       <button class="btn btn-outline" id="installBtn" onclick="installApp()">📲 Ilovani o'rnatish</button>
       <button class="btn btn-outline" onclick="openIdea()">💡 Sayt uchun g'oya yuborish</button>
       <button class="btn btn-outline" id="pushBtn" onclick="pushEnable()">🔔 Bildirishnomani yoqish</button>
@@ -417,7 +424,7 @@ button:focus-visible,.test-btn:focus-visible{outline:2px solid var(--gold2);outl
           <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
           Telegram
         </a>
-        <a href="https://instagram.com/abiturdtm" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;color:#fff;text-decoration:none">
+        <a href="https://instagram.com/_uzb_.___" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;color:#fff;text-decoration:none">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.16c3.2 0 3.58.01 4.85.07 3.25.15 4.77 1.69 4.92 4.92.06 1.27.07 1.65.07 4.85s-.01 3.58-.07 4.85c-.15 3.23-1.66 4.77-4.92 4.92-1.27.06-1.64.07-4.85.07s-3.58-.01-4.85-.07c-3.26-.15-4.77-1.7-4.92-4.92C2.17 15.58 2.16 15.2 2.16 12s.01-3.58.07-4.85C2.38 3.92 3.9 2.38 7.15 2.23 8.42 2.17 8.8 2.16 12 2.16zM12 0C8.74 0 8.33.01 7.05.07 2.7.27.27 2.69.07 7.05.01 8.33 0 8.74 0 12s.01 3.67.07 4.95c.2 4.36 2.62 6.78 6.98 6.98C8.33 23.99 8.74 24 12 24s3.67-.01 4.95-.07c4.35-.2 6.78-2.62 6.98-6.98.06-1.28.07-1.69.07-4.95s-.01-3.67-.07-4.95c-.2-4.35-2.62-6.78-6.98-6.98C15.67.01 15.26 0 12 0zm0 5.84a6.16 6.16 0 1 0 0 12.32 6.16 6.16 0 0 0 0-12.32zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.4-11.85a1.44 1.44 0 1 0 0 2.88 1.44 1.44 0 0 0 0-2.88z"/></svg>
           Instagram
         </a>
@@ -480,6 +487,21 @@ button:focus-visible,.test-btn:focus-visible{outline:2px solid var(--gold2);outl
     </div>
   </div>
 
+  <div id="duelScreen" class="hide">
+    <div class="card">
+      <h2>⚔️ Duel</h2>
+      <div id="duelBody"></div>
+    </div>
+    <button class="btn btn-outline" onclick="backToDashboard()">Orqaga</button>
+  </div>
+
+  <div id="parentScreen" class="hide">
+    <div class="card">
+      <h2>👪 Ota-onalar uchun hisobot</h2>
+      <div id="parentBody"></div>
+    </div>
+  </div>
+
   <div id="uniScreen" class="hide">
     <div class="card">
       <h2>🎓 Universitetlar</h2>
@@ -520,6 +542,7 @@ button:focus-visible,.test-btn:focus-visible{outline:2px solid var(--gold2);outl
 
 <div class="site-footer">© <span id="footerYear"></span> <b>ABITUR DTM</b>. Barcha huquqlar himoyalangan.<br><a href="oferta.html" style="color:var(--gold2)">Ommaviy oferta</a> · <a href="maxfiylik.html" style="color:var(--gold2)">Maxfiylik siyosati</a></div>
 
+<div id="parentModal" class="hide" style="position:fixed;inset:0;z-index:8000;background:rgba(0,0,0,.75);display:flex;align-items:center;justify-content:center;padding:20px"><div class="card" style="max-width:360px;width:100%;margin:0"><h2>👪 Ota-onaga hisobot</h2><p class="quality-desc" style="margin:0 auto 12px">Bu havola orqali ota-onangiz parolsiz faqat o‘qish uchun hisobotni ko‘radi: haftalik testlar, o‘rtacha natija, zaif mavzular.</p><input id="parentUrl" readonly style="width:100%;padding:12px;border-radius:10px;background:#0f1116;border:1px solid rgba(232,184,75,.3);color:var(--text);font-size:13px"><button class="btn" onclick="parentSend()">📤 Yuborish</button><button class="btn btn-outline" onclick="parentCopy()">Nusxalash</button><button class="btn btn-outline" onclick="parentRenew()">Yangi havola (eskisi o‘chadi)</button><button class="btn btn-outline" onclick="hide('parentModal')">Yopish</button></div></div>
 <div id="dailyModal" class="hide" style="position:fixed;inset:0;z-index:8000;background:rgba(0,0,0,.75);display:flex;align-items:center;justify-content:center;padding:20px">
   <div class="card" style="max-width:340px;width:100%;text-align:center;margin:0">
     <h2>📅 Kunlik test tayyor!</h2>
@@ -567,7 +590,7 @@ button:focus-visible,.test-btn:focus-visible{outline:2px solid var(--gold2);outl
 <script>
 /* ===== SOZLAMALAR ===== */
 const GOOGLE_CLIENT_ID="323960187871-77jganuhhpo1hba8t7ooh252kqeh9sc2.apps.googleusercontent.com";
-const GAS_URL="https://script.google.com/macros/s/AKfycbwGAnZvbL_bDg1d5gLV-nXsZQ6P9JlFOBlZxAAbr6Z90_ue4oznr1WlsSeIUtzZnTJ9bw/exec";
+const GAS_URL="https://script.google.com/macros/s/AKfycbyzTb0OyyS88Ol1f5-1xCesH6vVo5Dn7c3qi_FYvS0-PdtxwyHEkLG1IalXm7u34Rc_3A/exec";
 
 /* ===== YORDAMCHI ===== */
 const $=id=>document.getElementById(id);
@@ -577,6 +600,7 @@ const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;'
 $('footerYear').textContent=new Date().getFullYear();
 (function(){try{const r=new URLSearchParams(location.search).get('ref');if(r&&/^\d{3,12}$/.test(r)){localStorage.setItem('abitur_ref',JSON.stringify(r));history.replaceState(null,'',location.pathname)}
   const pd=new URLSearchParams(location.search).get('paid');if(pd&&/^O\d+$/.test(pd)){localStorage.setItem('abitur_order',JSON.stringify({id:pd,t:Date.now(),auto:1}));history.replaceState(null,'',location.pathname)}}catch(e){}})();
+(function(){try{const d=new URLSearchParams(location.search).get('duel');if(d&&/^\d{6}$/.test(d)){localStorage.setItem('abitur_duel',JSON.stringify(d));history.replaceState(null,'',location.pathname)}}catch(e){}})();
 setTimeout(()=>{const i=$('intro');if(i)i.remove()},1000); // intro animatsiyalari to'xtaydi
 
 function toast(m){const t=$('toast');t.textContent=m;t.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove('on'),3500)}
@@ -604,16 +628,16 @@ function api(p){
 }
 
 /* ===== EKRANLAR ===== */
-const SCREENS=['authScreen','regSuccess','dashboard','testSetScreen','paymentScreen','handbookScreen','gamesScreen','uniScreen','testScreen','resultScreen','loadScreen','errScreen'];
-const NAVS=['dashboard','testSetScreen','paymentScreen','handbookScreen','gamesScreen','uniScreen','resultScreen'];
+const SCREENS=['authScreen','regSuccess','dashboard','testSetScreen','paymentScreen','handbookScreen','gamesScreen','uniScreen','duelScreen','parentScreen','testScreen','resultScreen','loadScreen','errScreen'];
+const NAVS=['dashboard','testSetScreen','paymentScreen','handbookScreen','gamesScreen','uniScreen','duelScreen','resultScreen'];
 const TAB_INFO={home:['🏠','Bosh sahifa'],testlar:['📝','Testlar'],reyting:['🏆','Reyting'],chat:['💬','Chat'],kabinet:['👤','Kabinet']};
-const SUB_TAB={testSetScreen:{tab:'testlar',sub:'Test tanlash'},paymentScreen:{tab:'kabinet',sub:"Balansni to'ldirish"},resultScreen:{tab:'testlar',sub:'Natija'},handbookScreen:{tab:'testlar',sub:"Ma'lumotnoma"},gamesScreen:{tab:'testlar',sub:"O'yinlar"},uniScreen:{tab:'kabinet',sub:'Universitetlar'}};
+const SUB_TAB={testSetScreen:{tab:'testlar',sub:'Test tanlash'},paymentScreen:{tab:'kabinet',sub:"Balansni to'ldirish"},resultScreen:{tab:'testlar',sub:'Natija'},handbookScreen:{tab:'testlar',sub:"Ma'lumotnoma"},gamesScreen:{tab:'testlar',sub:"O'yinlar"},uniScreen:{tab:'kabinet',sub:'Universitetlar'},duelScreen:{tab:'home',sub:'Duel'}};
 let S={},currentUser=null,settingsCache={},pendingGoogleEmail=null,currentTab='home';
 const show=id=>{const e=$(id);if(e)e.classList.remove('hide');
   if(NAVS.includes(id)){$('bottomNav').classList.remove('hide');$('sectionBar').classList.remove('hide');if(SUB_TAB[id])setActiveTab(SUB_TAB[id].tab,SUB_TAB[id].sub)}};
 const hide=id=>{const e=$(id);if(e)e.classList.add('hide')};
 const hideAllScreens=()=>{SCREENS.forEach(hide);hide('bottomNav');hide('sectionBar');chatStop();try{gamesStop()}catch(e){}};
-const inFlow=()=>['testScreen','testSetScreen','paymentScreen','handbookScreen','gamesScreen','uniScreen','resultScreen'].some(id=>!$(id).classList.contains('hide'));
+const inFlow=()=>['testScreen','testSetScreen','paymentScreen','handbookScreen','gamesScreen','uniScreen','duelScreen','resultScreen'].some(id=>!$(id).classList.contains('hide'));
 function setActiveTab(t,sub){
   currentTab=t;
   document.querySelectorAll('.nav-item').forEach(b=>b.classList.toggle('active',b.dataset.tab===t));
@@ -813,6 +837,7 @@ async function loadDashboard(nav=true){
     toast(res.error||'Xatolik yuz berdi');return;
   }
   S.res=res;persist();paint();
+  setTimeout(duelPending,0);
   chatLoadList();pushRefresh();dailyLoad();weakLoad();inboxLoad();winLoad();fanPromptCheck();paintGoal();paintProg();goalLoad(true);progLoad(true);
   {const od=LS.get('abitur_order');if(od)orderCheck(!!od.auto)}
   if(nav&&!inFlow()&&!resumeRun())enterDash();
@@ -950,7 +975,7 @@ function stopAudio(){
 }
 
 /* test holati saqlanadi: sahifa yangilansa yoki brauzer yopilib qolsa ham test davom etadi */
-const saveRun=()=>LS.set('abitur_run_s',{uid:currentUser.id,type:activeTestType,sid:activeSid,name:activeQuestions._name,ans:activeAnswers,idx:currentQIndex,deadline:deadline,audio:activeAudio,at:activeAudio?$('lAudio').currentTime:0});
+const saveRun=()=>activeTestType==='duel'?0:LS.set('abitur_run_s',{uid:currentUser.id,type:activeTestType,sid:activeSid,name:activeQuestions._name,ans:activeAnswers,idx:currentQIndex,deadline:deadline,audio:activeAudio,at:activeAudio?$('lAudio').currentTime:0});
 const clearRun=()=>{LS.del('abitur_run_q');LS.del('abitur_run_s')};
 function resumeRun(){
   const q=LS.get('abitur_run_q'),s=LS.get('abitur_run_s');
@@ -1052,7 +1077,7 @@ async function flushOutbox(quiet){
 function reviewHtml(list){
   if(!list||!list.length)return '';
   return '<h2 style="margin:18px 0 10px;font-size:16px">Xatolar tahlili</h2>'+list.map(x=>'<div class="card" style="text-align:left;font-size:13px;padding:14px"><div style="color:var(--muted)">'+esc(x.savol)+'</div><div style="margin-top:6px">Sizning javobingiz: <b style="color:#ff6b6b">'+esc(x.javob||'—')+'</b> · To‘g‘ri: <b style="color:#8bd17c">'+esc(x.togri)+'</b></div>'+
-    (x.izoh?'<div style="margin-top:8px;padding:8px 10px;border-left:3px solid var(--gold);background:rgba(232,184,75,.08);border-radius:6px">💡 '+esc(x.izoh)+'</div>':'')+'</div>').join('');
+    (x.izoh?'<div style="margin-top:8px;padding:8px 10px;border-left:3px solid var(--gold);background:rgba(232,184,75,.08);border-radius:6px">💡 '+esc(x.izoh)+'</div>':(x.id?'<button class="btn btn-outline" style="margin-top:10px;padding:9px;font-size:13px" data-q="'+esc(x.id)+'" onclick="explainQ(this)">💡 Tushuntirish</button>':''))+'</div>').join('');
 }
 function renderExamResult(job,r){
   const box=$('resultBox'),score=r.score,maxScore=r.max,percent=maxScore>0?Math.round(score/maxScore*100):0,fullName=esc(currentUser.ism)+' '+esc(currentUser.familiya);
@@ -1069,6 +1094,7 @@ function renderExamResult(job,r){
 async function finishTest(){
   if(testSubmitted)return;
   if(activeTestType==='kun')return finishDaily();
+  if(activeTestType==='duel')return finishDuel();
   testSubmitted=true;deadline=0;stopAudio();
   clearInterval(timerInterval);
   saveTextAnswer();
@@ -1784,6 +1810,7 @@ function paintFans(){const el=$('fanChipsK');if(!el)return;renderFanChips('fanCh
 /* ===== ISHGA TUSHIRISH (sahifa to'liq yuklanishini kutmaydi) ===== */
 function boot(){
   hideAllScreens();
+  {const pq=new URLSearchParams(location.search).get('parent');if(pq&&/^[a-f0-9]{16,40}$/.test(pq)){parentView(pq);return}}
   if(!localStorage.getItem('abitur_email')){show('authScreen');initGoogle();return}
   const c=LS.get('abitur_cache');
   if(c&&c.res){
@@ -1950,6 +1977,171 @@ const shareLast=()=>{if(lastShare)shareCard(lastShare)};
 function shareGoal(){
   const g=S.goal&&S.goal.goal,lv=S.goal&&S.goal.level;if(!g)return;
   shareCard({title:'Mening maqsadim',big:g.short,sub:g.dir,lines:[(lv&&!lv.none?'Hozirgi daraja: '+lv.score+' / 189':'Tayyorgarlik boshlandi'),'Grant: '+g.grant+' · Kontrakt: '+g.contract],name:(currentUser.ism||'')+' '+(currentUser.familiya||''),ref:currentUser.id,text:'Men '+g.short+' ga kirmoqchiman!'});
+}
+
+
+/* ===== DO'ST BILAN DUEL ===== */
+let duelCode='',duelPoll=0,duelLast='';
+const duelApi=(a,x)=>api(Object.assign({action:a,id:currentUser.id,email:localStorage.getItem('abitur_email')},x||{}));
+const duelLink=c=>location.origin+location.pathname+'?duel='+c;
+function duelPending(){
+  const c=LS.get('abitur_duel');
+  if(!c||!currentUser||inFlow())return;
+  LS.del('abitur_duel');openDuel(c);
+}
+async function openDuel(code){
+  hideAllScreens();show('duelScreen');window.scrollTo(0,0);
+  clearInterval(duelPoll);duelLast='';
+  if(code)return duelShow(code);
+  duelMenu();
+}
+async function duelMenu(){
+  duelCode='';clearInterval(duelPoll);
+  $('duelBody').innerHTML='<p class="quality-desc" style="margin:0 auto 12px">Do‘stingizni chaqiring: ikkalangiz bir xil 10 ta savolni yechasiz. Ko‘p topgan yutadi.</p>'+
+    '<button class="btn" onclick="duelNew()">⚔️ Yangi duel yaratish</button>'+
+    '<div style="display:flex;gap:8px;margin-top:14px"><input id="duelCodeIn" inputmode="numeric" maxlength="6" placeholder="Duel kodi" autocomplete="off"><button class="btn" style="margin-top:0;width:auto;padding:0 20px" onclick="duelJoinCode()">Kirish</button></div>'+
+    '<div id="duelHist" style="margin-top:18px"></div>';
+  const r=await duelApi('duelList');
+  const el=$('duelHist');if(!el||!r||!r.ok||!r.list.length)return;
+  el.innerHTML='<div style="font-size:13px;color:var(--muted);margin-bottom:6px">So‘nggi duellar</div>'+r.list.map(x=>{
+    const st=x.result==='win'?'<b style="color:#7bc96f">Yutdingiz</b>':x.result==='lose'?'<b style="color:#ff6b6b">Yutqazdingiz</b>':x.result==='draw'?'<b>Durang</b>':!x.joined?'Do‘st kutilmoqda':!x.myDone?'Siz yechmagansiz':'Raqib yechmoqda';
+    return '<div class="stat-row" style="cursor:pointer" onclick="duelShow(\''+esc(x.code)+'\')"><span>'+esc(x.opp)+(x.my!==null&&x.their!==null?' · '+x.my+':'+x.their:'')+'</span>'+st+'</div>';
+  }).join('');
+}
+async function duelNew(){
+  busy(true);let r;try{r=await duelApi('duelCreate')}finally{busy(false)}
+  if(!r||!r.ok){toast((r&&r.error)||'Duel yaratilmadi');return}
+  duelShow(r.code);
+}
+function duelJoinCode(){
+  const c=($('duelCodeIn').value||'').replace(/\D/g,'');
+  if(c.length!==6){toast('6 xonali duel kodini kiriting');return}
+  duelShow(c);
+}
+async function duelShow(code){
+  hideAllScreens();show('duelScreen');
+  busy(true);let r;try{r=await duelApi('duelStatus',{code:code})}finally{busy(false)}
+  if(!r||!r.ok){toast((r&&r.error)||'Duel topilmadi');duelMenu();return}
+  duelLast='';renderDuel(r);
+}
+function renderDuel(r){
+  duelCode=r.code;const el=$('duelBody');if(!el)return;
+  const key=JSON.stringify([r.role,r.joined,r.me&&r.me.done,r.opp&&r.opp.done,r.finished]);
+  const m=r.me,o=r.opp,nm=esc(o&&o.name||'');
+  let h='';
+  if(r.finished){
+    const t=r.result,head=t==='win'?'🏆 Siz yutdingiz!':t==='lose'?'😔 Bu safar yutqazdingiz':'🤝 Durang';
+    h='<div style="text-align:center"><div style="font-size:21px;font-weight:700;color:var(--gold2)">'+head+'</div>'+
+      '<div style="display:flex;justify-content:space-around;align-items:center;margin:18px 0"><div><div style="font-size:13px;color:var(--muted)">Siz</div><div style="font-size:38px;font-weight:800">'+m.score+'</div></div><div style="font-size:24px;color:var(--muted)">:</div><div><div style="font-size:13px;color:var(--muted)">'+nm+'</div><div style="font-size:38px;font-weight:800">'+o.score+'</div></div></div>'+
+      (r.bonus>0?'<p style="margin-bottom:6px">'+COIN(20)+' <b style="color:var(--gold2)">+'+r.bonus+' coin</b> g‘alaba bonusi</p>':'')+
+      '<button class="btn" onclick="duelMenu()">⚔️ Yangi duel</button></div>';
+  }else if(r.role&&m.done){
+    h='<div style="text-align:center"><div style="font-size:15px">Siz yakunladingiz: <b style="color:var(--gold2)">'+m.score+' / '+m.max+'</b></div><p class="quality-desc" style="margin:12px auto">'+(r.joined?(nm||'Raqib')+' hali yechmoqda. Natija tayyor bo‘lganda bildirishnoma keladi.':'Do‘stingiz hali qo‘shilmadi. Havolani yuboring.')+'</p>'+duelInviteHtml(r)+'<button class="btn btn-outline" onclick="duelShow(\''+esc(r.code)+'\')">🔄 Yangilash</button></div>';
+  }else if(r.role){
+    h='<div style="text-align:center"><div style="font-size:13px;color:var(--muted)">Duel kodi</div><div style="font-size:30px;font-weight:800;letter-spacing:4px;color:var(--gold2)">'+esc(r.code)+'</div>'+
+      '<p class="quality-desc" style="margin:10px auto">'+(r.role==='A'?(r.joined?'<b>'+nm+'</b> qo‘shildi!':'Do‘stingiz havola orqali qo‘shilishini kuting yoki darrov boshlang.'):'Raqibingiz: <b>'+esc(r.opp.name)+'</b>')+' '+(r.minutes||6)+' daqiqa ichida 10 ta savol.</p>'+
+      (r.role==='A'?duelInviteHtml(r):'')+'<button class="btn" onclick="duelPlay()">▶ Testni boshlash</button></div>';
+  }else if(r.canJoin){
+    h='<div style="text-align:center"><div style="font-size:42px">⚔️</div><p style="font-size:16px;margin:8px 0"><b style="color:var(--gold2)">'+esc(r.creator)+'</b> sizni duelga chaqiryapti!</p><p class="quality-desc" style="margin:0 auto">10 ta savol, '+(r.minutes||6)+' daqiqa. Ko‘p topgan yutadi.</p><button class="btn" onclick="duelPlay()">Qabul qilish va boshlash</button></div>';
+  }else{
+    h='<p class="quality-desc" style="margin:0 auto">Bu duelga allaqachon ikki kishi qo‘shilgan.</p><button class="btn btn-outline" onclick="duelMenu()">Orqaga</button>';
+  }
+  el.innerHTML=h+'<div id="duelExtra"></div>';
+  clearInterval(duelPoll);
+  if(r.role&&!r.finished&&(m.done||!r.joined)){
+    duelPoll=setInterval(async()=>{
+      if($('duelScreen').classList.contains('hide')){clearInterval(duelPoll);return}
+      const x=await duelApi('duelStatus',{code:duelCode});
+      if(x&&x.ok&&JSON.stringify([x.role,x.joined,x.me.done,x.opp.done,x.finished])!==key)renderDuel(x);
+    },7000);
+  }
+}
+function duelInviteHtml(r){
+  return '<div style="margin:12px 0;padding:10px;border:1px dashed rgba(232,184,75,.5);border-radius:10px;font-size:12px;word-break:break-all;color:var(--muted)">'+esc(duelLink(r.code))+'</div><button class="btn btn-outline" style="margin-top:0" onclick="duelShare()">📤 Do‘stga yuborish</button>';
+}
+async function duelShare(){
+  const url=duelLink(duelCode),text='⚔️ ABITUR DTM da duelga chaqiryapman! Kod: '+duelCode;
+  try{if(navigator.share){await navigator.share({title:'ABITUR DTM duel',text:text,url:url});return}}catch(e){if(e&&e.name==='AbortError')return}
+  try{await navigator.clipboard.writeText(text+' '+url);toast('Havola nusxalandi')}catch(e){toast(url)}
+}
+async function duelPlay(){
+  busy(true);let r;try{r=await duelApi('duelStart',{code:duelCode})}finally{busy(false)}
+  if(!r||!r.ok){toast((r&&r.error)||'Xatolik');return}
+  if(r.already){renderDuel(r);return}
+  activeTestType='duel';activeSid='';activeQuestions=r.questions;activeQuestions._name='Duel';activeAnswers={};currentQIndex=0;testSubmitted=false;
+  stopAudio();activeAudio='';deadline=Date.now()+r.left*1000;
+  hideAllScreens();show('testScreen');renderQuestion();
+  clearInterval(timerInterval);timerInterval=setInterval(tick,1000);tick();
+}
+async function finishDuel(){
+  if(testSubmitted)return;
+  testSubmitted=true;deadline=0;clearInterval(timerInterval);saveTextAnswer();
+  const ans={};activeQuestions.forEach((q,i)=>{if(activeAnswers[i]!==undefined)ans[q.id]=activeAnswers[i]});
+  busy(true);let r;
+  try{r=await duelApi('duelSubmit',{code:duelCode,answers:JSON.stringify(ans)})}finally{busy(false)}
+  if(!r||!r.ok){
+    if(r&&r.network){testSubmitted=false;deadline=Date.now()+60000;timerInterval=setInterval(tick,1000);toast(r.error);return}
+    toast((r&&r.error)||'Xatolik');activeTestType=null;enterDash();return;
+  }
+  activeTestType=null;
+  hideAllScreens();show('duelScreen');window.scrollTo(0,0);
+  renderDuel(r);
+  if(r.review&&r.review.length)$('duelExtra').innerHTML=reviewHtml(r.review);
+  loadDashboard(false);
+}
+
+/* ===== AI TUSHUNTIRMA ===== */
+async function explainQ(btn){
+  if(btn.dataset.busy)return;
+  btn.dataset.busy='1';const old=btn.textContent;btn.textContent='Yozilmoqda...';
+  const r=await api({action:'explain',id:currentUser.id,email:localStorage.getItem('abitur_email'),qid:btn.dataset.q});
+  if(r&&r.ok){
+    const d=document.createElement('div');
+    d.style.cssText='margin-top:8px;padding:8px 10px;border-left:3px solid var(--gold);background:rgba(232,184,75,.08);border-radius:6px';
+    d.textContent='💡 '+r.izoh;btn.replaceWith(d);
+  }else{toast((r&&r.error)||'Tushuntirma topilmadi');btn.textContent=old;delete btn.dataset.busy}
+}
+
+/* ===== OTA-ONA HISOBOTI ===== */
+let parentUrl='';
+async function parentShare(){
+  busy(true);let r;try{r=await api({action:'parentLink',id:currentUser.id,email:localStorage.getItem('abitur_email')})}finally{busy(false)}
+  if(!r||!r.ok){toast((r&&r.error)||'Havola yaratilmadi');return}
+  parentUrl=r.url;$('parentUrl').value=r.url;show('parentModal');
+}
+async function parentSend(){
+  const text='Farzandimning ABITUR DTM dagi o‘qish hisoboti:';
+  try{if(navigator.share){await navigator.share({title:'ABITUR DTM hisobot',text:text,url:parentUrl});return}}catch(e){if(e&&e.name==='AbortError')return}
+  parentCopy();
+}
+async function parentCopy(){
+  try{await navigator.clipboard.writeText(parentUrl);toast('Havola nusxalandi')}catch(e){$('parentUrl').select();toast('Havolani nusxalang')}
+}
+async function parentRenew(){
+  if(!confirm('Yangi havola yaratilsa, eskisi ishlamay qoladi. Davom etasizmi?'))return;
+  busy(true);let r;try{r=await api({action:'parentReset',id:currentUser.id,email:localStorage.getItem('abitur_email')})}finally{busy(false)}
+  if(!r||!r.ok){toast((r&&r.error)||'Xatolik');return}
+  parentUrl=r.url;$('parentUrl').value=r.url;toast('Yangi havola tayyor');
+}
+async function parentView(tok){
+  try{const m=document.createElement('meta');m.name='robots';m.content='noindex,nofollow';document.head.appendChild(m)}catch(e){}
+  show('parentScreen');
+  const el=$('parentBody');el.innerHTML='<div class="spin"></div>';
+  const r=await api({action:'parentReport',token:tok});
+  if(!r||!r.ok){el.innerHTML='<p class="quality-desc" style="margin:0 auto">'+esc((r&&r.error)||'Hisobotni yuklab bo‘lmadi')+'</p>';return}
+  const w=r.week,box=(a,b)=>'<div style="background:#0f1116;border:1px solid rgba(232,184,75,.2);border-radius:12px;padding:12px;text-align:center"><div style="font-size:22px;font-weight:800;color:var(--gold2)">'+a+'</div><div style="font-size:12px;color:var(--muted);margin-top:2px">'+b+'</div></div>';
+  const verdict=w.tests===0?'Bu hafta hali test yechilmagan. Farzandingizni kuniga kamida bitta kunlik testga undang.':
+    w.avg>=70?'Natijalar yaxshi. Shu sur’atni saqlab, zaif mavzularni mustahkamlash kifoya.':
+    w.avg>=40?'O‘rtacha natija. Zaif mavzularga ko‘proq vaqt ajratish natijani tez oshiradi.':'Natija hozircha past. Asosiy mavzularni birma-bir takrorlash va har kuni mashq qilish tavsiya etiladi.';
+  el.innerHTML='<div style="text-align:center;margin-bottom:14px"><div style="font-size:13px;color:var(--muted)">O‘quvchi</div><div style="font-size:20px;font-weight:700;color:var(--gold2)">'+esc(r.name)+'</div>'+(r.fanlar?'<div style="font-size:12px;color:var(--muted);margin-top:2px">'+esc(r.fanlar.split(',').join(' · '))+'</div>':'')+'</div>'+
+    '<div style="font-size:13px;color:var(--muted);margin-bottom:6px">So‘nggi 7 kun</div>'+
+    '<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:10px">'+box(w.tests,'yechilgan testlar')+box(w.tests?w.avg+'%':'—','o‘rtacha natija')+box(w.days+' / 7','faol kunlar')+box(r.streak+' 🔥','ketma-ket kun')+'</div>'+
+    '<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:14px">'+box(fmtN(r.coin),'coin (shu oy)')+box('#'+r.rank,'reytingdagi o‘rni')+'</div>'+
+    '<p style="font-size:14px;line-height:1.6;padding:10px 12px;border-left:3px solid var(--gold);background:rgba(232,184,75,.08);border-radius:6px;margin-bottom:14px">'+esc(verdict)+'</p>'+
+    (r.timeline.length?'<div style="font-size:13px;color:var(--muted);margin-bottom:6px">So‘nggi '+r.timeline.length+' ta test natijasi (%)</div>'+lineChartSvg(r.timeline)+'<div style="height:14px"></div>':'')+
+    (r.weak.length?'<div style="font-size:13px;color:var(--muted);margin-bottom:6px">Eng zaif mavzular</div>'+r.weak.map(x=>'<div class="stat-row"><span>'+esc(x.fan)+(x.mavzu?' › '+esc(x.mavzu):'')+'</span><b style="color:'+(x.pct<50?'#ff6b6b':x.pct<75?'#e8b84b':'#7bc96f')+'">'+x.pct+'%</b></div>').join(''):'')+
+    '<div class="stat-row" style="margin-top:6px"><span>Tarif</span><b>'+(r.plan>0?r.plan+' kun qoldi':'faol emas')+'</b></div>'+
+    '<a class="btn" style="display:block;text-align:center;text-decoration:none;margin-top:18px" href="'+esc(location.pathname)+'">ABITUR DTM saytiga o‘tish</a>';
 }
 
 </script>
