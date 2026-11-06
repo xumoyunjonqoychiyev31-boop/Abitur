@@ -312,6 +312,7 @@ body.in-app .container{padding-top:0}
 .av-pr button.on{border-color:var(--gold);background:#2a2415}
 .av-sh .row{display:flex;gap:8px}.av-sh .row .btn{flex:1}
 .rk-l{display:flex;align-items:center;gap:8px;min-width:0}.rk-av{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--gold2),var(--gold));color:#111;font-weight:800;font-size:13px;font-style:normal;display:flex;align-items:center;justify-content:center;overflow:hidden;flex:none}.rk-av img{width:100%;height:100%;object-fit:cover}
+.cm.editable{cursor:pointer}.edit-bar{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:#1d1f25;border-top:1px solid rgba(232,184,75,.35);font-size:13px;color:var(--gold2)}.edit-bar button{background:none;border:0;color:var(--muted);font-size:16px;padding:4px 8px}
 </style>
 </head>
 <body>
@@ -708,7 +709,7 @@ body.in-app .container{padding-top:0}
 <script>
 /* ===== SOZLAMALAR ===== */
 const GOOGLE_CLIENT_ID="323960187871-77jganuhhpo1hba8t7ooh252kqeh9sc2.apps.googleusercontent.com";
-const GAS_URL="https://script.google.com/macros/s/AKfycbytioIZzl3taTP3DLO4qG3JFlYbUMIZu6_-HSph1cahtwDodUwFgI2_DqYEH5WB6lW93g/exec";
+const GAS_URL="https://script.google.com/macros/s/AKfycbzQsyqyEXWwui4jCICVoOPFsbp4UfZ_oM9BlpSdD2nfc-KgvNVJcncCPvxWoW9pqHluoA/exec";
 
 /* ===== YORDAMCHI ===== */
 const $=id=>document.getElementById(id);
@@ -1344,9 +1345,10 @@ function chatEnter(key,name){
   $('crAv').textContent=key==='all'?'👥':initials(name);
   $('chatRoom').classList.remove('hide');document.body.style.overflow='hidden';
   chatToggleBtn();chatRender();
-  chatPoll().then(()=>{if(chatKey===key)chatLoop()});
+  chatPoll(true).then(()=>{if(chatKey===key)chatLoop()});
 }
 function chatClose(){
+  chatEditing=null;chatEditBar(false);$('chatInput').value='';
   clearTimeout(roomTimer);roomTimer=null;
   recStop(false);vAudio.pause();vMid=null;
   $('chatRoom').classList.add('hide');document.body.style.overflow='';
@@ -1354,12 +1356,27 @@ function chatClose(){
   chatLoadList();
   if(currentTab==='chat'&&!listTimer)listTimer=setInterval(chatLoadList,6000);
 }
-async function chatPoll(){
+let chatPollN=0;
+async function chatPoll(forceFull){
   if(chatBusy||document.hidden||!currentUser||!chatKey)return;
   chatBusy=true;
   const k=chatKey;
+  // har 8-so'rovda (va xonaga kirganda) to'liq sinxronlash: sheetsdan o'chirilgan xabarlar ham yo'qoladi
+  const full=forceFull===true||(++chatPollN%8===0);
   try{
-    const r=await api({action:'getMessages',id:currentUser.id,to:k,after:chatLast});
+    const r=await api({action:'getMessages',id:currentUser.id,to:k,after:full?0:chatLast});
+    if(full&&k===chatKey&&r&&r.ok&&Array.isArray(r.list)){
+      const srv=r.list,cids=new Set(srv.map(m=>m.cid).filter(Boolean));
+      const keep=chatMsgs.filter(m=>m.pending&&!(m.cid&&cids.has(m.cid)));
+      const before=chatMsgs.filter(m=>!m.pending).length;
+      chatMsgs=srv.concat(keep).slice(-200);
+      chatLast=srv.length?Math.max.apply(null,srv.map(m=>m.t)):0;
+      chatIdle=srv.length&&srv.length>before?0:Math.min(chatIdle+1,6);
+      markSeen(k,chatLast);
+      LS.set(chatCacheKey(k),chatMsgs.filter(m=>!m.pending).slice(-50));
+      chatRender();
+      return;
+    }
     if(k!==chatKey||!r||!r.ok||!r.list||!r.list.length){chatIdle=Math.min(chatIdle+1,6);return}
     chatIdle=0;
     let changed=false;
@@ -1392,7 +1409,8 @@ function chatRender(){
     }else if(m.type==='voice'){
       body=`<div class="vm" data-mid="${esc(k)}"><button onclick="vmToggle(this)">▶</button><div class="vbar"><span></span></div><em>${fmtDur(m.dur||0)}</em></div>`;
     }else body=esc(m.text);
-    html+=`<div class="cm${me?' me':''}${m.pending?' pend':''}${m.type?' media':''}">${(!me&&chatKey==='all')?'<small>'+esc(m.name)+'</small>':''}${body}<i>${m.pending?'…':hm(m.t)}</i></div>`;
+    const ed=me&&!m.type&&!m.pending;
+    html+=`<div class="cm${me?' me':''}${m.pending?' pend':''}${m.type?' media':''}${ed?' editable':''}"${ed?` onclick="chatEditStart(${m.t})"`:''}>${(!me&&chatKey==='all')?'<small>'+esc(m.name)+'</small>':''}${body}<i>${m.edited?'tahrirlangan · ':''}${m.pending?'…':hm(m.t)}</i></div>`;
   });
   b.innerHTML=html||'<p class="quality-desc" style="margin:auto">Hali xabar yo‘q. Birinchi bo‘lib yozing!</p>';
   if(chatStick)b.scrollTop=b.scrollHeight;
@@ -1400,8 +1418,38 @@ function chatRender(){
 }
 const chatImgLoad=()=>{if(chatStick){const b=$('chatBox');b.scrollTop=b.scrollHeight}};
 function chatToggleBtn(){$('chatBtn').textContent=$('chatInput').value.trim()?'➤':'🎤'}
-function chatMainBtn(){if($('chatInput').value.trim())chatSend();else recStart()}
+function chatMainBtn(){if(chatEditing)chatEditSave();else if($('chatInput').value.trim())chatSend();else recStart()}
+/* ===== O'Z XABARINI TAHRIRLASH ===== */
+let chatEditing=null;
+function chatEditBar(on){
+  let b=$('editBar');
+  if(!on){if(b)b.remove();return}
+  if(!b){b=document.createElement('div');b.id='editBar';b.className='edit-bar';
+    b.innerHTML='<span>✎ Xabarni tahrirlash</span><button type="button" onclick="chatEditCancel()" aria-label="Bekor qilish">✕</button>';
+    $('crSend').parentNode.insertBefore(b,$('crSend'))}
+}
+function chatEditStart(t){
+  const m=chatMsgs.find(x=>x.t===t&&String(x.from)===String(currentUser.id));
+  if(!m||m.type||m.pending)return;
+  chatEditing=m;const i=$('chatInput');i.value=m.text;i.focus();
+  chatEditBar(true);chatToggleBtn();
+}
+function chatEditCancel(){
+  if(!chatEditing)return;
+  chatEditing=null;$('chatInput').value='';chatEditBar(false);chatToggleBtn();
+}
+async function chatEditSave(){
+  const m=chatEditing,i=$('chatInput'),text=i.value.trim();
+  if(!m)return;
+  if(!text||text===m.text){chatEditCancel();return}
+  const old=m.text;
+  m.text=text;m.edited=1;chatEditing=null;i.value='';chatEditBar(false);chatToggleBtn();chatRender();
+  const r=await api({action:'editMessage',id:currentUser.id,email:localStorage.getItem('abitur_email'),t:m.t,text:text});
+  if(!r||!r.ok){m.text=old;m.edited=0;chatRender();toast((r&&r.error)||'Tahrirlanmadi');return}
+  LS.set(chatCacheKey(chatKey),chatMsgs.filter(x=>!x.pending).slice(-50));
+}
 async function chatSend(){
+  if(chatEditing)return chatEditSave();
   const inp=$('chatInput'),text=inp.value.trim();
   if(!text||!chatKey)return;
   inp.value='';inp.focus();chatToggleBtn();            // darrov tozalanadi: ikki marta yuborilmaydi
