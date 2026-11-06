@@ -311,6 +311,7 @@ body.in-app .container{padding-top:0}
 .av-pr button{aspect-ratio:1;border-radius:50%;border:1px solid rgba(255,255,255,.12);background:#0f1013;font-size:22px;cursor:pointer;padding:0}
 .av-pr button.on{border-color:var(--gold);background:#2a2415}
 .av-sh .row{display:flex;gap:8px}.av-sh .row .btn{flex:1}
+.rk-l{display:flex;align-items:center;gap:8px;min-width:0}.rk-av{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--gold2),var(--gold));color:#111;font-weight:800;font-size:13px;font-style:normal;display:flex;align-items:center;justify-content:center;overflow:hidden;flex:none}.rk-av img{width:100%;height:100%;object-fit:cover}
 </style>
 </head>
 <body>
@@ -328,7 +329,7 @@ body.in-app .container{padding-top:0}
 <div class="container">
 
   <div class="top-logo"><img src="assets/logo.png" alt="ABITUR DTM logotipi" width="44" height="44"><span>ABITUR DTM</span></div>
-  <p class="tagline" style="text-align:center;color:var(--muted);font-size:12px;max-width:400px;margin:0 auto 16px;line-height:1.5">Onlayn <b style="color:var(--gold2)">Sinov test</b>, <b style="color:var(--gold2)">blok test</b> va <b style="color:var(--gold2)">milliy sertifikat</b> testlari — barcha fanlardan.</p>
+  <p class="tagline" style="text-align:center;color:var(--muted);font-size:12px;max-width:400px;margin:0 auto 16px;line-height:1.5">Onlayn <b style="color:var(--gold2)">DTM test</b>, <b style="color:var(--gold2)">blok test</b> va <b style="color:var(--gold2)">milliy sertifikat</b> testlari — barcha fanlardan.</p>
 
   <div id="sectionBar" class="app-bar is-home hide">
     <div class="ab-l">
@@ -707,7 +708,7 @@ body.in-app .container{padding-top:0}
 <script>
 /* ===== SOZLAMALAR ===== */
 const GOOGLE_CLIENT_ID="323960187871-77jganuhhpo1hba8t7ooh252kqeh9sc2.apps.googleusercontent.com";
-const GAS_URL="https://script.google.com/macros/s/AKfycbyzTb0OyyS88Ol1f5-1xCesH6vVo5Dn7c3qi_FYvS0-PdtxwyHEkLG1IalXm7u34Rc_3A/exec";
+const GAS_URL="https://script.google.com/macros/s/AKfycbytioIZzl3taTP3DLO4qG3JFlYbUMIZu6_-HSph1cahtwDodUwFgI2_DqYEH5WB6lW93g/exec";
 
 /* ===== YORDAMCHI ===== */
 const $=id=>document.getElementById(id);
@@ -935,8 +936,7 @@ function paint(){
    $('priceSinov').textContent=lb('sinov');$('priceBlok').textContent=lb('blok');$('priceSert').textContent=lb('sertifikat')}
   $('cardNum').textContent=settingsCache.card_number||'-';
   $('cardOwner').textContent=settingsCache.card_owner||'-';
-  $('rankingList').innerHTML=((S.rank&&S.rank.list)||[]).slice(0,20).map((u,i)=>
-    `<div class="rank-item${String(u.id)===String(res.id)?' me':''}"><span>#${i+1} ${esc(u.ism)} ${esc(u.familiya)}</span><b>${COIN(14)} ${fmtN(u.totalScore||0)}</b></div>`).join('');
+  rankPaint();
   document.querySelectorAll('.rbn').forEach(e=>{e.textContent=String(settingsCache.referral_bonus||2000).replace(/\B(?=(\d{3})+(?!\d))/g,' ')});
   renderHome(res);
   renderCerts(S.certs);
@@ -1583,6 +1583,7 @@ async function pushEnable(silent){
     const reg=await navigator.serviceWorker.register('/firebase-messaging-sw.js');
     await navigator.serviceWorker.ready;
     const token=await firebase.messaging().getToken({vapidKey:FB_VAPID,serviceWorkerRegistration:reg});
+    if(!token)throw new Error('token yo‘q');
     if(!pushEnable.om){pushEnable.om=1;firebase.messaging().onMessage(p=>{const n=p.notification||{};toast((n.title||'Yangi xabar')+(n.body?': '+n.body:''));chatLoadList();try{navigator.serviceWorker.ready.then(r=>r.showNotification(n.title||'ABITUR DTM',{body:n.body||'',icon:'assets/logo.png',vibrate:[200,100,200]}))}catch(e){}})}   // sayt ochiq bo'lganda ham ko'rinadi
     if(LS.get('abitur_push')!==token||!silent){
       const r=await api({action:'savePushToken',id:currentUser.id,email:localStorage.getItem('abitur_email'),token:token});
@@ -2345,8 +2346,21 @@ function ttStart(it,div){
 /* ===== PROFIL RASM ===== */
 const AV_EMOJI=['🦁','🐯','🦊','🐼','🦅','🐺','🚀','⭐','🎓','📚','🧠','🔥'];
 function avKey(){return 'abitur_av_'+String(currentUser&&currentUser.id||'')}
-function avGet(){try{return localStorage.getItem(avKey())||''}catch(e){return ''}}
-function avSet(v){try{v?localStorage.setItem(avKey(),v):localStorage.removeItem(avKey())}catch(e){toast('Rasm saqlanmadi')}avPaint()}
+function avGet(){if(S.res&&S.res.avatar!==undefined)return String(S.res.avatar||'');try{return localStorage.getItem(avKey())||''}catch(e){return ''}}
+function avSet(v){
+  try{localStorage.setItem(avKey(),v)}catch(e){}
+  if(S.res)S.res.avatar=v;
+  try{const m=((S.rank&&S.rank.list)||[]).find(u=>String(u.id)===String(currentUser.id));if(m)m.avatar=v}catch(e){}
+  avPaint();rankPaint();
+  apiPost({action:'setAvatar',id:currentUser.id,email:localStorage.getItem('abitur_email'),img:v}).then(r=>{if(!r||!r.ok)toast((r&&r.error)||'Rasm serverga saqlanmadi')}).catch(()=>toast('Rasm serverga saqlanmadi'));
+}
+function rankPaint(){
+  const res=S.res||{},el=$('rankingList');if(!el)return;
+  el.innerHTML=((S.rank&&S.rank.list)||[]).slice(0,20).map((u,i)=>{
+    const mine=String(u.id)===String(res.id),av=mine?avGet():String(u.avatar||''),l=(u.ism||'?').trim().charAt(0).toUpperCase()||'?';
+    const box=document.createElement('div');avFill(box,av,l);
+    return '<div class="rank-item'+(mine?' me':'')+'"><span class="rk-l"><i class="rk-av">'+box.innerHTML+'</i>#'+(i+1)+' '+esc(u.ism)+' '+esc(u.familiya)+'</span><b>'+COIN(14)+' '+fmtN(u.totalScore||0)+'</b></div>'}).join('');
+}
 function avFill(el,v,letter){
   if(!el)return;
   if(v&&v.indexOf('data:image')===0){el.innerHTML='<img alt="" src="'+v+'">'}
@@ -2378,10 +2392,10 @@ function avOpen(){
     if(!/^image\//.test(f.type)){toast('Faqat rasm tanlang');return}
     const im=new Image(),u=URL.createObjectURL(f);
     im.onload=()=>{
-      const n=160,c=document.createElement('canvas');c.width=c.height=n;
+      const n=96,c=document.createElement('canvas');c.width=c.height=n;
       const m=Math.min(im.width,im.height),sx=(im.width-m)/2,sy=(im.height-m)/2;
       c.getContext('2d').drawImage(im,sx,sy,m,m,0,0,n,n);
-      URL.revokeObjectURL(u);avSet(c.toDataURL('image/jpeg',.82));close();
+      URL.revokeObjectURL(u);avSet(c.toDataURL('image/jpeg',.72));close();
     };
     im.onerror=()=>{URL.revokeObjectURL(u);toast('Rasm ochilmadi')};
     im.src=u;
