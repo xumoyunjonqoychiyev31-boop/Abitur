@@ -313,6 +313,13 @@ body.in-app .container{padding-top:0}
 .av-sh .row{display:flex;gap:8px}.av-sh .row .btn{flex:1}
 .rk-l{display:flex;align-items:center;gap:8px;min-width:0}.rk-av{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--gold2),var(--gold));color:#111;font-weight:800;font-size:13px;font-style:normal;display:flex;align-items:center;justify-content:center;overflow:hidden;flex:none}.rk-av img{width:100%;height:100%;object-fit:cover}
 .cm.editable{cursor:pointer}.edit-bar{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:#1d1f25;border-top:1px solid rgba(232,184,75,.35);font-size:13px;color:var(--gold2)}.edit-bar button{background:none;border:0;color:var(--muted);font-size:16px;padding:4px 8px}
+.or-line{display:flex;align-items:center;gap:10px;margin:18px 0 6px;color:var(--muted);font-size:12px}.or-line:before,.or-line:after{content:'';flex:1;height:1px;background:rgba(255,255,255,.12)}
+.g-only{display:none}body.guest .g-only{display:block}body.guest .u-only{display:none!important}
+body.guest [data-sec="chat"]:not(#guestCta),body.guest [data-sec="kabinet"]:not(#guestCta){display:none!important}
+body.guest #planCard{display:none!important}
+.guest-bar{display:none;align-items:center;justify-content:space-between;gap:12px}body.guest .guest-bar{display:flex}
+.guest-bar b{display:block;font-size:15px;margin-bottom:2px}.guest-bar span{font-size:12px;color:var(--muted);line-height:1.4}.guest-bar .btn{width:auto;flex:none;padding:10px 18px;margin:0}
+
 </style>
 </head>
 <body>
@@ -359,7 +366,29 @@ body.in-app .container{padding-top:0}
       <p style="font-size:13px;color:var(--muted);text-align:center;margin-bottom:16px">Google hisobingiz orqali bir bosishda kiring.</p>
       <div id="gSignInBtn" style="display:flex;justify-content:center;min-height:44px"></div>
       <div class="error hide" id="googleErr" style="margin-top:12px"></div>
+      <div class="or-line"><span>yoki email bilan</span></div>
+      <label for="emEmail">Email</label><input id="emEmail" type="email" inputmode="email" autocomplete="username" placeholder="nom@gmail.com">
+      <label for="emPass">Parol</label><input id="emPass" type="password" autocomplete="current-password" placeholder="Parolingiz" onkeydown="if(event.key==='Enter')emLogin()">
+      <button class="btn" id="emLoginBtn" onclick="emLogin()">Kirish</button>
+      <button class="btn btn-outline" id="emCodeBtn" onclick="emStartCode()" style="margin-top:8px">Kod orqali kirish · Ro‘yxatdan o‘tish · Parolni tiklash</button>
+      <div class="error hide" id="emErr" style="margin-top:12px"></div>
+      <button class="btn btn-outline" onclick="guestEnter()" style="margin-top:14px">← Hisobsiz saytni ko‘rish</button>
       <p style="font-size:11px;color:var(--muted);text-align:center;margin-top:14px;line-height:1.5">Kirish orqali <a href="oferta.html" style="color:var(--gold2)">ommaviy oferta</a> va <a href="maxfiylik.html" style="color:var(--gold2)">maxfiylik siyosati</a> shartlariga rozilik bildirasiz.</p>
+    </div>
+    <div class="card hide" id="emailCodeCard">
+      <h2>Emailni tasdiqlash</h2>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:6px">Kod <b id="emSent" style="color:var(--gold2)"></b> manziliga yuborildi (spam papkasini ham tekshiring).</p>
+      <label for="emCode">6 xonali kod</label><input id="emCode" inputmode="numeric" maxlength="6" autocomplete="one-time-code" placeholder="123456">
+      <div id="emNew" class="hide">
+        <label>Ism</label><input id="emIsm" autocomplete="given-name">
+        <label>Familiya</label><input id="emFam" autocomplete="family-name">
+        <label>Taklif kodi (ixtiyoriy) — ikkalangizga bonus</label><input id="emRef" placeholder="Do'stingiz ID raqami">
+        <label>Qaysi fanlar kerak? (bir nechtasini tanlang)</label><div id="fanChipsE" style="margin-top:4px"></div>
+      </div>
+      <label for="emNewPass" id="emPassLbl">Parol (ixtiyoriy)</label><input id="emNewPass" type="password" autocomplete="new-password" placeholder="Kamida 6 ta belgi">
+      <button class="btn" id="emVerifyBtn" onclick="emVerify()">Tasdiqlash va kirish</button>
+      <button class="btn btn-outline" onclick="emBack()" style="margin-top:8px">Orqaga</button>
+      <div class="error hide" id="emErr2"></div>
     </div>
     <div class="card hide" id="newUserCard">
       <h2>Deyarli tayyor!</h2>
@@ -386,6 +415,16 @@ body.in-app .container{padding-top:0}
   <div id="dashboard" class="hide">
 
     <!-- ===== BOSH SAHIFA ===== -->
+    <div class="card guest-bar g-only" data-sec="home">
+      <div><b>Mehmon rejimi</b><span>Testlarni ko‘rishingiz mumkin. Yechish uchun hisobga kiring.</span></div>
+      <button class="btn" onclick="goAuth()">Kirish</button>
+    </div>
+    <div class="card g-only" id="guestCta" data-sec="none" style="text-align:center">
+      <div style="font-size:42px;margin-bottom:6px" id="gcIco">🔒</div>
+      <h2 id="gcTitle">Hisobga kiring</h2>
+      <p class="quality-desc" id="gcTxt" style="margin:0 auto 14px">Bu bo‘limdan foydalanish uchun hisobga kiring yoki ro‘yxatdan o‘ting.</p>
+      <button class="btn" onclick="goAuth()">Kirish / Ro‘yxatdan o‘tish</button>
+    </div>
     <div class="card daily" data-sec="home" id="dailyCard">
       <div class="eyebrow">⚡ Kunlik test</div>
       <p class="daily-txt" id="dailyTxt">Yuklanmoqda...</p>
@@ -406,8 +445,8 @@ body.in-app .container{padding-top:0}
       <button class="tile" onclick="openDuel()"><i>⚔️</i><span class="t">Duel</span><span class="s">Do'st bilan</span></button>
     </div>
 
-    <div class="sec-t" data-sec="home">Mening natijam</div>
-    <div class="card q-card" data-sec="home">
+    <div class="sec-t u-only" data-sec="home">Mening natijam</div>
+    <div class="card q-card u-only" data-sec="home">
       <div class="quality-ring-wrap">
         <svg class="quality-ring" viewBox="0 0 120 120">
           <circle class="ring-bg" cx="60" cy="60" r="52"></circle>
@@ -425,12 +464,12 @@ body.in-app .container{padding-top:0}
       </div>
     </div>
 
-    <div class="card" data-sec="home">
+    <div class="card u-only" data-sec="home">
       <div class="eyebrow">🕘 Oxirgi test</div>
       <div id="hLast" class="quality-desc" style="margin:8px 0 0;text-align:left;max-width:none">Hali test yechilmagan.</div>
     </div>
 
-    <div class="card" data-sec="home">
+    <div class="card u-only" data-sec="home">
       <div class="eyebrow" style="margin-bottom:8px">🎁 Do'stni taklif qiling</div>
       <p class="quality-desc" style="margin:0 auto 10px">Do'stingiz ro'yxatdan o'tishda ID raqamingizni kiritsa, ikkalangizga ham <b class="rbn">2000</b> so'm tushadi.</p>
       <div id="hMyId" style="text-align:center;font-size:28px;font-weight:800;color:var(--gold2);letter-spacing:3px">-</div>
@@ -709,7 +748,7 @@ body.in-app .container{padding-top:0}
 <script>
 /* ===== SOZLAMALAR ===== */
 const GOOGLE_CLIENT_ID="323960187871-77jganuhhpo1hba8t7ooh252kqeh9sc2.apps.googleusercontent.com";
-const GAS_URL="https://script.google.com/macros/s/AKfycbzQsyqyEXWwui4jCICVoOPFsbp4UfZ_oM9BlpSdD2nfc-KgvNVJcncCPvxWoW9pqHluoA/exec";
+const GAS_URL="https://script.google.com/macros/s/AKfycbz40S-AmKVY5zr6LD9y2OvUvnxtEoAhneh60uu8dSe0_pSXT8WzxLzC6uwA2NJ5w0xaMA/exec";
 
 /* ===== YORDAMCHI ===== */
 const $=id=>document.getElementById(id);
@@ -913,17 +952,14 @@ function logout(){
   S={};currentUser=null;currentTab='home';
   chatReset();
   try{google.accounts.id.disableAutoSelect()}catch(e){}
-  hideAllScreens();show('authScreen');
-  $('newUserCard').classList.add('hide');
-  $('googleAuthCard').classList.remove('hide');
-  initGoogle();
+  guestEnter();
 }
 
 /* ===== DASHBOARD: avval keshdan darrov, keyin fonda yangilanadi ===== */
-const persist=()=>LS.set('abitur_cache',S);
+const persist=()=>{if(!isGuest())LS.set('abitur_cache',S)};
 function paint(){
   const res=S.res;if(!res)return;
-  currentUser=res;
+  currentUser=res.guest?null:res;guestSync();
   $('dashName').textContent=(res.ism||'')+' '+(res.familiya||'');
   $('dId').textContent=res.id||'-';
   $('dRank').textContent=res.rank?'#'+res.rank:'-';
@@ -1983,7 +2019,7 @@ function paintFans(){const el=$('fanChipsK');if(!el)return;renderFanChips('fanCh
 function boot(){
   hideAllScreens();
   {const pq=new URLSearchParams(location.search).get('parent');if(pq&&/^[a-f0-9]{16,40}$/.test(pq)){parentView(pq);return}}
-  if(!localStorage.getItem('abitur_email')){show('authScreen');initGoogle();return}
+  if(!localStorage.getItem('abitur_email')){guestEnter();guestWelcome();return}
   const c=LS.get('abitur_cache');
   if(c&&c.res){
     S=c;paint();
@@ -1999,6 +2035,69 @@ window.addEventListener('online',()=>{
   flushOutbox().then(ok=>{if(ok&&S.res)loadDashboard(false)});
   if(!$('authScreen').classList.contains('hide'))initGoogle();
 });
+/* ===== MEHMON REJIMI: hisobsiz kirish, funksiya bosilganda "hisobga kiring" ===== */
+const isGuest=()=>!localStorage.getItem('abitur_email');
+function guestSync(){document.body.classList.toggle('guest',isGuest())}
+function needLogin(msg){
+  if($('nlOv'))return;
+  const ov=document.createElement('div');ov.className='av-ov';ov.id='nlOv';
+  ov.innerHTML='<div class="av-sh" style="text-align:center"><div style="font-size:40px">🔒</div><h3 style="margin:6px 0 8px">Hisobga kiring</h3>'+
+   '<p class="quality-desc" style="margin:0 auto 16px">'+esc(msg||'Bu funksiyadan foydalanish uchun hisobga kiring yoki ro‘yxatdan o‘ting.')+'</p>'+
+   '<button class="btn" id="nlGo">Kirish / Ro‘yxatdan o‘tish</button>'+
+   '<button class="btn btn-outline" id="nlNo" style="margin-top:8px">Keyinroq</button></div>';
+  document.body.appendChild(ov);
+  const close=()=>ov.remove();
+  ov.addEventListener('click',e=>{if(e.target===ov)close()});
+  $('nlNo').onclick=close;$('nlGo').onclick=()=>{close();goAuth()};
+}
+function goAuth(){
+  hideAllScreens();
+  ['newUserCard','emailCodeCard'].forEach(hide);
+  show('authScreen');show('googleAuthCard');initGoogle();
+  window.scrollTo(0,0);
+}
+function guestDaily(){const t=$('dailyTxt'),bt=$('dailyBtn');if(t)t.textContent='Har kuni 10 ta savol: to‘g‘ri javoblar uchun coin yutib oling. Boshlash uchun hisobga kiring.';if(bt){bt.classList.remove('hide');bt.disabled=false;bt.textContent='Boshlash'}}
+let guestPub=null;
+function guestEnter(){
+  currentUser=null;
+  S={res:{guest:true,id:'',ism:'Mehmon',familiya:'',balans:0,totalScore:0,testsCount:0,rank:0,until:0,fanlar:'',goal:'',avgQuality:null,lastTest:null}};
+  if(guestPub){S.set=guestPub.set;S.rank=guestPub.rank}
+  guestSync();currentTab='home';
+  hideAllScreens();show('dashboard');showTab('home');paint();
+  Promise.all([api({action:'getSettings'}),api({action:'getRanking'})]).then(([a,b])=>{
+    guestPub=guestPub||{};
+    if(a&&a.settings){guestPub.set=a;if(isGuest()){S.set=a}}
+    if(b&&b.list){guestPub.rank=b;if(isGuest()){S.rank=b}}
+    if(isGuest()&&S.res&&S.res.guest)paint();
+  });
+}
+function guestWelcome(){
+  // do'st havolasi / duel taklifi bilan kelganlarga darrov ro'yxatdan o'tishni eslatamiz
+  if(LS.get('abitur_ref')||LS.get('abitur_duel'))setTimeout(()=>{if(isGuest())needLogin(LS.get('abitur_duel')?'Do‘stingiz sizni duelga chaqirdi. Qatnashish uchun hisobga kiring.':'Do‘st taklifi bilan keldingiz. Ro‘yxatdan o‘tsangiz, ikkalangizga bonus tushadi.')},700);
+}
+// hisob kerak bo'lgan funksiyalar
+['ttStart','startDaily','openDuel','openGames','openHandbook','showPayment','openIdea','bellOpen','parentShare','shareRef','shareLast','shareGoal','setGoal','pushEnable','buyPlan','copyMyId','dailyModalGo','viewCert'].forEach(n=>{
+  const f=window[n];if(typeof f!=='function')return;
+  window[n]=function(){if(isGuest()){needLogin();return}return f.apply(this,arguments)};
+});
+// fon so'rovlari mehmon uchun ishlamaydi
+['chatStart','chatLoadList','inboxLoad','dailyLoad','weakLoad','pushRefresh','winLoad'].forEach(n=>{
+  const f=window[n];if(typeof f!=='function')return;
+  window[n]=function(){if(isGuest())return;return f.apply(this,arguments)};
+});
+(function(){
+  const f=window.showTab;
+  const T={chat:['💬','Chat uchun hisob kerak','Boshqa abituriyentlar bilan yozishish uchun hisobga kiring.'],kabinet:['👤','Kabinet uchun hisob kerak','Natijalaringiz, balans va sozlamalar uchun hisobga kiring yoki ro‘yxatdan o‘ting.']};
+  window.showTab=function(t){
+    const c=$('guestCta');
+    if(c){
+      if(isGuest()&&T[t]){c.dataset.sec=t;$('gcIco').textContent=T[t][0];$('gcTitle').textContent=T[t][1];$('gcTxt').textContent=T[t][2]}
+      else c.dataset.sec='none';
+    }
+    return f.apply(this,arguments);
+  };
+})();
+
 boot();
 
 /* ===== UNIVERSITETLAR, MAQSAD, PROGRESS, ULASHISH ===== */
@@ -2324,7 +2423,8 @@ function subBack(){
 }
 function paintBar(){
   const r=S.res;if(!r)return;
-  const c=$('sbCoin');if(c)c.innerHTML=COIN(16)+' <span>'+fmtN(r.totalScore??0)+'</span>';
+  const c=$('sbCoin');
+  if(c){if(r.guest){c.innerHTML='<span>Kirish</span>';c.onclick=goAuth;guestDaily()}else{c.innerHTML=COIN(16)+' <span>'+fmtN(r.totalScore??0)+'</span>';c.onclick=()=>showTab('reyting')}}
   const nm=((r.ism||'')+' '+(r.familiya||'')).trim();
   const k=$('kName');if(k)k.textContent=nm||'—';
   avPaint();
@@ -2448,6 +2548,67 @@ function avOpen(){
     im.onerror=()=>{URL.revokeObjectURL(u);toast('Rasm ochilmadi')};
     im.src=u;
   };
+}
+
+/* ===== EMAIL BILAN KIRISH: parol yoki email'ga kelgan kod ===== */
+const emErr=(id,m)=>{const e=$(id);e.textContent=m||'';e.classList.toggle('hide',!m)};
+const emMail=()=>$('emEmail').value.trim().toLowerCase();
+const emOk=e=>/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(e);
+function emFinishLogin(email){
+  localStorage.setItem('abitur_email',email);
+  hideAllScreens();show('loadScreen');loadDashboard(true);
+}
+async function emLogin(){
+  const email=emMail(),pass=$('emPass').value;emErr('emErr','');
+  if(!emOk(email)){emErr('emErr','Emailni to‘g‘ri kiriting');return}
+  if(!pass){emErr('emErr','Parolni kiriting yoki “Kod orqali kirish” ni bosing');return}
+  const btn=$('emLoginBtn');setLoading(btn,true,'Kirilmoqda...');
+  let r;try{r=await apiPost({action:'emailLogin',email:email,pass:pass})}finally{setLoading(btn,false)}
+  if(r&&r.ok){emFinishLogin(email);return}
+  emErr('emErr',(r&&r.error)||'Kirib bo‘lmadi');
+}
+let emExists=true;
+async function emStartCode(){
+  const email=emMail();emErr('emErr','');
+  if(!emOk(email)){emErr('emErr','Avval emailni to‘g‘ri kiriting');return}
+  const btn=$('emCodeBtn'),old=btn.textContent;setLoading(btn,true,'Yuborilmoqda...');
+  let r;try{r=await apiPost({action:'emailCode',email:email})}finally{setLoading(btn,false,old)}
+  if(!r||!r.ok){emErr('emErr',(r&&r.error)||'Kod yuborilmadi');return}
+  emExists=!!r.exists;
+  $('emSent').textContent=email;$('emCode').value='';$('emNewPass').value='';emErr('emErr2','');
+  $('emNew').classList.toggle('hide',emExists);
+  $('emPassLbl').textContent=emExists?'Yangi parol (ixtiyoriy — parolni tiklash uchun)':'Parol o‘rnating (ixtiyoriy)';
+  if(!emExists){
+    $('emRef').value=LS.get('abitur_ref')||'';renderFanChips('fanChipsE',[]);
+    api({action:'getSettings'}).then(x=>{if(x&&x.settings&&x.settings.fanlar){settingsCache=x.settings;renderFanChips('fanChipsE',[...(fanSel['fanChipsE']||[])])}});
+  }
+  $('googleAuthCard').classList.add('hide');show('emailCodeCard');
+  setTimeout(()=>$('emCode').focus(),100);
+}
+function emBack(){$('emailCodeCard').classList.add('hide');$('googleAuthCard').classList.remove('hide')}
+async function emVerify(){
+  const email=emMail(),code=$('emCode').value.trim(),pass=$('emNewPass').value;emErr('emErr2','');
+  if(!/^\d{6}$/.test(code)){emErr('emErr2','6 xonali kodni kiriting');return}
+  if(pass&&pass.length<6){emErr('emErr2','Parol kamida 6 ta belgi bo‘lsin');return}
+  const body={action:'emailVerify',email:email,code:code,pass:pass};
+  if(!emExists){
+    body.ism=$('emIsm').value.trim();body.familiya=$('emFam').value.trim();body.referralId=$('emRef').value.trim();
+    if(!body.ism||!body.familiya){emErr('emErr2','Ism va familiyani kiriting');return}
+    body.fanlar=pickedFans('fanChipsE');
+    if(!body.fanlar){emErr('emErr2','Kamida bitta fanni tanlang');return}
+  }
+  const btn=$('emVerifyBtn');setLoading(btn,true,'Tekshirilmoqda...');
+  let r;try{r=await apiPost(body)}finally{setLoading(btn,false)}
+  if(!r||!r.ok){emErr('emErr2',(r&&r.error)||'Tasdiqlanmadi');return}
+  if(r.isNew){
+    localStorage.setItem('abitur_email',email);hideAllScreens();
+    $('registeredId').textContent=r.id||'—';
+    const b=$('regBonusMsg'),fm=n=>String(n).replace(/\B(?=(\d{3})+(?!\d))/g,' '),sb=r.signupBonus||0,rb=r.refBonus||0;
+    if(sb>0||rb>0){b.textContent='Bonus: ro‘yxatdan o‘tish '+fm(sb)+' so‘m'+(rb>0?' + taklif '+fm(rb)+' so‘m (do‘stingizga ham tushdi)':'');b.classList.remove('hide')}
+    else b.classList.add('hide');
+    show('regSuccess');return;
+  }
+  emFinishLogin(email);
 }
 
 </script>
