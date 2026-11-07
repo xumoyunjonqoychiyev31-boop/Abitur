@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="uz">
 <head>
@@ -319,6 +320,30 @@ body.guest [data-sec="chat"]:not(#guestCta),body.guest [data-sec="kabinet"]:not(
 body.guest #planCard{display:none!important}
 .guest-bar{display:none;align-items:center;justify-content:space-between;gap:12px}body.guest .guest-bar{display:flex}
 .guest-bar b{display:block;font-size:15px;margin-bottom:2px}.guest-bar span{font-size:12px;color:var(--muted);line-height:1.4}.guest-bar .btn{width:auto;flex:none;padding:10px 18px;margin:0}
+
+.bgm-btn{position:fixed;right:14px;bottom:82px;z-index:900;width:46px;height:46px;border-radius:50%;border:1px solid rgba(232,184,75,.55);background:rgba(20,21,26,.92);color:var(--gold2);font-size:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.5);padding:0;-webkit-tap-highlight-color:transparent}
+.bgm-btn.hide{display:none}
+.bgm-btn .eq{position:absolute;inset:auto 0 5px 0;display:none;justify-content:center;gap:2px;height:8px;align-items:flex-end}
+.bgm-btn .eq b{width:2px;background:var(--gold2);border-radius:1px;animation:eq 0.9s infinite ease-in-out}
+.bgm-btn .eq b:nth-child(2){animation-delay:.2s}.bgm-btn .eq b:nth-child(3){animation-delay:.4s}
+.bgm-btn.on{background:linear-gradient(135deg,var(--gold2),var(--gold));color:#111}
+.bgm-btn.on .eq{display:flex}.bgm-btn.on .eq b{background:#111}
+@keyframes eq{0%,100%{height:2px}50%{height:8px}}
+
+.bgm-panel{position:fixed;right:12px;bottom:138px;z-index:901;width:min(320px,calc(100vw - 24px));max-height:58vh;display:flex;flex-direction:column;background:#15161a;border:1px solid rgba(232,184,75,.4);border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.6);padding:12px}
+.bgm-panel.hide{display:none}
+.bp-h{display:flex;justify-content:space-between;align-items:center;font-size:15px}
+.bp-h button{background:none;border:0;color:var(--muted);font-size:16px;padding:4px 8px;cursor:pointer}
+.bp-now{margin:8px 0 2px;font-size:13px;color:var(--gold2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bp-ctl{display:flex;align-items:center;justify-content:space-between;gap:6px;margin:8px 0 10px}
+.bp-ctl button{flex:1;height:40px;border-radius:12px;border:1px solid rgba(255,255,255,.12);background:#0f1013;color:#fff;font-size:16px;cursor:pointer;padding:0}
+.bp-ctl .main{background:linear-gradient(135deg,var(--gold2),var(--gold));color:#111;border:0;font-size:18px}
+.bp-list{overflow:auto;-webkit-overflow-scrolling:touch;display:flex;flex-direction:column;gap:6px}
+.bgm-tr{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:9px 10px;border-radius:10px;border:1px solid transparent;background:#0f1013;color:#fff;font-size:14px;cursor:pointer}
+.bgm-tr .n{width:22px;text-align:center;color:var(--muted);font-size:12px;flex:none}
+.bgm-tr .t{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bgm-tr .t small{display:block;color:var(--muted);font-size:11px}
+.bgm-tr.cur{border-color:rgba(232,184,75,.5);background:#2a2415}.bgm-tr.cur .n{color:var(--gold2)}
 
 </style>
 </head>
@@ -2098,6 +2123,121 @@ function guestWelcome(){
   };
 })();
 
+/* ===== FON MUSIQASI: ro'yxat (playlist), biri tugasa keyingisi; har kim o'zi tanlaydi ===== */
+// Ro'yxat: assets/music/list.json  (yoki Settings varag'ida music_list = to'liq havola)
+// Format: [{"title":"Nomi","artist":"Ijrochi","src":"fayl.mp3"}, ...]  (src ro'yxat fayliga nisbatan yoki to'liq havola)
+const bgm=new Audio();bgm.preload='none';bgm.volume=.5;bgm.setAttribute('playsinline','');
+let bgmList=[],bgmIdx=-1,bgmWant=false,bgmDucked=false,bgmLoaded=false,bgmErr=0,bgmMode='all';
+const bgmLS={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+bgmWant=bgmLS.get('abitur_bgm')==='1';
+bgmMode=['all','one','shuffle'].includes(bgmLS.get('abitur_bgm_mode'))?bgmLS.get('abitur_bgm_mode'):'all';
+function bgmListUrl(){const st=(S.set&&S.set.settings)||settingsCache||{};return String(st.music_list||'').trim()||'assets/music/list.json'}
+function bgmTitle(t){return t.title||String(t.src||'').split('/').pop().replace(/\.[a-z0-9]+$/i,'').replace(/[_-]+/g,' ')||'Qo‘shiq'}
+async function bgmLoadList(){
+  if(bgmLoaded)return;bgmLoaded=true;
+  try{
+    const lu=new URL(bgmListUrl(),location.href).href;
+    const r=await fetch(lu,{cache:'no-cache'});if(!r.ok)throw 0;
+    const j=await r.json(),arr=Array.isArray(j)?j:(j.tracks||[]);
+    bgmList=arr.map(x=>typeof x==='string'?{src:x}:x).filter(x=>x&&x.src).map(x=>({title:bgmTitle(x),artist:x.artist||'',url:new URL(x.src,lu).href,key:String(x.src)}));
+  }catch(e){bgmList=[]}
+  if(!bgmList.length){   // eski usul: bitta qo'shiq
+    const st=(S.set&&S.set.settings)||settingsCache||{},one=String(st.music_url||'').trim();
+    if(one)bgmList=[{title:'Musiqa',artist:'',url:new URL(one,location.href).href,key:one}];
+  }
+  const saved=bgmLS.get('abitur_bgm_track'),k=bgmList.findIndex(t=>t.key===saved);
+  bgmIdx=k>=0?k:(bgmList.length?0:-1);
+  if(bgmIdx>=0)bgmSetSrc(bgmIdx);
+  bgmRender();bgmUi();bgmResume();
+}
+function bgmSetSrc(i){
+  bgmIdx=i;const t=bgmList[i];if(!t)return;
+  bgm.src=t.url;bgm.loop=bgmMode==='one';bgmLS.set('abitur_bgm_track',t.key);
+  try{if('mediaSession' in navigator)navigator.mediaSession.metadata=new MediaMetadata({title:t.title,artist:t.artist||'ABITUR DTM'})}catch(e){}
+}
+async function bgmPlay(){try{await bgm.play();bgmErr=0;return true}catch(e){return false}}
+async function bgmPick(i){
+  if(i===bgmIdx&&!bgm.paused){bgmStop();return}
+  if(i!==bgmIdx||!bgm.src)bgmSetSrc(i);
+  bgmWant=true;bgmLS.set('abitur_bgm','1');bgmDucked=false;
+  if(!(await bgmPlay())){bgmWant=false;bgmLS.set('abitur_bgm','0');toast('Qo‘shiqni ijro etib bo‘lmadi')}
+  bgmUi();bgmRender();
+}
+function bgmStop(){bgmWant=false;bgmDucked=false;bgmLS.set('abitur_bgm','0');bgm.pause();bgmUi();bgmRender()}
+function bgmMain(){
+  if(!bgmList.length)return;
+  if(!bgm.paused)bgmStop();else bgmPick(bgmIdx<0?0:bgmIdx);
+}
+function bgmNext(dir){
+  const n=bgmList.length;if(!n)return;
+  let i;
+  if(bgmMode==='shuffle'&&n>1&&dir>0){do{i=Math.floor(Math.random()*n)}while(i===bgmIdx)}
+  else i=(bgmIdx+dir+n)%n;
+  bgmSetSrc(i);
+  if(bgmWant||!bgm.paused){bgmWant=true;bgmLS.set('abitur_bgm','1');bgmPlay().then(()=>{bgmUi();bgmRender()})}
+  else{bgmUi();bgmRender()}
+}
+function bgmModeSet(){
+  bgmMode=bgmMode==='all'?'one':bgmMode==='one'?'shuffle':'all';
+  bgmLS.set('abitur_bgm_mode',bgmMode);bgm.loop=bgmMode==='one';bgmRender();
+}
+bgm.addEventListener('ended',()=>{if(bgmMode!=='one')bgmNext(1)});
+bgm.addEventListener('play',()=>{bgmUi();bgmRender()});
+bgm.addEventListener('pause',()=>{bgmUi();bgmRender()});
+bgm.addEventListener('error',()=>{
+  if(!bgm.src||!bgmList.length)return;
+  bgmErr++;
+  if(bgmErr>=bgmList.length){bgmErr=0;bgmWant=false;bgmLS.set('abitur_bgm','0');toast('Qo‘shiqlar ochilmadi');bgmUi();return}
+  if(bgmWant)bgmNext(1);
+});
+function bgmUi(){
+  const b=$('bgmBtn');if(!b)return;
+  const on=!bgm.paused;
+  b.classList.toggle('on',on);b.classList.toggle('hide',!bgmList.length);
+  b.querySelector('.ic').textContent=on?'🎵':'🎵';
+}
+function bgmRender(){
+  const p=$('bgmPanel');if(!p)return;
+  const on=!bgm.paused,cur=bgmList[bgmIdx];
+  $('bgmNow').textContent=cur?cur.title:'—';
+  $('bgmPlayBtn').textContent=on?'⏸':'▶';
+  $('bgmModeBtn').textContent=bgmMode==='all'?'🔁':bgmMode==='one'?'🔂':'🔀';
+  $('bgmModeBtn').title=bgmMode==='all'?'Ro‘yxatni takrorlash':bgmMode==='one'?'Bitta qo‘shiqni takrorlash':'Aralash';
+  $('bgmTracks').innerHTML=bgmList.map((t,i)=>'<button type="button" class="bgm-tr'+(i===bgmIdx?' cur':'')+'" onclick="bgmPick('+i+')"><span class="n">'+(i===bgmIdx&&on?'♪':(i+1))+'</span><span class="t">'+esc(t.title)+(t.artist?'<small>'+esc(t.artist)+'</small>':'')+'</span></button>').join('');
+}
+function bgmPanel(open){
+  const p=$('bgmPanel');if(!p)return;
+  const o=open===undefined?p.classList.contains('hide'):open;
+  p.classList.toggle('hide',!o);if(o)bgmRender();
+}
+// sayt qayta ochilganda: avval yoqilgan bo'lsa, birinchi bosishda davom etadi (brauzer o'zi ijro etishga ruxsat bermaydi)
+function bgmResume(){
+  if(!bgmWant||!bgmList.length||!bgm.paused)return;
+  bgmPlay().then(ok=>{
+    bgmUi();bgmRender();
+    if(ok)return;
+    const go=()=>{document.removeEventListener('pointerdown',go,true);document.removeEventListener('keydown',go,true);if(bgmWant&&bgm.paused)bgmPlay().then(()=>{bgmUi();bgmRender()})};
+    document.addEventListener('pointerdown',go,true);document.addEventListener('keydown',go,true);
+  });
+}
+function bgmCheck(){bgmLoadList()}
+// ovozli xabar va audio test ijro etilganda musiqa vaqtincha to'xtaydi
+function bgmDuck(on){
+  if(on){if(!bgm.paused){bgmDucked=true;bgm.pause()}}
+  else if(bgmDucked){bgmDucked=false;if(bgmWant)bgmPlay().then(()=>{bgmUi();bgmRender()})}
+}
+[vAudio,$('lAudio')].forEach(a=>{if(!a)return;
+  a.addEventListener('play',()=>{if(!a.muted)bgmDuck(true)});
+  a.addEventListener('pause',()=>bgmDuck(false));
+  a.addEventListener('ended',()=>bgmDuck(false));
+});
+try{if('mediaSession' in navigator){
+  navigator.mediaSession.setActionHandler('play',()=>bgmPick(bgmIdx<0?0:bgmIdx));
+  navigator.mediaSession.setActionHandler('pause',bgmStop);
+  navigator.mediaSession.setActionHandler('nexttrack',()=>bgmNext(1));
+  navigator.mediaSession.setActionHandler('previoustrack',()=>bgmNext(-1));
+}}catch(e){}
+
 boot();
 
 /* ===== UNIVERSITETLAR, MAQSAD, PROGRESS, ULASHISH ===== */
@@ -2423,6 +2563,7 @@ function subBack(){
 }
 function paintBar(){
   const r=S.res;if(!r)return;
+  bgmCheck();
   const c=$('sbCoin');
   if(c){if(r.guest){c.innerHTML='<span>Kirish</span>';c.onclick=goAuth;guestDaily()}else{c.innerHTML=COIN(16)+' <span>'+fmtN(r.totalScore??0)+'</span>';c.onclick=()=>showTab('reyting')}}
   const nm=((r.ism||'')+' '+(r.familiya||'')).trim();
@@ -2612,5 +2753,18 @@ async function emVerify(){
 }
 
 </script>
+<button id="bgmBtn" class="bgm-btn hide" type="button" onclick="bgmPanel()" aria-label="Musiqa"><span class="ic">🎵</span><i class="eq"><b></b><b></b><b></b></i></button>
+<div id="bgmPanel" class="bgm-panel hide" role="dialog" aria-label="Musiqa ro‘yxati">
+  <div class="bp-h"><b>🎵 Musiqa</b><button type="button" onclick="bgmPanel(false)" aria-label="Yopish">✕</button></div>
+  <div class="bp-now" id="bgmNow">—</div>
+  <div class="bp-ctl">
+    <button type="button" id="bgmModeBtn" onclick="bgmModeSet()">🔁</button>
+    <button type="button" onclick="bgmNext(-1)" aria-label="Oldingi">⏮</button>
+    <button type="button" class="main" id="bgmPlayBtn" onclick="bgmMain()">▶</button>
+    <button type="button" onclick="bgmNext(1)" aria-label="Keyingi">⏭</button>
+    <button type="button" onclick="bgmStop()" aria-label="To‘xtatish">⏹</button>
+  </div>
+  <div class="bp-list" id="bgmTracks"></div>
+</div>
 </body>
 </html>
