@@ -345,12 +345,14 @@ body.guest #planCard{display:none!important}
       <p style="font-size:13px;color:var(--muted);text-align:center;margin-bottom:16px">Google hisobingiz orqali bir bosishda kiring.</p>
       <div id="gSignInBtn" style="display:flex;justify-content:center;min-height:44px"></div>
       <div class="error hide" id="googleErr" style="margin-top:12px"></div>
+      <div id="emBlock" class="hide">
       <div class="or-line"><span>yoki email bilan</span></div>
       <label for="emEmail">Email</label><input id="emEmail" type="email" inputmode="email" autocomplete="username" placeholder="nom@gmail.com">
       <label for="emPass">Parol</label><input id="emPass" type="password" autocomplete="current-password" placeholder="Parolingiz" onkeydown="if(event.key==='Enter')emLogin()">
       <button class="btn" id="emLoginBtn" onclick="emLogin()">Kirish</button>
       <button class="btn btn-outline" id="emCodeBtn" onclick="emStartCode()" style="margin-top:8px">Kod orqali kirish · Ro‘yxatdan o‘tish · Parolni tiklash</button>
       <div class="error hide" id="emErr" style="margin-top:12px"></div>
+      </div>
       <button class="btn btn-outline" onclick="guestEnter()" style="margin-top:14px">← Hisobsiz saytni ko‘rish</button>
       <p style="font-size:11px;color:var(--muted);text-align:center;margin-top:14px;line-height:1.5">Kirish orqali <a href="oferta.html" style="color:var(--gold2)">ommaviy oferta</a> va <a href="maxfiylik.html" style="color:var(--gold2)">maxfiylik siyosati</a> shartlariga rozilik bildirasiz.</p>
     </div>
@@ -361,7 +363,7 @@ body.guest #planCard{display:none!important}
       <div id="emNew" class="hide">
         <label>Ism</label><input id="emIsm" autocomplete="given-name">
         <label>Familiya</label><input id="emFam" autocomplete="family-name">
-        <label>Taklif kodi (ixtiyoriy) — ikkalangizga bonus</label><input id="emRef" placeholder="Do'stingiz ID raqami">
+        <label>Taklif kodi (ixtiyoriy)</label><input id="emRef" placeholder="Do'stingiz ID raqami">
         <label>Qaysi fanlar kerak? (bir nechtasini tanlang)</label><div id="fanChipsE" style="margin-top:4px"></div>
       </div>
       <label for="emNewPass" id="emPassLbl">Parol (ixtiyoriy)</label><input id="emNewPass" type="password" autocomplete="new-password" placeholder="Kamida 6 ta belgi">
@@ -374,7 +376,7 @@ body.guest #planCard{display:none!important}
       <p style="font-size:13px;color:var(--muted);margin-bottom:6px">Google hisobingizdan olingan ma'lumot:</p>
       <label>Ism</label><input id="gIsm">
       <label>Familiya</label><input id="gFamiliya">
-      <label>Taklif kodi (ixtiyoriy) — ikkalangizga bonus</label><input id="gReferral" placeholder="Do'stingiz ID raqami">
+      <label>Taklif kodi (ixtiyoriy)</label><input id="gReferral" placeholder="Do'stingiz ID raqami">
       <label>Qaysi fanlar kerak? (bir nechtasini tanlang)</label><div id="fanChipsR" style="margin-top:4px"></div>
       <button class="btn" id="gCompleteBtn" onclick="completeGoogleRegister()">Ro'yxatdan o'tishni yakunlash</button>
       <div class="error hide" id="gCompleteErr"></div>
@@ -422,7 +424,7 @@ body.guest #planCard{display:none!important}
     <div class="sec-t" data-sec="home">Vositalar</div>
     <div class="tiles" data-sec="home">
       <button class="tile" onclick="openHandbook()"><i>📚</i><span class="t">Ma'lumotnoma</span><span class="s" id="hbBadge">Tarifda</span></button>
-      <button class="tile" onclick="openGames()"><i>🎮</i><span class="t">O'yinlar</span><span class="s">Bepul</span></button>
+      <button class="tile" onclick="openGames()"><i>🎮</i><span class="t">O'yinlar</span><span class="s">Limitga kiradi</span></button>
       <button class="tile" onclick="openDuel()"><i>⚔️</i><span class="t">Duel</span><span class="s">Do'st bilan</span></button>
     </div>
 
@@ -540,13 +542,12 @@ body.guest #planCard{display:none!important}
     <button class="row-btn" data-sec="kabinet" onclick="openUni()"><span class="ic">🏛️</span>Universitetlar va o'tish ballari</button>
 
     <div class="card u-only" data-sec="kabinet" id="wdCard">
-      <div class="eyebrow">💰 Yutuq hisobi</div>
+      <div class="eyebrow">💰 Balansni kartaga yechish</div>
       <div style="text-align:center;font-size:26px;font-weight:800;color:var(--gold2);margin:8px 0"><span id="wdBal">0</span> so‘m</div>
       <p class="quality-desc" id="wdInfo" style="margin:0 auto 10px"></p>
       <input id="wdCardIn" inputmode="numeric" maxlength="19" placeholder="Karta raqami (16 ta raqam)" autocomplete="off">
       <input id="wdAmt" inputmode="numeric" placeholder="Summa (so‘m)" autocomplete="off" style="margin-top:8px">
       <button class="btn" onclick="wdSubmit()">💳 Kartaga yechib olish</button>
-      <button class="btn btn-outline" onclick="prizeToBal()">Balansga o‘tkazish</button>
       <div id="wdHist" style="margin-top:12px"></div>
     </div>
     <div class="sec-t" data-sec="kabinet">Sozlamalar</div>
@@ -694,7 +695,7 @@ body.guest #planCard{display:none!important}
 <script>
 /* ===== SOZLAMALAR ===== */
 const GOOGLE_CLIENT_ID="323960187871-77jganuhhpo1hba8t7ooh252kqeh9sc2.apps.googleusercontent.com";
-const GAS_URL="https://script.google.com/macros/s/AKfycbwKMusIIimQE9N28HCMWMVWVW0FM4tF5ln6lLmnLQDDf9ZF6sAGTalKvZjsWXjIBahn2g/exec";
+const GAS_URL="https://script.google.com/macros/s/AKfycbwsAG_7XrM0EKTnyKnef-Z3kPpOdwhDblQSKBQUCFBNenjMp5Xl96GhAf1ykveyVXtHCg/exec";
 
 /* ===== YORDAMCHI ===== */
 const $=id=>document.getElementById(id);
@@ -1570,7 +1571,12 @@ function gamesMenu(){
   const L=[['calc','⚡ Tezkor hisob','45 soniyada ko‘proq misol yeching',gmBest('calc')?' · Rekord: '+gmBest('calc'):''],['seq','🧩 Mantiqiy ketma-ketlik','Keyingi sonni toping (10 raund)',gmBest('seq')?' · Rekord: '+gmBest('seq')+'/10':''],['mem','🃏 Xotira kartalari','Formula va javobini juftlang',gmBest('mem')?' · Rekord: '+gmBest('mem')+' yurish':'']];
   $('gmBody').innerHTML=L.map(g=>'<div class="test-btn" onclick="gameStart(\''+g[0]+'\')"><div><div class="name">'+g[1]+'</div><div class="sub">'+g[2]+g[3]+'</div></div><span class="badge">O‘ynash</span></div>').join('');
 }
-function gameStart(k){gamesStop();$('gmBody').dataset.mode=k;({calc:gCalc,seq:gSeq,mem:gMem})[k]()}
+async function gameStart(k){
+  if(!currentUser){needLogin();return}
+  busy(true);let r;try{r=await uApi('gameStart')}finally{busy(false)}
+  if(!r||!r.ok){toast((r&&r.error)||'Xatolik');if(r&&r.limit){currentUser.limUsed=r.used;currentUser.limMax=r.max;persist();paint()}return}
+  if(r.premium===false){currentUser.limUsed=r.used;currentUser.limMax=r.max;persist();paint();toast('Bugungi bepul limit: '+r.used+' / '+r.max)}
+  gamesStop();$('gmBody').dataset.mode=k;({calc:gCalc,seq:gSeq,mem:gMem})[k]()}
 function gEnd(k,title,text,score,better){
   gamesStop();const b=gmBest(k);let rec='';
   if(better(score,b)){LS.set('abitur_gb_'+k,score);rec='<p style="color:var(--gold2);margin-top:8px">🎉 Yangi rekord!</p>'}
@@ -2036,8 +2042,8 @@ function paintWd(){
   const r=S.res||{},need=Number(settingsCache.withdraw_refs||5),min=Number(settingsCache.withdraw_min||10000),cnt=Number(r.refCount)||0;
   if($('refCnt'))$('refCnt').textContent=cnt+' / '+need;
   if(!$('wdBal'))return;
-  $('wdBal').textContent=fmtN(r.prizeBal||0);
-  $('wdInfo').innerHTML='Reytingdan yutgan pullaringiz shu yerga tushadi. Kartaga yechish uchun <b class="gold">'+need+'</b> ta do‘st taklif qiling (hozir '+cnt+'). Eng kam summa: '+fmtN(min)+' so‘m.';
+  $('wdBal').textContent=fmtN(r.balans||0);
+  $('wdInfo').innerHTML='Balansingizdagi pulni (reyting sovrinlari ham shu yerga tushadi) kartangizga yechib olishingiz mumkin. Buning uchun <b class="gold">'+need+'</b> ta do‘st taklif qiling (hozir '+cnt+'). Eng kam summa: '+fmtN(min)+' so‘m.';
 }
 async function wdSubmit(){
   const card=($('wdCardIn').value||'').replace(/\D/g,''),amt=Math.floor(Number(($('wdAmt').value||'').replace(/\D/g,''))||0);
@@ -2046,14 +2052,7 @@ async function wdSubmit(){
   if(!confirm(fmtN(amt)+' so‘m **** '+card.slice(-4)+' kartasiga yechilsin?'))return;
   busy(true);let r;try{r=await uApi('withdraw',{card:card,amount:amt})}finally{busy(false)}
   if(!r||!r.ok){toast((r&&r.error)||'Xatolik');return}
-  S.res.prizeBal=r.prizeBal;persist();paint();$('wdAmt').value='';toast('So‘rov yuborildi. Admin to‘lab beradi ✓');wdHist();
-}
-async function prizeToBal(){
-  if(!(Number(S.res&&S.res.prizeBal)>0)){toast('Yutuq hisobingizda mablag‘ yo‘q');return}
-  if(!confirm('Yutuq hisobidagi barcha pul asosiy balansga o‘tkazilsinmi?'))return;
-  busy(true);let r;try{r=await uApi('prizeToBalance')}finally{busy(false)}
-  if(!r||!r.ok){toast((r&&r.error)||'Xatolik');return}
-  S.res.prizeBal=0;S.res.balans=r.balans;persist();paint();toast('Balansga o‘tkazildi ✓');
+  S.res.balans=r.balans;persist();paint();$('wdAmt').value='';toast('So‘rov yuborildi. Admin to‘lab beradi ✓');wdHist();
 }
 async function wdHist(){
   const el=$('wdHist');if(!el||!currentUser)return;
@@ -2186,7 +2185,7 @@ async function pdfMake(r){
     await loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js');
     const L=['a','b','c','d'];
     const wrap=document.createElement('div');
-    wrap.style.cssText='position:fixed;left:-10000px;top:0;width:690px;background:#fff;color:#111;font-family:Arial,sans-serif;font-size:13px;line-height:1.45;padding:0';
+    wrap.style.cssText='background:#fff;color:#111;font-family:Arial,sans-serif;font-size:13px;line-height:1.45';
     let h='<div style="text-align:center;margin-bottom:14px"><h1 style="font-size:22px;margin:0">'+esc(r.title)+'</h1><div style="color:#666">'+esc(TEST_LABEL[r.type]||'Test')+' · ABITUR DTM</div></div>';
     r.variants.forEach((v,vi)=>{
       h+='<div style="'+(vi?'page-break-before:always;':'')+'"><h2 style="font-size:16px;border-bottom:2px solid #b8860b;padding-bottom:4px">'+esc(r.variants.length>1?v.name:'Savollar')+'</h2>';
@@ -2199,7 +2198,7 @@ async function pdfMake(r){
       v.questions.forEach((q,i)=>{h+='<td style="border:1px solid #ccc;padding:5px 6px;text-align:center;width:10%"><b>'+(i+1)+'</b><br>'+esc(String(q.javob).toUpperCase())+'</td>'+((i+1)%10===0?'</tr><tr>':'')});
       h+='</tr></table></div>';
     });
-    wrap.innerHTML=h;document.body.appendChild(wrap);
+    wrap.innerHTML=h;
     const logo=await new Promise(res=>{const im=new Image();im.onload=()=>{const c=document.createElement('canvas');c.width=im.width;c.height=im.height;c.getContext('2d').drawImage(im,0,0);res({d:c.toDataURL('image/png'),w:im.width,h:im.height})};im.onerror=()=>res(null);im.src='assets/logo.png'});
     const fname=String(r.title).replace(/[^\wЀ-ӿ]+/g,'_').slice(0,40)+'.pdf';
     await html2pdf().set({margin:[12,10,18,10],filename:fname,image:{type:'jpeg',quality:.92},html2canvas:{scale:2,useCORS:true,backgroundColor:'#ffffff'},jsPDF:{unit:'mm',format:'a4',orientation:'portrait'},pagebreak:{mode:['css','legacy']}})
@@ -2216,7 +2215,7 @@ async function pdfMake(r){
          pdf.text(i+' / '+n,W-10,H-8,{align:'right'});
        }
      }).save();
-    wrap.remove();toast('PDF yuklab olindi ✓');
+    toast('PDF yuklab olindi ✓');
   }finally{busy(false)}
 }
 
