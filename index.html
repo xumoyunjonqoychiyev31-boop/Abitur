@@ -418,7 +418,7 @@ body.guest #planCard{display:none!important}
     <div class="tiles" data-sec="home">
       <button class="tile" onclick="goTests('sinov')"><b class="n">30</b><span class="t">Sinov</span><span class="s">30 savol · 30 ball</span></button>
       <button class="tile" onclick="goTests('blok')"><b class="n">90</b><span class="t">Blok</span><span class="s">90 savol · 189 ball</span></button>
-      <button class="tile" onclick="goTests('sertifikat')"><b class="n">45</b><span class="t">Sertifikat</span><span class="s">45 savol · 100 ball</span></button>
+      <button class="tile" onclick="goTests('sertifikat')"><b class="n">55</b><span class="t">Sertifikat</span><span class="s">55 savol · 100 ball</span></button>
     </div>
 
     <div class="sec-t" data-sec="home">Vositalar</div>
@@ -482,7 +482,7 @@ body.guest #planCard{display:none!important}
     <div data-sec="testlar">
       <span class="tt-price" data-t="sinov">Sinov test · 30 savol · jami 30 ball · bugun: <b id="priceSinov">...</b></span>
       <span class="tt-price hide" data-t="blok">Blok test · 90 savol · jami 189 ball · bugun: <b id="priceBlok">...</b></span>
-      <span class="tt-price hide" data-t="sertifikat">Sertifikat test · 45 savol · jami 100 ball · bugun: <b id="priceSert">...</b></span>
+      <span class="tt-price hide" data-t="sertifikat">Sertifikat test · 55 savol · jami 100 ball · bugun: <b id="priceSert">...</b></span>
     </div>
     <div class="chips-row" id="ttChips" data-sec="testlar"></div>
     <div id="ttList" data-sec="testlar"></div>
@@ -548,7 +548,10 @@ body.guest #planCard{display:none!important}
       <input id="wdCardIn" inputmode="numeric" maxlength="19" placeholder="Karta raqami (16 ta raqam)" autocomplete="off">
       <input id="wdAmt" inputmode="numeric" placeholder="Summa (so‘m)" autocomplete="off" style="margin-top:8px">
       <button class="btn" onclick="wdSubmit()">💳 Kartaga yechib olish</button>
-      <div id="wdHist" style="margin-top:12px"></div>
+      </div>
+    <div class="card u-only" data-sec="kabinet" id="appsCard">
+      <div class="eyebrow">📋 Arizalarim</div>
+      <div id="wdHist" style="margin-top:8px"><p class="quality-desc" style="margin:0">Hali ariza yo‘q.</p></div>
     </div>
     <div class="sec-t" data-sec="kabinet">Sozlamalar</div>
     <button class="row-btn" data-sec="kabinet" onclick="parentShare()"><span class="ic">👪</span>Ota-onaga hisobot</button>
@@ -695,7 +698,7 @@ body.guest #planCard{display:none!important}
 <script>
 /* ===== SOZLAMALAR ===== */
 const GOOGLE_CLIENT_ID="323960187871-77jganuhhpo1hba8t7ooh252kqeh9sc2.apps.googleusercontent.com";
-const GAS_URL="https://script.google.com/macros/s/AKfycbwsAG_7XrM0EKTnyKnef-Z3kPpOdwhDblQSKBQUCFBNenjMp5Xl96GhAf1ykveyVXtHCg/exec";
+const GAS_URL="https://script.google.com/macros/s/AKfycbzva83DLUu0D3k1_tSo3EUqRiCDWrR8XB6nJ6b4hhWtyyLdBMT-EXmejZBviK5TlbdE0Q/exec";
 
 /* ===== YORDAMCHI ===== */
 const $=id=>document.getElementById(id);
@@ -982,7 +985,7 @@ async function submitPayment(){
   const res=await api({action:'submitPayment',id:currentUser.id,summa:summa,izoh:izoh});
   setLoading(btn,false);
   if(!res.ok){msg.textContent=res.error||"To‘lovni yuborishda xatolik.";msg.classList.remove('hide');return}
-  msg.textContent="Yuborildi! Admin tasdiqlashini kuting.";msg.classList.remove('hide');
+  msg.textContent="Yuborildi! Admin tasdiqlashini kuting.";msg.classList.remove('hide');setTimeout(wdHist,500);
   $('paySumma').value='';$('payIzoh').value='';
 }
 
@@ -2030,8 +2033,7 @@ async function finishDuel(){
 function paintNews(){
   const c=$('newsCard');if(!c)return;
   const u=String(settingsCache.news_url||'').trim();
-  if(!u){c.classList.add('hide');return}
-  c.classList.remove('hide');
+  c.classList.remove('hide');$('newsBtn').classList.toggle('hide',!u);
   $('newsTitle').textContent=settingsCache.news_title||'Yangiliklar';
   $('newsTxt').textContent=settingsCache.news_text||'Eng so‘nggi yangiliklar va e’lonlar Telegram kanalimizda.';
 }
@@ -2056,9 +2058,13 @@ async function wdSubmit(){
 }
 async function wdHist(){
   const el=$('wdHist');if(!el||!currentUser)return;
-  const r=await uApi('wdMine');if(!r||!r.ok||!r.list.length){el.innerHTML='';return}
-  const st={Kutilmoqda:'⏳ Kutilmoqda',Tolandi:'✅ To‘landi',Rad:'❌ Rad etildi'};
-  el.innerHTML='<div style="font-size:13px;color:var(--muted);margin-bottom:6px">So‘nggi so‘rovlar</div>'+r.list.map(x=>'<div class="stat-row"><span>'+esc(x.date)+' · '+fmtN(x.sum)+' · '+esc(x.card)+'</span><b>'+esc(st[x.status]||x.status)+'</b></div>').join('');
+  const r=await uApi('myApps');if(!r||!r.ok)return;
+  const st={Kutilmoqda:'⏳ Kutilmoqda',Tasdiqlangan:'✅ Tasdiqlangan',Tolandi:'✅ To‘landi','To‘landi':'✅ To‘landi',Rad:'❌ Rad etildi','Rad etildi':'❌ Rad etildi','Rad etilgan':'❌ Rad etildi'};
+  const row=(t,x,extra)=>'<div class="stat-row"><span>'+t+' · '+esc(x.date||'')+' · '+fmtN(x.sum)+' so‘m'+(extra||'')+'</span><b>'+esc(st[x.status]||x.status)+'</b></div>';
+  let h='';
+  if(r.payments.length)h+='<div style="font-size:13px;color:var(--muted);margin:4px 0">To‘lovlar</div>'+r.payments.map(x=>row('💳',x)).join('');
+  if(r.withdrawals.length)h+='<div style="font-size:13px;color:var(--muted);margin:10px 0 4px">Yechib olish</div>'+r.withdrawals.map(x=>row('💸',x,' · '+esc(x.card))).join('');
+  el.innerHTML=h||'<p class="quality-desc" style="margin:0">Hali ariza yo‘q.</p>';
 }
 const uApi=(a,x)=>api(Object.assign({action:a,id:currentUser&&currentUser.id,email:localStorage.getItem('abitur_email')},x||{}));
 
@@ -2171,8 +2177,8 @@ let pdfOwned=null;
 async function pdfOpen(type,base){
   if(!currentUser){needLogin();return}
   if(!pdfOwned){const m=await uApi('pdfMine');pdfOwned=(m&&m.ok)?m.list:[]}
-  const own=pdfOwned.indexOf(type+'|'+base)>=0,price=Number(settingsCache.pdf_price||5000);
-  if(!own&&!confirm('«'+base+'» testlarini PDF qilib yuklab olish: '+fmtN(price)+' so‘m balansdan yechiladi (bir marta to‘lanadi). Davom etasizmi?'))return;
+  const own=pdfOwned.some(x=>x===type+'|'+base||x==='all|'+base),NQ={sinov:30,blok:90,sertifikat:55}[type],price=Number(settingsCache.pdf_price||5000);
+  if(!own&&!confirm('«'+base+'» — '+(TEST_LABEL[type]||'test')+', '+NQ+' ta savol, javoblari bilan PDF: '+fmtN(price)+' so‘m balansdan yechiladi (bir marta to‘lanadi). Davom etasizmi?'))return;
   busy(true);let r;
   try{r=await uApi('pdfBuy',{testTuri:type,base:base})}finally{busy(false)}
   if(!r||!r.ok){toast((r&&r.error)||'Xatolik');if(r&&r.needBalance)showPayment(r.price);return}
@@ -2183,26 +2189,43 @@ async function pdfMake(r){
   busy(true);
   try{
     await loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js');
-    const L=['a','b','c','d'];
-    const wrap=document.createElement('div');
-    wrap.style.cssText='background:#fff;color:#111;font-family:Arial,sans-serif;font-size:13px;line-height:1.45';
-    let h='<div style="text-align:center;margin-bottom:14px"><h1 style="font-size:22px;margin:0">'+esc(r.title)+'</h1><div style="color:#666">'+esc(TEST_LABEL[r.type]||'Test')+' · ABITUR DTM</div></div>';
-    r.variants.forEach((v,vi)=>{
-      h+='<div style="'+(vi?'page-break-before:always;':'')+'"><h2 style="font-size:16px;border-bottom:2px solid #b8860b;padding-bottom:4px">'+esc(r.variants.length>1?v.name:'Savollar')+'</h2>';
-      v.questions.forEach((q,i)=>{
-        h+='<div style="margin:10px 0;page-break-inside:avoid"><b>'+(i+1)+'.</b> '+esc(q.savol);
-        L.forEach(l=>{if(q[l])h+='<div style="margin-left:18px">'+l.toUpperCase()+') '+esc(q[l])+'</div>'});
-        h+='</div>';
-      });
-      h+='</div><div style="page-break-before:always"><h2 style="font-size:16px;border-bottom:2px solid #b8860b;padding-bottom:4px">To‘g‘ri javoblar'+(r.variants.length>1?' — '+esc(v.name):'')+'</h2><table style="width:100%;border-collapse:collapse;margin-top:8px"><tr>';
-      v.questions.forEach((q,i)=>{h+='<td style="border:1px solid #ccc;padding:5px 6px;text-align:center;width:10%"><b>'+(i+1)+'</b><br>'+esc(String(q.javob).toUpperCase())+'</td>'+((i+1)%10===0?'</tr><tr>':'')});
-      h+='</tr></table></div>';
-    });
-    wrap.innerHTML=h;
+    const L=['a','b','c','d'],ST='background:#fff;color:#111;font-family:Arial,sans-serif;font-size:13px;line-height:1.45;padding:2px 0';
+    const chunks=[];
+    const add=h=>{const d=document.createElement('div');d.style.cssText=ST;d.innerHTML=h;chunks.push(d)};
+    let first=true;
+    r.sections.forEach(sec=>sec.variants.forEach(v=>{
+      const head='<h2 style="font-size:16px;margin:0 0 8px;border-bottom:2px solid #b8860b;padding-bottom:4px">'+esc(TEST_LABEL[sec.type]||'Test')+' · '+esc(v.name)+'</h2>';
+      const qs=v.questions;
+      for(let i=0;i<qs.length;i+=7){
+        let h='';
+        if(first){h+='<div style="text-align:center;margin-bottom:14px"><h1 style="font-size:22px;margin:0">'+esc(r.title)+'</h1><div style="color:#666">ABITUR DTM · savollar va javoblar</div></div>';first=false}
+        if(i===0)h+=head;
+        qs.slice(i,i+7).forEach((q,j)=>{
+          h+='<div style="margin:9px 0"><b>'+(i+j+1)+'.</b> '+esc(q.savol);
+          L.forEach(l=>{if(q[l])h+='<div style="margin-left:18px">'+l.toUpperCase()+') '+esc(q[l])+'</div>'});
+          h+='</div>';
+        });
+        add(h);
+      }
+    }));
+    r.sections.forEach(sec=>sec.variants.forEach(v=>{
+      const qs=v.questions;
+      for(let i=0;i<qs.length;i+=60){
+        let h='';
+        if(i===0)h+='<h2 style="font-size:16px;margin:0 0 8px;border-bottom:2px solid #b8860b;padding-bottom:4px">To‘g‘ri javoblar · '+esc(TEST_LABEL[sec.type]||'Test')+' · '+esc(v.name)+'</h2>';
+        h+='<table style="width:100%;border-collapse:collapse"><tr>';
+        qs.slice(i,i+60).forEach((q,j)=>{h+='<td style="border:1px solid #ccc;padding:4px;text-align:center;width:10%;font-size:12px"><b>'+(i+j+1)+'</b><br>'+esc(String(q.javob).toUpperCase())+'</td>'+((j+1)%10===0?'</tr><tr>':'')});
+        h+='</tr></table>';
+        add(h);
+      }
+    }));
     const logo=await new Promise(res=>{const im=new Image();im.onload=()=>{const c=document.createElement('canvas');c.width=im.width;c.height=im.height;c.getContext('2d').drawImage(im,0,0);res({d:c.toDataURL('image/png'),w:im.width,h:im.height})};im.onerror=()=>res(null);im.src='assets/logo.png'});
-    const fname=String(r.title).replace(/[^\wЀ-ӿ]+/g,'_').slice(0,40)+'.pdf';
-    await html2pdf().set({margin:[12,10,18,10],filename:fname,image:{type:'jpeg',quality:.92},html2canvas:{scale:2,useCORS:true,backgroundColor:'#ffffff'},jsPDF:{unit:'mm',format:'a4',orientation:'portrait'},pagebreak:{mode:['css','legacy']}})
-     .from(wrap).toPdf().get('pdf').then(pdf=>{
+    const fname=String(r.title).replace(/[^\w\u0400-\u04FF]+/g,'_').slice(0,40)+'.pdf';
+    const opt={margin:[12,10,18,10],filename:fname,image:{type:'jpeg',quality:.92},html2canvas:{scale:2,useCORS:true,backgroundColor:'#ffffff'},jsPDF:{unit:'mm',format:'a4',orientation:'portrait'}};
+    // har bir bo'lak alohida chiziladi: katta hujjat bitta rasmga sig'maydi va oxiri (javoblar) kesilib qolardi
+    let w=html2pdf().set(opt).from(chunks[0]).toPdf();
+    for(let i=1;i<chunks.length;i++){const el=chunks[i];w=w.get('pdf').then(pdf=>{pdf.addPage()}).from(el).toContainer().toCanvas().toPdf()}
+    await w.get('pdf').then(pdf=>{
        const n=pdf.internal.getNumberOfPages(),W=pdf.internal.pageSize.getWidth(),H=pdf.internal.pageSize.getHeight();
        for(let i=1;i<=n;i++){
          pdf.setPage(i);
@@ -2215,7 +2238,7 @@ async function pdfMake(r){
          pdf.text(i+' / '+n,W-10,H-8,{align:'right'});
        }
      }).save();
-    toast('PDF yuklab olindi ✓');
+    toast('PDF yuklab olindi ✓ ('+r.total+' ta savol)');
   }finally{busy(false)}
 }
 
