@@ -554,6 +554,7 @@ body.guest #planCard{display:none!important}
       <div id="wdHist" style="margin-top:8px"><p class="quality-desc" style="margin:0">Hali ariza yo‘q.</p></div>
     </div>
     <div class="sec-t" data-sec="kabinet">Sozlamalar</div>
+    <button class="row-btn" data-sec="kabinet" id="botBtn" onclick="botLink()"><span class="ic">🤖</span><span id="botBtnTx">Telegram botga ulash</span></button>
     <button class="row-btn" data-sec="kabinet" onclick="parentShare()"><span class="ic">👪</span>Ota-onaga hisobot</button>
     <button class="row-btn" data-sec="kabinet" id="installBtn" onclick="installApp()">📲 Ilovani o'rnatish</button>
     <button class="row-btn" data-sec="kabinet" onclick="openIdea()"><span class="ic">💡</span>Sayt uchun g'oya yuborish</button>
@@ -698,7 +699,7 @@ body.guest #planCard{display:none!important}
 <script>
 /* ===== SOZLAMALAR ===== */
 const GOOGLE_CLIENT_ID="323960187871-77jganuhhpo1hba8t7ooh252kqeh9sc2.apps.googleusercontent.com";
-const GAS_URL="https://script.google.com/macros/s/AKfycbzva83DLUu0D3k1_tSo3EUqRiCDWrR8XB6nJ6b4hhWtyyLdBMT-EXmejZBviK5TlbdE0Q/exec";
+const GAS_URL="https://script.google.com/macros/s/AKfycbzKHYAVqzhAtNvNgazcSSkBVmva8X0bEHxTfz73dIn2TMZ5L6B5jYVEPpkRq2xXL77Law/exec";
 
 /* ===== YORDAMCHI ===== */
 const $=id=>document.getElementById(id);
@@ -2040,7 +2041,14 @@ function paintNews(){
 function openNews(){const u=String(settingsCache.news_url||'').trim();if(u)window.open(u,'_blank','noopener')}
 
 /* ===== YUTUQ HISOBI VA YECHIB OLISH ===== */
+async function botLink(){
+  busy(true);let r;try{r=await uApi('botLink')}finally{busy(false)}
+  if(!r||!r.ok){toast((r&&r.error)||'Xatolik');return}
+  window.open(r.url,'_blank','noopener');
+  toast('Telegramda «Start» tugmasini bosing');
+}
 function paintWd(){
+  {const b=$('botBtnTx');if(b)b.textContent=(S.res&&S.res.botLinked)?'Telegram bot ulangan ✓ (qayta ulash)':'Telegram botga ulash'}
   const r=S.res||{},need=Number(settingsCache.withdraw_refs||5),min=Number(settingsCache.withdraw_min||10000),cnt=Number(r.refCount)||0;
   if($('refCnt'))$('refCnt').textContent=cnt+' / '+need;
   if(!$('wdBal'))return;
