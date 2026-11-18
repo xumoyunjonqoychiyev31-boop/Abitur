@@ -554,7 +554,7 @@ body.guest #planCard{display:none!important}
       <div id="wdHist" style="margin-top:8px"><p class="quality-desc" style="margin:0">Hali ariza yo‘q.</p></div>
     </div>
     <div class="sec-t" data-sec="kabinet">Sozlamalar</div>
-    <button class="row-btn" data-sec="kabinet" id="botBtn" onclick="botLink()"><span class="ic">🤖</span><span id="botBtnTx">Telegram botga ulash</span></button>
+    <button class="row-btn" data-sec="kabinet" id="botBtn" onclick="botLink()"><span class="ic">🤖</span><span id="botBtnTx">Javob tekshiruvchi botga ulash</span></button>
     <button class="row-btn" data-sec="kabinet" onclick="parentShare()"><span class="ic">👪</span>Ota-onaga hisobot</button>
     <button class="row-btn" data-sec="kabinet" id="installBtn" onclick="installApp()">📲 Ilovani o'rnatish</button>
     <button class="row-btn" data-sec="kabinet" onclick="openIdea()"><span class="ic">💡</span>Sayt uchun g'oya yuborish</button>
@@ -699,7 +699,7 @@ body.guest #planCard{display:none!important}
 <script>
 /* ===== SOZLAMALAR ===== */
 const GOOGLE_CLIENT_ID="323960187871-77jganuhhpo1hba8t7ooh252kqeh9sc2.apps.googleusercontent.com";
-const GAS_URL="https://script.google.com/macros/s/AKfycbxx0kH7pO0ToXgrLNZ22jEGyONPUWqD6rz7gLQqfgyN2ZA0qwebWAUCJTxhBfEMcjSDxA/exec";
+const GAS_URL="https://script.google.com/macros/s/AKfycbyGnvzNcMNQ4BwqaAJaSn_VfWgm7rIO9kMLvROBdO2rvItBDWA4rS2lriVwUvK1n75DqA/exec";
 
 /* ===== YORDAMCHI ===== */
 const $=id=>document.getElementById(id);
@@ -2048,7 +2048,7 @@ async function botLink(){
   toast('Telegramda «Start» tugmasini bosing');
 }
 function paintWd(){
-  {const b=$('botBtnTx');if(b)b.textContent=(S.res&&S.res.botLinked)?'Telegram bot ulangan ✓ (qayta ulash)':'Telegram botga ulash'}
+  {const b=$('botBtnTx');if(b)b.textContent=(S.res&&S.res.botLinked)?'Telegram bot ulangan ✓ (qayta ulash)':'Javob tekshiruvchi botga ulash'}
   const r=S.res||{},need=Number(settingsCache.withdraw_refs||5),min=Number(settingsCache.withdraw_min||10000),cnt=Number(r.refCount)||0;
   if($('refCnt'))$('refCnt').textContent=cnt+' / '+need;
   if(!$('wdBal'))return;
@@ -2186,7 +2186,7 @@ async function pdfOpen(type,base){
   if(!currentUser){needLogin();return}
   if(!pdfOwned){const m=await uApi('pdfMine');pdfOwned=(m&&m.ok)?m.list:[]}
   const own=pdfOwned.some(x=>x===type+'|'+base||x==='all|'+base),NQ={sinov:30,blok:90,sertifikat:55}[type],price=Number(settingsCache.pdf_price||5000);
-  if(!own&&!confirm('«'+base+'» — '+(TEST_LABEL[type]||'test')+', '+NQ+' ta savol, javoblari bilan PDF: '+fmtN(price)+' so‘m balansdan yechiladi (bir marta to‘lanadi). Davom etasizmi?'))return;
+  if(!own&&!confirm('«'+base+'» — '+(TEST_LABEL[type]||'test')+', '+NQ+' ta savol, PDF (javoblarni Telegram botda tekshirasiz): '+fmtN(price)+' so‘m balansdan yechiladi (bir marta to‘lanadi). Davom etasizmi?'))return;
   busy(true);let r;
   try{r=await uApi('pdfBuy',{testTuri:type,base:base})}finally{busy(false)}
   if(!r||!r.ok){toast((r&&r.error)||'Xatolik');if(r&&r.needBalance)showPayment(r.price);return}
@@ -2198,35 +2198,67 @@ async function pdfMake(r){
   try{
     await loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js');
     const L=['a','b','c','d'],ST='background:#fff;color:#111;font-family:Arial,sans-serif;font-size:13px;line-height:1.45;padding:2px 0';
-    const chunks=[];
-    const add=h=>{const d=document.createElement('div');d.style.cssText=ST;d.innerHTML=h;chunks.push(d)};
-    let first=true;
+    const chunks=[],PW=718,PH=920;
+    const strip=s=>String(s).replace(/^\s*\d+\s*[.)]\s*/,'');
+    // 1) bloklar: sarlavha + savollar
+    const blocks=[];let pre='';
+    pre+='<div style="text-align:center;margin-bottom:10px"><h1 style="font-size:22px;margin:0">'+esc(r.title)+'</h1><div style="color:#666">ABITUR DTM · savollar</div>'+
+      '<div style="color:#444;font-size:12px;margin-top:4px">Oxirgi sahifadagi javoblar blokini to‘ldirib, Telegramda '+(r.bot?'<b>@'+esc(r.bot)+'</b>':'ABITUR DTM botiga')+' suratini yuboring — bot tekshirib beradi. Har variantning o‘z kodi bor.</div></div>';
     r.sections.forEach(sec=>sec.variants.forEach(v=>{
-      const head='<h2 style="font-size:16px;margin:0 0 8px;border-bottom:2px solid #b8860b;padding-bottom:4px">'+esc(TEST_LABEL[sec.type]||'Test')+' · '+esc(v.name)+'</h2>';
-      const qs=v.questions;
-      for(let i=0;i<qs.length;i+=7){
-        let h='';
-        if(first){h+='<div style="text-align:center;margin-bottom:14px"><h1 style="font-size:22px;margin:0">'+esc(r.title)+'</h1><div style="color:#666">ABITUR DTM · savollar va javoblar</div></div>';first=false}
-        if(i===0)h+=head;
-        qs.slice(i,i+7).forEach((q,j)=>{
-          h+='<div style="margin:9px 0"><b>'+(i+j+1)+'.</b> '+esc(q.savol);
-          L.forEach(l=>{if(q[l])h+='<div style="margin-left:18px">'+l.toUpperCase()+') '+esc(q[l])+'</div>'});
-          h+='</div>';
-        });
-        add(h);
-      }
+      pre+='<h2 style="font-size:16px;margin:0 0 4px;border-bottom:2px solid #b8860b;padding-bottom:4px">'+esc(TEST_LABEL[sec.type]||'Test')+' · '+esc(v.name)+'<span style="float:right;font-size:14px;color:#8a6508">Kod: '+esc(v.kod||'')+'</span></h2>';
+      v.questions.forEach((q,i)=>{
+        let h=pre;pre='';
+        h+='<div style="padding:5px 0"><b>'+esc(q.lab||(i+1))+'.</b> '+esc(strip(q.savol));
+        ['a','b','c','d'].forEach(l=>{if(q[l])h+='<div style="margin-left:18px">'+l.toUpperCase()+') '+esc(q[l])+'</div>'});
+        if(q.w)h+='<div style="margin-left:18px;color:#666;font-size:12px">Yozma javob (botga matn shaklida yuboriladi)</div>';
+        h+='</div>';blocks.push(h);
+      });
     }));
-    r.sections.forEach(sec=>sec.variants.forEach(v=>{
-      const qs=v.questions;
-      for(let i=0;i<qs.length;i+=60){
-        let h='';
-        if(i===0)h+='<h2 style="font-size:16px;margin:0 0 8px;border-bottom:2px solid #b8860b;padding-bottom:4px">To‘g‘ri javoblar · '+esc(TEST_LABEL[sec.type]||'Test')+' · '+esc(v.name)+'</h2>';
-        h+='<table style="width:100%;border-collapse:collapse"><tr>';
-        qs.slice(i,i+60).forEach((q,j)=>{h+='<td style="border:1px solid #ccc;padding:4px;text-align:center;width:10%;font-size:12px"><b>'+(i+j+1)+'</b><br>'+esc(String(q.javob).toUpperCase())+'</td>'+((j+1)%10===0?'</tr><tr>':'')});
-        h+='</tr></table>';
-        add(h);
+    // 2) o'lchab, har sahifaga sig'adiganini yig'amiz (hech narsa kesilmaydi)
+    const meas=document.createElement('div');
+    meas.style.cssText='position:absolute;left:0;top:0;width:'+PW+'px;visibility:hidden;pointer-events:none;'+ST;
+    document.body.appendChild(meas);
+    let cur='',curH=0;
+    const flush=()=>{if(!cur)return;const d=document.createElement('div');d.style.cssText=ST;d.innerHTML=cur;chunks.push(d);cur='';curH=0};
+    blocks.forEach(hh=>{
+      meas.innerHTML=hh;const bh=meas.offsetHeight;
+      if(cur&&curH+bh>PH)flush();
+      cur+=hh;curH+=bh;
+    });
+    flush();meas.remove();
+    // 3) javob varag'i (OMR) — har variant uchun, PDF oxirida
+    const sheetHtml=(sec,v)=>{
+      const wq=v.questions.filter(q=>q.w),n=v.questions.length-wq.length,R=20,cols=Math.max(1,Math.ceil(n/R)),C='#b03050';
+      const circ='<span style="display:inline-block;width:18px;height:18px;border:1.5px solid '+C+';border-radius:50%;margin-right:6px;vertical-align:middle;box-sizing:border-box"></span>';
+      const letters=['A','B','C','D'].map(l=>'<span style="display:inline-block;width:24px;font-size:12px;font-weight:700;color:#c0102a">'+l+'</span>').join('');
+      let h='<div style="text-align:center;font-weight:700;font-size:15px;margin-bottom:6px">JAVOBLAR BLOKI · '+esc(r.title)+' · '+esc(TEST_LABEL[sec.type]||'')+'</div>';
+      h+='<div style="position:relative;border:2px solid #c97a8c;padding:10px;width:690px;box-sizing:border-box">';
+      [[0,0],[1,0],[0,1],[1,1]].forEach(p=>{h+='<span style="position:absolute;width:12px;height:12px;background:#000;'+(p[0]?'right:-1px;':'left:-1px;')+(p[1]?'bottom:-1px;':'top:-1px;')+'"></span>'});
+      // variant kodi — 6 xonali, doiralarda bo'yaladi (0–9)
+      const dc='<span style="display:inline-block;width:15px;height:15px;border:1.5px solid '+C+';border-radius:50%;box-sizing:border-box;margin:0 3px"></span>';
+      let grid='<div style="font-size:11px;font-weight:700;margin-bottom:3px"><b>VARIANT KODI</b></div><div style="background:#fbe3e8;padding:4px 2px;display:inline-block;white-space:nowrap">';
+      for(let c=0;c<6;c++){grid+='<div style="display:inline-block;vertical-align:top;width:21px;margin:0 2px;background:'+(c%2?'#fff':'#f6c9d3')+'">';for(let d=0;d<=9;d++)grid+='<div style="height:20px;line-height:20px;font-size:0;text-align:center"><span style="display:inline-block;width:15px;height:15px;border:1.5px solid '+C+';border-radius:50%;box-sizing:border-box;vertical-align:middle;background:transparent"></span></div>';grid+='</div>'}
+      grid+='</div>';
+      let digs='<div style="display:inline-block;white-space:nowrap;margin-right:2px;vertical-align:top;padding-top:21px">';for(let d=0;d<=9;d++)digs+='<div style="height:20px;line-height:20px;font-size:11px;font-weight:700;color:#c0102a;padding:0 4px 0 0;text-align:right">'+d+'</div>';digs+='</div>';
+      h+='<div style="margin:0 6px 8px;white-space:nowrap;font-size:0"><div style="display:inline-block;vertical-align:top;width:210px">'+digs+'<div style="display:inline-block;vertical-align:top;padding-top:0">'+grid+'</div></div>'+
+        '<div style="display:inline-block;vertical-align:top;width:440px;font-size:12px;white-space:normal;line-height:1.5;padding-left:10px">'+
+        '<div style="border:1px solid #c97a8c;padding:8px 10px;margin-bottom:8px"><b>Variant kodi</b> — test varag‘idagi sarlavha yonida yozilgan 6 xonali raqamni chapdagi doiralarda bo‘yang (har ustunda bittadan).</div>'+
+        'Variant: <b>'+esc(v.name)+'</b><br>Familiya, ism: ______________________________<br><br>'+
+        '<span style="font-size:11px;color:#444">Faqat <b>qora yoki ko‘k</b> ruchka bilan, doirani to‘liq bo‘yang. Bo‘yalmagan yoki ikki marta bo‘yalgan qator hisoblanmaydi.</span></div></div>';
+      h+='<div style="margin:0 6px;white-space:nowrap;font-size:0">';
+      for(let c=0;c<cols;c++){
+        h+='<div style="display:inline-block;vertical-align:top;width:'+Math.floor(666/cols)+'px;padding:6px 0 6px 6px;background:'+(c%2===0?'#fbe3e8':'#fff')+';box-sizing:border-box">';
+        h+='<div style="height:20px;line-height:20px;padding-left:30px">'+letters+'</div>';
+        for(let i=c*R;i<Math.min(n,(c+1)*R);i++){
+          h+='<div style="height:27px;line-height:27px;white-space:nowrap"><b style="display:inline-block;width:30px;font-size:12px;color:#222">'+(i+1)+'</b>'+circ+circ+circ+circ+'</div>';
+        }
+        h+='</div>';
       }
-    }));
+      h+='</div>';
+      h+='<div style="font-size:11px;color:#444;margin:10px 14px 0;line-height:1.4">Har savolga faqat bitta doirani qora yoki ko‘k ruchka bilan to‘liq bo‘yang. To‘ldirgach varaqni tekis, yorug‘ joyda, butun holda suratga olib Telegram botga yuboring'+(r.bot?' (@'+esc(r.bot)+')':'')+'.'+(wq.length?'<br><b>Yozma savollar ('+esc(wq[0].lab)+' – '+esc(wq[wq.length-1].lab)+')</b> javobini doira bilan emas, botga <b>matn shaklida</b> yuboring: masalan <b>'+esc(wq[0].lab)+'=12</b>':'')+'</div>';
+      return h+'</div>';
+    };
+    r.sections.forEach(sec=>sec.variants.forEach(v=>{const d=document.createElement('div');d.style.cssText=ST;d.innerHTML=sheetHtml(sec,v);chunks.push(d)}));
     const logo=await new Promise(res=>{const im=new Image();im.onload=()=>{const c=document.createElement('canvas');c.width=im.width;c.height=im.height;c.getContext('2d').drawImage(im,0,0);res({d:c.toDataURL('image/png'),w:im.width,h:im.height})};im.onerror=()=>res(null);im.src='assets/logo.png'});
     const fname=String(r.title).replace(/[^\w\u0400-\u04FF]+/g,'_').slice(0,40)+'.pdf';
     const opt={margin:[12,10,18,10],filename:fname,image:{type:'jpeg',quality:.92},html2canvas:{scale:2,useCORS:true,backgroundColor:'#ffffff'},jsPDF:{unit:'mm',format:'a4',orientation:'portrait'}};
@@ -2238,8 +2270,8 @@ async function pdfMake(r){
        for(let i=1;i<=n;i++){
          pdf.setPage(i);
          pdf.saveGraphicsState();pdf.setGState(new pdf.GState({opacity:.09}));
-         if(logo){const sz=90,hh=sz*logo.h/logo.w;pdf.addImage(logo.d,'PNG',(W-sz)/2,(H-hh)/2-12,sz,hh)}
-         pdf.setFontSize(46);pdf.setTextColor(120,90,10);pdf.text('ABITUR DTM',W/2,H/2+38,{align:'center',angle:30});
+         if(logo){const sz=90,hh=sz*logo.h/logo.w;pdf.addImage(logo.d,'PNG',(W-sz)/2,(H-hh)/2-28,sz,hh)}
+         pdf.setFontSize(40);pdf.setTextColor(120,90,10);pdf.text('ABITUR DTM',W/2-22,H/2+72,{align:'center',angle:30});
          pdf.restoreGraphicsState();
          pdf.setFontSize(9);pdf.setTextColor(90,90,90);
          pdf.text('Aloqa: '+r.phone+'   |   Telegram: '+r.telegram,W/2,H-8,{align:'center'});
