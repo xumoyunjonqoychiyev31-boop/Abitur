@@ -331,6 +331,17 @@ body.guest #planCard{display:none!important}
 .sh-q{flex:1;min-width:0;font-size:12px;color:var(--muted);line-height:1.3;cursor:pointer;max-height:32px;overflow:hidden}
 .sh-b{flex:none;display:flex;gap:5px}.sh-o{width:30px;height:30px;border-radius:50%;border:1.5px solid rgba(232,184,75,.6);display:grid;place-items:center;font-size:12px;font-weight:700;cursor:pointer}.sh-o.f{background:var(--gold);color:#111;border-color:var(--gold)}
 .sh-t{flex:none;width:90px;padding:6px;font-size:13px}
+.vd-s{width:100%;box-sizing:border-box;padding:12px 14px;border-radius:12px;border:1px solid rgba(232,184,75,.35);background:#0f1116;color:#fff;font-size:15px;margin-bottom:10px}
+.vd-f{display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;margin-bottom:6px;scrollbar-width:none}.vd-f::-webkit-scrollbar{display:none}
+.vd-f button{flex:none;padding:8px 14px;border-radius:20px;border:1px solid rgba(232,184,75,.35);background:transparent;color:var(--gold2);font-weight:700;font-size:13px}.vd-f button.on{background:var(--gold);color:#111;border-color:var(--gold)}
+.vd{display:flex;gap:12px;padding:10px;margin-bottom:8px;border-radius:14px;background:var(--panel);border:1px solid rgba(255,255,255,.07);cursor:pointer}
+.vd-th{position:relative;flex:none;width:120px;height:68px;border-radius:10px;background:#000 center/cover;display:grid;place-items:center}
+.vd-th::after{content:"▶";width:30px;height:30px;border-radius:50%;background:rgba(0,0,0,.65);color:var(--gold2);display:grid;place-items:center;font-size:13px;padding-left:2px;box-sizing:border-box}
+.vd-th i{position:absolute;right:4px;bottom:4px;font-style:normal;font-size:10px;background:rgba(0,0,0,.75);padding:1px 5px;border-radius:5px}
+.vd-t{font-weight:700;font-size:14px;line-height:1.3}.vd-m{font-size:12px;color:var(--muted);margin-top:4px}.vd.seen{opacity:.65}
+.vd-rec{border-color:rgba(232,184,75,.5);background:rgba(232,184,75,.06)}
+#vidModal{position:fixed;inset:0;z-index:320;background:rgba(0,0,0,.92);display:flex;flex-direction:column;justify-content:center;padding:14px}
+#vidModal.hide{display:none}.vd-fr{position:relative;width:100%;aspect-ratio:16/9;border-radius:14px;overflow:hidden;background:#000}.vd-fr iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
 .chest{display:flex;align-items:center;gap:12px;padding:14px;margin-bottom:6px;border-radius:16px;background:var(--panel);border:1px solid rgba(255,255,255,.07)}.chest.on{border-color:var(--gold);background:linear-gradient(135deg,rgba(232,184,75,.18),rgba(232,184,75,.03));animation:chp 1.8s ease-in-out infinite}
 @keyframes chp{50%{box-shadow:0 0 18px rgba(232,184,75,.35)}}
 .sh-bot{display:flex;gap:10px;padding:12px 14px;border-top:1px solid rgba(255,255,255,.08)}.sh-bot .btn{margin:0}
@@ -471,6 +482,7 @@ body.guest #planCard{display:none!important}
       <button class="tile" onclick="fKnow()"><i>🗺</i><span class="t">Bilim xaritasi</span><span class="s">Mavzu foizi</span></button>
       <button class="tile" onclick="fExam()"><i>📝</i><span class="t">Imtihon rejimi</span><span class="s">DTM varaqasi</span></button>
       <button class="tile" onclick="fMist()"><i>📕</i><span class="t">Xatolar daftari</span><span class="s">Qayta ishlash</span></button>
+      <button class="tile" onclick="fVideo()"><i>🎬</i><span class="t">Video darslar</span><span class="s">Mavzular bo‘yicha</span></button>
       <button class="tile" onclick="fGifts()"><i>🎁</i><span class="t">Sovg‘alar</span><span class="s">Lvl · sandiq</span></button>
       <button class="tile" onclick="fMedals()"><i>🏅</i><span class="t">Medallar</span><span class="s">Yutuqlar</span></button>
       <button class="tile" onclick="fPlan()"><i>🎯</i><span class="t">O'quv rejasi</span><span class="s">Maqsad</span></button>
@@ -549,7 +561,7 @@ body.guest #planCard{display:none!important}
     <div class="card" data-sec="kabinet">
       <div class="prof-top">
         <div class="prof-av" id="kAv" onclick="avOpen()" role="button" aria-label="Profil rasmini o‘zgartirish">?</div>
-        <div><div class="prof-name" id="kName">—</div><div class="prof-id">ID <b id="dId">-</b></div></div>
+        <div><div class="prof-name" id="kName">—</div><div class="prof-id">ID <b id="dId">-</b></div><div id="kLvl" style="margin-top:6px"></div></div>
       </div>
       <div class="mini-g">
         <div class="mini"><span>Reyting o'rni</span><b id="dRank">-</b></div>
@@ -729,6 +741,13 @@ body.guest #planCard{display:none!important}
     <div class="sh-bot"><button class="btn btn-outline" onclick="closeSheet()">⬅ Savollarga</button><button class="btn" onclick="confirmFinish()">🏁 Yakunlash</button></div>
   </div>
 
+  <div id="vidModal" class="hide">
+    <div class="vd-fr" id="vidFr"></div>
+    <div id="vidInfo" style="margin:12px 2px 4px;font-weight:800;font-size:16px"></div>
+    <div id="vidSub" style="font-size:12px;color:var(--muted);margin:0 2px 12px"></div>
+    <div style="display:flex;gap:10px"><button class="btn btn-outline" style="margin:0" onclick="vidClose()">✕ Yopish</button><button class="btn" style="margin:0" onclick="vidNext()">Keyingi ▶</button></div>
+  </div>
+
   <div id="resultScreen" class="hide">
     <div id="resultBox"></div>
     <button class="btn btn-outline" onclick="backToDashboard()">Kabinetga qaytish</button>
@@ -766,7 +785,8 @@ body.guest #planCard{display:none!important}
 <script>
 /* ===== SOZLAMALAR ===== */
 const GOOGLE_CLIENT_ID="323960187871-77jganuhhpo1hba8t7ooh252kqeh9sc2.apps.googleusercontent.com";
-const GAS_URL="https://script.google.com/macros/s/AKfycbwreAIt4zUfsLmzNGo6Vb5dgLiYdf6CcLfG7VlUlHpgm7Ix7sXb2qf_lSDm01lXLgRfdg/exec";
+const GAS_URL="https://script.google.com/macros/s/AKfycbym6s3AOPbuu0w4fOTUHY6b49aBMSksNWQG2z9fqRLl_SEx6b9g5Ej6A7Tie3Efiaq41Q/exec";
+
 /* ===== YORDAMCHI ===== */
 const $=id=>document.getElementById(id);
 const LS={get(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}},del(k){try{localStorage.removeItem(k)}catch(e){}}};
@@ -784,7 +804,7 @@ function busy(on){busyN=Math.max(0,busyN+(on?1:-1));$('busy').classList.toggle('
 window.addEventListener('unhandledrejection',e=>{console.error(e.reason);busyN=0;$('busy').classList.add('hide')});
 
 /* ===== SERVER SO'ROVLARI: timeout + qayta urinish + takroriy so'rovlarni birlashtirish ===== */
-const SAFE=new Set(['getUserByEmail','getSettings','getRanking','getTests','getCertificates','googleLogin','dailyStatus','dailyStart','weakTopics','orderStatus','winners','handbook','storyList','storyMedia','storyComments','profile','wdMine','pdfMine','duelStatus','mistakes','medals','gifts','knowledge','recommend','plan','remGet']);
+const SAFE=new Set(['getUserByEmail','getSettings','getRanking','getTests','getCertificates','googleLogin','dailyStatus','dailyStart','weakTopics','orderStatus','winners','handbook','storyList','storyMedia','storyComments','profile','wdMine','pdfMine','duelStatus','mistakes','medals','gifts','videos','knowledge','recommend','plan','remGet']);
 const inflight=new Map();
 function api(p){
   const url=GAS_URL+'?'+new URLSearchParams(p).toString(),safe=SAFE.has(p.action);
@@ -972,6 +992,14 @@ function logout(){
 
 /* ===== DASHBOARD: avval keshdan darrov, keyin fonda yangilanadi ===== */
 const persist=()=>{if(!isGuest())LS.set('abitur_cache',S)};
+let lvAt=0,lvCache=null;
+function paintLvl(force){
+  const el=$('kLvl');if(!el)return;
+  const draw=r=>{el.innerHTML='<span class="chip">⭐ Lvl '+r.lv.lvl+' · '+esc(r.title||'')+'</span><div style="width:150px;margin-top:6px">'+barH(r.lv.pct,'var(--gold)')+'</div><div style="font-size:11px;color:var(--muted);margin-top:-4px">'+r.lv.xp+' / '+r.lv.to+' XP</div>'};
+  if(lvCache&&!force)draw(lvCache);
+  if(!currentUser||(!force&&Date.now()-lvAt<60000))return;lvAt=Date.now();
+  uApi('gifts').then(r=>{if(r&&r.ok&&r.lv){lvCache=r;draw(r)}}).catch(()=>{});
+}
 function paint(){
   const res=S.res;if(!res)return;
   currentUser=res.guest?null:res;guestSync();
@@ -994,7 +1022,7 @@ function paint(){
   renderCerts(S.certs);
   paintPlan();paintDaily();paintWeak();paintPrize();paintInstall();paintFans();
   {const hb=$('hbBadge');if(hb)hb.textContent=planActive()?'Premium':'Premiumda'}
-  paintBar();
+  paintBar();paintLvl();
 }
 async function loadDashboard(nav=true){
   const email=localStorage.getItem('abitur_email');
@@ -1609,6 +1637,48 @@ async function chestGo(b){
   if(!r||!r.ok){toast((r&&r.error)||'Xatolik');return fGifts()}
   toast('🎁 Sandiqdan +'+COINTXT(r.coin)+' chiqdi!');
   if(r.balans!==undefined){currentUser.balans=r.balans;persist();paint()}fGifts();
+}
+
+
+/* --- Video darslar --- */
+let VD={list:[],fan:'',q:'',weak:[],cur:null,seq:[]};
+const vdSeen=()=>{try{return JSON.parse(localStorage.getItem('vd_seen')||'{}')}catch(e){return{}}};
+const vdMark=id=>{try{const s=vdSeen();s[id]=1;localStorage.setItem('vd_seen',JSON.stringify(s))}catch(e){}};
+const vdThumb=v=>v.yt?'background-image:url(https://i.ytimg.com/vi/'+v.yt+'/mqdefault.jpg)':'background:linear-gradient(135deg,#222,#111)';
+async function fVideo(){
+  openFeat('Video darslar');
+  const r=await api({action:'videos'});if(!r||!r.ok)return featErr(r);
+  VD.list=r.list;VD.fan='';VD.q='';VD.weak=[];
+  if(!VD.list.length)return fb('<p class="quality-desc" style="margin:0 auto">Video darslar tez orada qo‘shiladi.</p>');
+  vdDraw();
+  if(currentUser){uApi('recommend').then(x=>{if(x&&x.ok&&x.weak&&x.weak.length){VD.weak=x.weak.map(w=>w.t);vdDraw()}}).catch(()=>{})}
+}
+function vdCard(v,rec){const s=vdSeen();return '<div class="vd'+(s[v.id]?' seen':'')+(rec?' vd-rec':'')+'" onclick="vidOpen('+v.id+')"><div class="vd-th" style="'+vdThumb(v)+'">'+(v.dur?'<i>'+esc(v.dur)+'</i>':'')+'</div><div style="min-width:0"><div class="vd-t">'+esc(v.title)+'</div><div class="vd-m">'+esc(v.fan)+' › '+esc(v.topic)+(s[v.id]?' · ✓ ko‘rilgan':'')+'</div></div></div>'}
+function vdDraw(){
+  const fans=[...new Set(VD.list.map(v=>v.fan))],q=VD.q.trim().toLowerCase();
+  let L=VD.list.filter(v=>(!VD.fan||v.fan===VD.fan)&&(!q||(v.title+' '+v.topic+' '+v.fan).toLowerCase().includes(q)));
+  const rec=!VD.fan&&!q?VD.list.filter(v=>VD.weak.includes(v.fan+' › '+v.topic)).slice(0,4):[];
+  const by={};L.forEach(v=>{(by[v.fan+' › '+v.topic]=by[v.fan+' › '+v.topic]||[]).push(v)});
+  const sc=$('vdSearch'),keep=sc&&document.activeElement===sc;
+  fb('<input id="vdSearch" class="vd-s" placeholder="🔍 Mavzu yoki dars nomini qidiring" value="'+esc(VD.q)+'" oninput="VD.q=this.value;vdDraw()">'+
+   '<div class="vd-f"><button class="'+(VD.fan?'':'on')+'" onclick="VD.fan=\'\';vdDraw()">Hammasi</button>'+fans.map(f=>'<button class="'+(VD.fan===f?'on':'')+'" onclick="VD.fan=decodeURIComponent(\''+encodeURIComponent(f)+'\');vdDraw()">'+esc(f)+'</button>').join('')+'</div>'+
+   (rec.length?'<div class="h3">🎯 Sizga tavsiya (zaif mavzular)</div>'+rec.map(v=>vdCard(v,1)).join(''):'')+
+   (Object.keys(by).length?Object.keys(by).map(k=>'<div class="h3">'+esc(k)+' · '+by[k].length+' ta</div>'+by[k].map(v=>vdCard(v)).join('')).join(''):'<p class="quality-desc" style="margin:14px auto">Hech narsa topilmadi.</p>'));
+  if(keep){const n=$('vdSearch');n.focus();n.setSelectionRange(n.value.length,n.value.length)}
+}
+function vidOpen(id){
+  const v=VD.list.find(x=>x.id===id);if(!v)return;
+  VD.cur=v;
+  const s=VD.list.filter(x=>x.topic===v.topic&&x.fan===v.fan);VD.seq=s;
+  if(!v.yt){window.open(v.url,'_blank');vdMark(v.id);vdDraw();return}
+  $('vidFr').innerHTML='<iframe src="https://www.youtube-nocookie.com/embed/'+v.yt+'?rel=0&playsinline=1&autoplay=1" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>';
+  $('vidInfo').textContent=v.title;$('vidSub').textContent=v.fan+' › '+v.topic+(v.dur?' · '+v.dur:'');
+  $('vidModal').classList.remove('hide');vdMark(v.id);
+}
+function vidClose(){$('vidFr').innerHTML='';$('vidModal').classList.add('hide');vdDraw()}
+function vidNext(){
+  const i=VD.seq.findIndex(x=>x.id===VD.cur.id),n=VD.seq[i+1]||VD.list[(VD.list.findIndex(x=>x.id===VD.cur.id)+1)%VD.list.length];
+  if(n)vidOpen(n.id)
 }
 
 /* --- Medallar --- */
