@@ -380,6 +380,13 @@ body.guest #planCard{display:none!important}
 .sm-o{display:flex;gap:12px;align-items:center;width:100%;text-align:left;padding:14px;margin-bottom:10px;border-radius:14px;border:1.5px solid rgba(255,255,255,.12);background:var(--panel);color:#fff;font-size:15px}
 .sm-o b{flex:none;width:30px;height:30px;border-radius:50%;border:1.5px solid rgba(232,184,75,.6);display:grid;place-items:center;font-size:13px}.sm-o.on{border-color:var(--gold);background:rgba(232,184,75,.12)}.sm-o.on b{background:var(--gold);color:#111}
 .sm-o.ok{border-color:#7bc96f;background:rgba(123,201,111,.12)}.sm-o.bad{border-color:#ff6b6b;background:rgba(255,107,107,.12)}
+.pl{position:fixed;inset:0;z-index:600;background:radial-gradient(circle at 50% 30%,#2a2210,#07080b 70%);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px}
+.pl.hide{display:none}.pl h2{font-size:20px;color:var(--gold2);margin:8px 0 4px;text-align:center}.pl p{color:var(--muted);font-size:13px;min-height:18px;text-align:center}
+.pl-d{display:flex;gap:16px;margin:22px 0}.pl-d i{width:18px;height:18px;border-radius:50%;border:2px solid var(--gold);transition:.15s}.pl-d i.on{background:var(--gold);box-shadow:0 0 14px rgba(232,184,75,.7)}
+.pl-d.err{animation:plsh .4s}@keyframes plsh{25%{transform:translateX(-12px)}75%{transform:translateX(12px)}}
+.pl-k{display:grid;grid-template-columns:repeat(3,76px);gap:14px}.pl-k button{height:76px;border-radius:50%;border:1.5px solid rgba(232,184,75,.35);background:rgba(255,255,255,.04);color:#fff;font-size:28px;font-weight:600}.pl-k button:active{background:rgba(232,184,75,.25)}.pl-k .e{visibility:hidden}
+.pl-f{margin-top:22px;background:none;border:0;color:var(--gold2);font-size:14px;text-decoration:underline}
+.row2{display:flex;gap:10px;flex-wrap:wrap}.row2 .btn{width:auto;margin:0;flex:1}
 .chest{display:flex;align-items:center;gap:12px;padding:14px;margin-bottom:6px;border-radius:16px;background:var(--panel);border:1px solid rgba(255,255,255,.07)}.chest.on{border-color:var(--gold);background:linear-gradient(135deg,rgba(232,184,75,.18),rgba(232,184,75,.03));animation:chp 1.8s ease-in-out infinite}
 @keyframes chp{50%{box-shadow:0 0 18px rgba(232,184,75,.35)}}
 .sh-bot{display:flex;gap:10px;padding:12px 14px;border-top:1px solid rgba(255,255,255,.08)}.sh-bot .btn{margin:0}
@@ -628,6 +635,11 @@ body.guest #planCard{display:none!important}
       </div>
       <button class="btn" onclick="showPayment()">💳 Balansni to'ldirish</button>
     </div>
+    <div class="card" data-sec="kabinet" id="pinCard">
+      <div class="eyebrow">🔒 Ilova kodi</div>
+      <p class="quality-desc" id="pinTxt" style="margin:6px 0 12px;text-align:left"></p>
+      <div class="row2" id="pinBtns"></div>
+    </div>
 
     <div class="sec-t" data-sec="kabinet">Mening ma'lumotlarim</div>
     <details class="acc" data-sec="kabinet" id="goalCard">
@@ -798,6 +810,8 @@ body.guest #planCard{display:none!important}
     <div class="sh-bot"><button class="btn btn-outline" onclick="closeSheet()">⬅ Savollarga</button><button class="btn" onclick="confirmFinish()">🏁 Yakunlash</button></div>
   </div>
 
+  <div id="pinLock" class="pl hide"><div style="font-size:44px">🔒</div><h2 id="plT">Kodni kiriting</h2><p id="plS"></p><div class="pl-d" id="plD"><i></i><i></i><i></i><i></i></div><div class="pl-k" id="plK"></div><button class="pl-f" id="plF" onclick="pinForgot()">Kodni unutdim</button><button class="pl-f" id="plC" style="display:none" onclick="pinCancel()">Bekor qilish</button></div>
+
   <div id="chestModal" class="hide"><div class="cm-in"><div class="cm-t" id="cmT"></div><div class="cm-stage"><div class="cm-glow" id="cmGlow"></div><div class="cm-chest" id="cmChest"><div class="cm-base"></div><div class="cm-lid"></div><div class="cm-lock">🔒</div></div><div id="cmBurst"></div></div><div id="cmIc" style="display:none"></div><div class="cm-amt" id="cmAmt"></div><div class="cm-sub" id="cmSub"></div><button class="btn hide" id="cmBtn" onclick="cmClose()">Zo‘r! ✨</button></div></div>
 
   <div id="smpModal" class="hide"><div class="sm-top"><span id="smT">Namuna test</span><button class="btn btn-outline" style="width:auto;margin:0;padding:6px 12px;font-size:13px" onclick="smpClose()">✕ Chiqish</button></div><div id="smpBody"></div></div>
@@ -846,7 +860,7 @@ body.guest #planCard{display:none!important}
 <script>
 /* ===== SOZLAMALAR ===== */
 const GOOGLE_CLIENT_ID="323960187871-77jganuhhpo1hba8t7ooh252kqeh9sc2.apps.googleusercontent.com";
-const GAS_URL="https://script.google.com/macros/s/AKfycbwH55xFLVFQ2oSBNDZlKLTFReN9SaIAYLtJTMiCIuay7OhYLhqpocaA7AR8k3G5l_njNQ/exec";
+const GAS_URL="https://script.google.com/macros/s/AKfycbyXj58b-E6r8pUjq216npYb-6YdO6X-RrA3RTACzQ1lnsFPL9cqboy_qK_kXWU5UIVLAQ/exec";
 
 /* ===== YORDAMCHI ===== */
 const $=id=>document.getElementById(id);
@@ -2931,7 +2945,65 @@ async function emVerify(){
 
 
 boot();
+
+/* ===== ILOVA KODI (ixtiyoriy 4 xonali PIN, shu qurilmada saqlanadi) ===== */
+const PINK='app_pin_v1';
+const pinHas=()=>{try{return !!localStorage.getItem(PINK)}catch(e){return false}};
+async function pinHash(p){
+  const s='abitur|'+p;
+  try{const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}
+  catch(e){let h=5381;for(const c of s)h=((h<<5)+h+c.charCodeAt(0))|0;return 'x'+h}
+}
+let PL={mode:'unlock',buf:'',first:'',fails:0,until:0,cb:null};
+function pinKeys(){const k=$('plK');if(k.dataset.b)return;k.dataset.b=1;k.innerHTML=[1,2,3,4,5,6,7,8,9,'',0,'⌫'].map(x=>'<button class="'+(x===''?'e':'')+'" onclick="pinKey(\''+x+'\')">'+x+'</button>').join('')}
+function pinDraw(){[...$('plD').children].forEach((d,i)=>d.classList.toggle('on',i<PL.buf.length))}
+function pinOpen(mode,cb){
+  PL={mode,buf:'',first:'',fails:PL.fails||0,until:PL.until||0,cb:cb||null};pinKeys();
+  const t={unlock:['Kodni kiriting','Ilova qulflangan'],set1:['Yangi kod o‘ylab toping','4 ta raqam'],set2:['Kodni takrorlang','Xuddi shu 4 ta raqam'],verify:['Hozirgi kodni kiriting','']}[mode];
+  $('plT').textContent=t[0];$('plS').textContent=t[1];pinDraw();
+  $('plF').style.display=mode==='unlock'||mode==='verify'?'':'none';$('plC').style.display=mode==='unlock'?'none':'';
+  $('pinLock').classList.remove('hide');
+}
+function pinClose(){$('pinLock').classList.add('hide')}
+function pinCancel(){pinClose()}
+async function pinKey(k){
+  if(Date.now()<PL.until){$('plS').textContent='Kuting: '+Math.ceil((PL.until-Date.now())/1000)+' soniya';return}
+  if(k==='⌫'){PL.buf=PL.buf.slice(0,-1);pinDraw();return}
+  if(PL.buf.length>=4)return;PL.buf+=k;pinDraw();if(PL.buf.length<4)return;
+  const v=PL.buf,m=PL.mode;
+  if(m==='unlock'||m==='verify'){
+    const ok=(await pinHash(v))===localStorage.getItem(PINK);
+    if(ok){PL.fails=0;const cb=PL.cb;pinClose();if(cb)cb();return}
+    PL.fails++;PL.buf='';pinDraw();$('plD').classList.remove('err');void $('plD').offsetWidth;$('plD').classList.add('err');try{navigator.vibrate&&navigator.vibrate(200)}catch(e){}
+    if(PL.fails>=5){PL.until=Date.now()+30000;PL.fails=0;$('plS').textContent='Ko‘p xato. 30 soniya kuting'}else $('plS').textContent='Kod noto‘g‘ri ('+PL.fails+'/5)';
+    return;
+  }
+  if(m==='set1'){PL.first=v;PL.buf='';PL.mode='set2';$('plT').textContent='Kodni takrorlang';$('plS').textContent='Xuddi shu 4 ta raqam';pinDraw();return}
+  if(m==='set2'){
+    if(v!==PL.first){PL.buf='';PL.first='';PL.mode='set1';pinDraw();$('plD').classList.remove('err');void $('plD').offsetWidth;$('plD').classList.add('err');$('plT').textContent='Yangi kod o‘ylab toping';$('plS').textContent='Kodlar mos kelmadi. Qaytadan';return}
+    try{localStorage.setItem(PINK,await pinHash(v))}catch(e){}
+    pinClose();pinPaint();toast('🔒 Ilova kodi yoqildi');
+  }
+}
+function pinForgot(){
+  if(!confirm('Kod unutilsa, hisobdan chiqib, Google orqali qayta kirasiz va kod o‘chadi. Davom etasizmi?'))return;
+  try{localStorage.removeItem(PINK)}catch(e){}pinClose();logout();
+}
+function pinSet(){pinOpen('set1')}
+function pinChange(){pinOpen('verify',()=>pinOpen('set1'))}
+function pinOff(){pinOpen('verify',()=>{try{localStorage.removeItem(PINK)}catch(e){}pinPaint();toast('Ilova kodi o‘chirildi')})}
+function pinPaint(){
+  const t=$('pinTxt'),b=$('pinBtns');if(!t)return;
+  if(pinHas()){t.textContent='Ilova kodi yoqilgan: ilovani ochganda 4 xonali kod so‘raladi. Kod faqat shu qurilmada saqlanadi.';b.innerHTML='<button class="btn btn-outline" onclick="pinChange()">✏️ Kodni almashtirish</button><button class="btn btn-outline" onclick="pinOff()">🔓 O‘chirish</button>'}
+  else{t.textContent='Ixtiyoriy: ilovani boshqalar ochmasligi uchun 4 xonali kod qo‘ying. Bu Google hisobingizdan alohida.';b.innerHTML='<button class="btn" onclick="pinSet()">🔒 Kod o‘rnatish</button>'}
+}
+(function(){
+  let hid=0;
+  document.addEventListener('visibilitychange',()=>{if(document.hidden)hid=Date.now();else if(hid&&Date.now()-hid>120000&&pinHas()&&localStorage.getItem('abitur_email')&&$('pinLock').classList.contains('hide'))pinOpen('unlock')});
+  if(pinHas()&&localStorage.getItem('abitur_email'))pinOpen('unlock');
+  pinPaint();
+})();
 </script>
-<script>['chestModal','vidModal','sheetModal','smpModal','planBack','planCard','cmDummy'].forEach(i=>{const e=document.getElementById(i);if(e)document.body.appendChild(e)});</script>
+<script>['pinLock','chestModal','vidModal','sheetModal','smpModal','planBack','planCard','cmDummy'].forEach(i=>{const e=document.getElementById(i);if(e)document.body.appendChild(e)});</script>
 </body>
 </html>
