@@ -392,6 +392,9 @@ body.guest #planCard{display:none!important}
 .sh-bot{display:flex;gap:10px;padding:12px 14px;border-top:1px solid rgba(255,255,255,.08)}.sh-bot .btn{margin:0}
 .tt-pdf:active{background:rgba(232,184,75,.18)}
 .news-card .btn{margin-top:10px}
+/* ===== BEPUL REJIM: pul, balans, tarif, limit ko'rinmaydi ===== */
+#sbCoin,#wdCard,#appsCard,#payNow,.mini:has(#dBalans),.mini:has(#dScore2),.stat-row:has(#dScore),button[onclick="showPayment()"],button[onclick="fGifts()"],#hbBadge,.tile .s:empty{display:none!important}
+.tile:has(.s#hbBadge) .s{display:none}
 </style>
 </head>
 <body>
@@ -466,11 +469,9 @@ body.guest #planCard{display:none!important}
     </div>
     <div class="card hide" id="newUserCard">
       <h2>Deyarli tayyor!</h2>
-      <p style="font-size:13px;color:var(--muted);margin-bottom:6px">Google hisobingizdan olingan ma'lumot:</p>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:6px">Ism va familiyangizni kiriting:</p>
       <label>Ism</label><input id="gIsm">
       <label>Familiya</label><input id="gFamiliya">
-      <label>Taklif kodi (ixtiyoriy)</label><input id="gReferral" placeholder="Do'stingiz ID raqami">
-      <label>Qaysi fanlar kerak? (bir nechtasini tanlang)</label><div id="fanChipsR" style="margin-top:4px"></div>
       <button class="btn" id="gCompleteBtn" onclick="completeGoogleRegister()">Ro'yxatdan o'tishni yakunlash</button>
       <div class="error hide" id="gCompleteErr"></div>
     </div>
@@ -522,7 +523,7 @@ body.guest #planCard{display:none!important}
     <div class="sec-t" data-sec="home">Vositalar</div>
     <div class="tiles" data-sec="home">
       <button class="tile" onclick="openHandbook()"><i>📚</i><span class="t">Ma'lumotnoma</span><span class="s" id="hbBadge">Tarifda</span></button>
-      <button class="tile" onclick="openGames()"><i>🎮</i><span class="t">O'yinlar</span><span class="s">Limitga kiradi</span></button>
+      <button class="tile" onclick="openGames()"><i>🎮</i><span class="t">O'yinlar</span><span class="s">Bepul</span></button>
       <button class="tile" onclick="openDuel()"><i>⚔️</i><span class="t">Duel</span><span class="s">Do'st bilan</span></button>
     </div>
 
@@ -860,7 +861,7 @@ body.guest #planCard{display:none!important}
 <script>
 /* ===== SOZLAMALAR ===== */
 const GOOGLE_CLIENT_ID="323960187871-77jganuhhpo1hba8t7ooh252kqeh9sc2.apps.googleusercontent.com";
-const GAS_URL="https://script.google.com/macros/s/AKfycbxtSf6CkFHHJ1JMi2MmOu0P__99wwLgdq2FMfpyXraMeFL4kMftDVmYgKTJzIWXlsqNrQ/exec";
+const GAS_URL="https://script.google.com/macros/s/AKfycbwxdiemCqbYegJk1H91ST1TldG6Gx7fMVn-Qwz1VMdW4aigVtc0XfHutgx010pp7k0JYg/exec";
 
 /* ===== YORDAMCHI ===== */
 const $=id=>document.getElementById(id);
@@ -1036,12 +1037,11 @@ async function handleGoogleCredential(response){
   }
 }
 async function completeGoogleRegister(){
-  const ism=$('gIsm').value.trim(),familiya=$('gFamiliya').value.trim(),referralId=$('gReferral').value.trim();
+  const ism=$('gIsm').value.trim(),familiya=$('gFamiliya').value.trim(),referralId='';
   const errEl=$('gCompleteErr');
   errEl.classList.add('hide');
   if(!ism||!familiya){errEl.textContent='Ism va familiyani kiriting';errEl.classList.remove('hide');return}
-  const fanlar=pickedFans('fanChipsR');
-  if(!fanlar){errEl.textContent='Kamida bitta fanni tanlang';errEl.classList.remove('hide');return}
+  const fanlar='';
   const btn=$('gCompleteBtn');
   setLoading(btn,true,'Yuborilmoqda...');
   const res=await api({action:'googleRegister',email:pendingGoogleEmail,ism:ism,familiya:familiya,referralId:referralId,fanlar:fanlar});
@@ -1111,7 +1111,11 @@ async function loadDashboard(nav=true){
       else if(nav){hideAllScreens();show('errScreen')}
       return;
     }
-    if(!S.res){logout();return}
+    if(!S.res){
+      if(res&&/topilmadi/i.test(res.error||'')){logout();return}
+      if(nav){hideAllScreens();const ep=document.querySelector('#errScreen .quality-desc');if(ep)ep.textContent=(res&&res.error)||'Server xatosi. Birozdan keyin qayta urinib ko‘ring.';show('errScreen')}
+      return;
+    }
     toast(res.error||'Xatolik yuz berdi');return;
   }
   S.res=res;persist();paint();
@@ -1525,6 +1529,7 @@ function paintPlan(){
   }).join('');
 }
 function showPlanCard(why){
+  return;
   if(!currentUser){needLogin();return}
   paintPlan();const c=$('planCard');c.classList.add('pm');c.classList.remove('hide');$('planBack').classList.remove('hide');
   if(why){const t=$('planTxt');t.innerHTML='<b class="gold">'+why+'</b><br>'+t.innerHTML}
@@ -1696,7 +1701,7 @@ const featErr=r=>fb('<p class="quality-desc" style="margin:0 auto">'+esc((r&&r.e
 
 
 /* --- Sovg'alar, unvonlar, sandiq --- */
-const COINTXT=n=>n?fmtN(n)+' so‘m':'';
+const COINTXT=n=>'';
 async function fGifts(){
   if(featNeedLogin())return;openFeat('Lvl sovg‘alari');
   const r=await uApi('gifts');if(!r||!r.ok)return featErr(r);
@@ -2099,6 +2104,7 @@ async function saveFanlar(id,closeModal){
 }
 function fanModalLater(){LS.set('abitur_fan_skip',today());$('fanModal').classList.add('hide')}
 function fanPromptCheck(){
+  return;
   if(!currentUser||myFans().length||fanPromptCheck.shown||LS.get('abitur_fan_skip')===today())return;
   if(inFlow())return;
   fanPromptCheck.shown=1;renderFanChips('fanChipsM',[]);$('fanModal').classList.remove('hide');
@@ -2146,7 +2152,7 @@ function goAuth(){
   show('authScreen');show('googleAuthCard');initGoogle();
   window.scrollTo(0,0);
 }
-function guestDaily(){const t=$('dailyTxt'),bt=$('dailyBtn');if(t)t.textContent='Har kuni 10 ta savol: to‘g‘ri javoblar uchun coin yutib oling. Boshlash uchun hisobga kiring.';if(bt){bt.classList.remove('hide');bt.disabled=false;bt.textContent='Boshlash'}}
+function guestDaily(){const t=$('dailyTxt'),bt=$('dailyBtn');if(t)t.textContent='Har kuni 10 ta savol: bepul. Boshlash uchun hisobga kiring.';if(bt){bt.classList.remove('hide');bt.disabled=false;bt.textContent='Boshlash'}}
 let guestPub=null;
 function guestEnter(){
   currentUser=null;
@@ -2945,6 +2951,7 @@ async function emVerify(){
 
 
 boot();
+setTimeout(()=>{const l=$('loadScreen');if(l&&!l.classList.contains('hide')){hideAllScreens();show('errScreen')}},30000);
 
 /* ===== ILOVA KODI (ixtiyoriy 4 xonali PIN, shu qurilmada saqlanadi) ===== */
 const PINK='app_pin_v1';
